@@ -1,4 +1,4 @@
-<project name="Reverse Proxy" default="compile" basedir=".">
+<project name="j2ep" default="compile" basedir=".">
 
 
 
