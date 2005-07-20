@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+
+	<servers>
+		<server id="1" className="net.sf.j2ep.servers.BaseServer"
+			hostName="localhost:8080/test-response"
+		/>
+		
+		<!--
+			Here is a host that doesn't exist
+		-->
+		<server id="3" className="net.sf.j2ep.servers.BaseServer"
+			hostName="www.dfsdf.dkdks"
+		/>
+		
+		<server id="4" className="net.sf.j2ep.servers.BaseServer"
+			hostName="localhost:8080/test-response/GET"
+		/>
+		
+		<!-- 
+			Here is a server that has to support some special methods
+			like PROPFIND. It is used to test that a Allow will be
+			rewritted to only include supported http methods.
+		-->
+		<server id="2" className="net.sf.j2ep.servers.BaseServer"
+			hostName="localhost:8080/webdav"
+		/>
+	</servers>
+
+
+	<rules>
+		<rule className="net.sf.j2ep.rules.DirectoryRule"
+  			directory="/testUnsupportedMethods"
+  			serverId="2"
+  		/>
+  		
+  		<rule className="net.sf.j2ep.rules.DirectoryRule"
+  			directory="/testNonExistentServer"
+  			serverId="3"
+  		/>
+  		
+  		<rule className="net.sf.j2ep.rules.DirectoryRule"
+  			directory="/testDirectoryMapping"
+  			serverId="4"
+  		/>
+  		
+  		<rule className="net.sf.j2ep.rules.AcceptEverythingRule"
+  			serverId="1"
+  		/>
+	</rules>
+	
+</config>

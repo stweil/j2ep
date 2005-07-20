@@ -1,0 +1,6 @@
+.classpath
+.project
+*.properties
+WEB-INF
+testreports
+lib
