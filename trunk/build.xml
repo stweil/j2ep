@@ -1,0 +1,430 @@
+<project name="Reverse Proxy" default="compile" basedir=".">
+
+
+
+	<!-- ===================== Property Definitions =========================== -->
+
+
+	<!--
+
+  Each of the following properties are used in the build script.
+  Values for these properties are set by the first place they are
+  defined, from the following list:
+
+  * Definitions on the "ant" command line (ant -Dfoo=bar compile).
+
+  * Definitions from a "build.properties" file in the top level
+    source directory of this application.
+
+  * Definitions from a "build.properties" file in the developer's
+    home directory.
+
+  * Default definitions in this build.xml file.
+
+  You will note below that property values can be composed based on the
+  contents of previously defined properties.  This is a powerful technique
+  that helps you minimize the number of changes required when your development
+  environment is modified.  Note that property composition is allowed within
+  "build.properties" files as well as in the "build.xml" script.
+
+-->
+
+	<property file="build.properties"/>
+
+	<!-- Tomcat definitions -->
+	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" />
+	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" />
+	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" />
+
+
+	<!-- ==================== File and Directory Names ======================== -->
+
+
+	<!--
+
+  These properties generally define file and directory names (or paths) that
+  affect where the build process stores its outputs.
+
+  app.name             Base name of this application, used to
+                       construct filenames and directories.
+                       Defaults to "myapp".
+
+  app.version          Version number of this iteration of the application.
+
+  build.home           The directory into which the "prepare" and
+                       "compile" targets will generate their output.
+                       Defaults to "build".
+
+  dist.home            The name of the base directory in which
+                       distribution files are created.
+                       Defaults to "dist".
+-->
+
+	<property name="app.name"			value="j2ep"/>
+	<property name="app.version"		value="0.1-dev"/>
+	<property name="build.home"			value="${basedir}/WEB-INF/classes"/>
+	<property name="app.home"			value="${basedir}/WEB-INF"/>
+	<property name="lib.home"			value="${basedir}/WEB-INF/lib"/>
+	<property name="test.relativehome"	value="/org/apache/webapp/reverseproxy/test"/>
+	<property name="test.path"			value="org.apache.webapp.reverseproxy.test"/>
+	<property name="dist.home"			value="${basedir}/dist"/>
+	<property name="reports.test"		value="${basedir}/testreports"/>
+	<property name="docs.home"			value="${basedir}/docs"/>
+	<property name="src.home"			value="${basedir}/src"/>
+	<property name="manager.url"		value="${server.url}/manager"/>
+
+
+
+	<!--  ==================== Compilation Control Options ==================== -->
+
+	<!--
+
+  These properties control option settings on the Javac compiler when it
+  is invoked using the <javac> task.
+
+  compile.debug        Should compilation include the debug option?
+
+  compile.deprecation  Should compilation include the deprecation option?
+
+  compile.optimize     Should compilation include the optimize option?
+
+-->
+
+	<property name="compile.debug"       value="true"/>
+	<property name="compile.deprecation" value="false"/>
+	<property name="compile.optimize"    value="true"/>
+
+
+
+	<!-- ==================== External Dependencies =========================== -->
+
+
+	<!--
+
+	Use property values to define the locations of external JAR files on which
+	your application will depend.  In general, these values will be used for
+	two purposes:
+	* Inclusion on the classpath that is passed to the Javac compiler
+	* Being copied into the "/WEB-INF/lib" directory during execution
+	of the "deploy" target.
+
+	Because we will automatically include all of the Java classes that Tomcat 5
+	exposes to web applications, we will not need to explicitly list any of those
+	dependencies.  You only need to worry about external dependencies for JAR
+	files that you are going to include inside your "/WEB-INF/lib" directory.
+
+	-->
+
+	<property name="commons-httpclient-3.0-rc3.jar" 
+		value="${external.libs}/commons-httpclient-3.0-rc3.jar"/>
+
+	<property name="commons-digester-1.7.jar" 
+		value="${external.libs}/commons-digester-1.7.jar"/>
+
+	<property name="commons-beanutils.jar" 
+		value="${external.libs}/commons-beanutils.jar"/>
+
+	<property name="commons-codec-1.3.jar.jar" 
+		value="${external.libs}/commons-codec-1.3.jar"/>
+
+
+
+	<!-- ==================== Compilation Classpath =========================== -->
+
+	<!--
+
+	Rather than relying on the CLASSPATH environment variable, Ant includes
+	features that makes it easy to dynamically construct the classpath you
+	need for each compilation.  The example below constructs the compile
+	classpath to include the servlet.jar file, as well as the other components
+	that Tomcat makes available to web applications automatically, plus anything
+	that you explicitly added.
+
+	-->
+
+	<path id="compile.classpath">
+
+		<!-- Include all JAR files that will be included in /WEB-INF/lib -->
+		<pathelement location="${commons-httpclient-3.0-rc3.jar}"/>
+		<pathelement location="${commons-digester-1.7.jar}"/>
+		<pathelement location="${commons-beanutils.jar}"/>
+		<pathelement location="${commons-codec-1.3.jar.jar}"/>
+
+		<!-- Include all elements that Tomcat exposes to applications -->
+		<pathelement location="${catalina.home}/common/classes"/>
+		<fileset dir="${catalina.home}/common/endorsed">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="${catalina.home}/common/lib">
+			<include name="*.jar"/>
+		</fileset>
+		<pathelement location="${catalina.home}/shared/classes"/>
+		<fileset dir="${catalina.home}/shared/lib">
+			<include name="*.jar"/>
+		</fileset>
+
+		<!-- Test path -->
+		<pathelement location="${build.home}"/>
+
+	</path>
+
+	<!-- Define the Cactus tasks -->
+	<taskdef resource="cactus.tasks">
+		<classpath>
+			<pathelement location="lib/cactus.jar" />
+			<pathelement location="lib/cactus-ant.jar" />
+			<pathelement location="lib/commons-httpclient.jar" />
+			<pathelement location="lib/commons-logging.jar" />
+			<pathelement location="lib/aspectjrt.jar" />
+		</classpath>
+	</taskdef>
+
+	<!-- ==================== All Target ====================================== -->
+
+	<!--
+
+  The "all" target is a shortcut for running the "clean" target followed
+  by the "compile" target, to force a complete recompile.
+
+-->
+
+	<target name="all" depends="clean,compile"
+   description="Clean build and dist directories, then compile"/>
+
+
+
+	<!-- ==================== Clean Target ==================================== -->
+
+	<!--
+
+  The "clean" target deletes any previous "build" and "dist" directory,
+  so that you can be ensured the application can be built from scratch.
+
+-->
+
+	<target name="clean"
+   description="Delete old build and dist directories">
+		<delete dir="${build.home}"/>
+		<delete dir="${lib.home}"/>
+		<delete dir="${dist.home}"/>
+		<delete dir="${docs.home}"/>
+	</target>
+
+
+
+	<!-- ==================== Compile Target ================================== -->
+
+	<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+  This example assumes that you will be including your classes in an
+  unpacked directory hierarchy under "/WEB-INF/classes".
+
+-->
+
+	<target name="compile" depends="prepare"
+   description="Compile Java sources">
+
+		<!-- Compile Java classes as necessary -->
+		<mkdir    dir="${build.home}"/>
+		<javac srcdir="${src.home}"
+          destdir="${build.home}"
+            debug="${compile.debug}"
+      deprecation="${compile.deprecation}"
+         optimize="${compile.optimize}">
+			<classpath refid="compile.classpath"/>
+		</javac>
+
+
+
+		<!-- Copy application resources -->
+		<copy  todir="${build.home}">
+			<fileset dir="${src.home}" excludes="**/*.java,**/*.class"/>
+		</copy>
+
+	</target>
+
+
+	<!-- ==================== Testing ================================== -->
+
+	<target name="test" depends="cactusrelease,redeploy.cactuswar,deploy.cactuswar"
+	   description="Run all junit and cactus tests">
+
+		<!-- JUnit -->
+		<junit printsummary="yes" haltonfailure="yes">
+			<classpath refid="compile.classpath"/>
+			<formatter type="plain"/>
+
+			<test name="net.sf.j2ep.test.CompositeRuleTest" todir="${reports.test}"/>
+			<test name="net.sf.j2ep.test.DirectoryRuleTest" todir="${reports.test}"/>
+			<test name="net.sf.j2ep.test.IPRuleTest" todir="${reports.test}"/>
+		</junit>
+
+		<cactus warfile="${dist.home}/${app.name}-${app.version}-CACTUS.war"
+		    printsummary="yes">
+			<classpath refid="compile.classpath"/>
+			<formatter type="plain"/>	
+
+			<test name="net.sf.j2ep.test.OptionTest" todir="${reports.test}"/>
+			<test name="net.sf.j2ep.test.GetTest" todir="${reports.test}"/>
+			<test name="net.sf.j2ep.test.PostTest" todir="${reports.test}"/>
+			<test name="net.sf.j2ep.test.DirectoryMappingTest" todir="${reports.test}"/>
+		</cactus>
+
+	</target>
+
+
+	<!-- ==================== Dist Target ===================================== -->
+
+
+	<!--
+
+  The "dist" target creates a binary distribution of your application
+  in a directory structure ready to be archived in a tar.gz or zip file.
+  Note that this target depends on two others:
+
+  * "compile" so that the entire web application (including external
+    dependencies) will have been assembled
+
+  * "javadoc" so that the application Javadocs will have been created
+
+-->
+
+	<target name="cactusrelease" depends="compile"
+   description="Create war for cactus test">
+
+		<!-- Create temporary dist directory -->
+		<mkdir dir="${dist.home}/tmp/WEB-INF" />
+		<copy    todir="${dist.home}/tmp/WEB-INF">
+			<fileset dir="${app.home}"/>
+		</copy>
+
+		<!-- We only want the web.xml that cactus is making for us -->
+		<move tofile="${dist.home}/tmp/WEB-INF/web.xml" overwrite="true"
+			file="${dist.home}/tmp/WEB-INF/cactus-web.xml" />
+
+		<!-- Create application JAR file -->
+		<jar jarfile="${dist.home}/test.war"
+         basedir="${dist.home}/tmp"/>
+
+		<cactifywar srcfile="${dist.home}/test.war" destfile="${dist.home}/${app.name}-${app.version}-CACTUS.war" />
+
+		<!-- Remove tempdir -->
+		<delete dir="${dist.home}/tmp"/>
+
+		<!-- Remove temporary war -->
+		<delete file="${dist.home}/test.war"/>
+
+		<waitfor maxwait="1000" checkevery="450" timeoutproperty="notdeployed">
+			<http url="${server.url}/test/ServletRedirector?Cactus_Service=RUN_TEST"/>
+		</waitfor>
+
+
+	</target>
+
+	<!-- ==================== Release Target ===================================== -->
+	<target name="release" depends="test,javadoc"
+	   description="Create binary distribution">
+
+		<!-- Create temporary dist directory -->
+		<mkdir dir="${dist.home}/tmp/WEB-INF" />
+		<copy    todir="${dist.home}/tmp/WEB-INF">
+			<fileset dir="${app.home}"/>
+		</copy>
+
+		<!-- Copy documentation subdirectories -->
+		<mkdir   dir="${dist.home}/docs"/>
+		<copy    todir="${dist.home}/docs">
+			<fileset dir="${docs.home}"/>
+		</copy>
+
+		<!-- Remove tests from war -->
+		<delete dir="${dist.home}/tmp/WEB-INF/classes${test.relativehome}"/>
+		<delete file="${dist.home}/tmp/WEB-INF/classes/cactus.properties"/>
+		<delete file="${dist.home}/tmp/WEB-INF/cactus-web.xml"/>
+
+		<!-- Create application JAR file -->
+		<jar jarfile="${dist.home}/${app.name}-${app.version}.war"
+		         basedir="${dist.home}/tmp"/>
+
+		<!-- Remove tempdir -->
+		<delete dir="${dist.home}/tmp"/>
+
+	</target>
+
+
+	<!-- ==================== Javadoc Target ================================== -->
+
+	<!--
+
+  The "javadoc" target creates Javadoc API documentation for the Java
+  classes included in your application.  Normally, this is only required
+  when preparing a distribution release, but is available as a separate
+  target in case the developer wants to create Javadocs independently.
+
+-->
+
+	<target name="javadoc" depends="compile"
+   description="Create Javadoc API documentation">
+
+		<mkdir          dir="${docs.home}/api"/>
+		<javadoc sourcepath="${src.home}"
+                destdir="${docs.home}/api"
+    excludepackagenames="${test.path}.*"
+           packagenames="*">
+			<classpath refid="compile.classpath"/>
+		</javadoc>
+
+	</target>
+
+	<!-- Undeploy -->
+	<target name="redeploy.cactuswar" unless="notdeployed">
+		<undeploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/test" />
+
+		<deploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/test" localWar="file://${dist.home}/${app.name}-${app.version}-CACTUS.war" />
+
+	</target>
+
+	<!-- Deploy -->
+	<target name="deploy.cactuswar" if="notdeployed">
+
+		<deploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/test" localWar="file://${dist.home}/${app.name}-${app.version}-CACTUS.war" />
+	</target>
+
+
+	<!-- ==================== Prepare Target ================================== -->
+
+	<!--
+
+  The "prepare" target is used to create the "build" destination directory,
+  and copy the static contents of your web application to it.  If you need
+  to copy static files from external dependencies, you can customize the
+  contents of this task.
+
+  Normally, this task is executed indirectly when needed.
+
+-->
+
+	<target name="prepare">
+
+		<!-- Create build directories as needed -->
+		<mkdir  dir="${build.home}"/>
+		<mkdir  dir="${build.home}"/>
+		<mkdir  dir="${build.home}"/>
+		<mkdir  dir="${reports.test}"/>
+
+
+		<!-- Copy external dependencies as required -->
+		<mkdir  dir="${lib.home}"/>
+		<copy todir="${lib.home}" file="${commons-httpclient-3.0-rc3.jar}"/>
+		<copy todir="${lib.home}" file="${commons-digester-1.7.jar}"/>
+		<copy todir="${lib.home}" file="${commons-beanutils.jar}"/>
+		<copy todir="${lib.home}" file="${commons-codec-1.3.jar.jar}"/>
+
+
+	</target>
+
+
+
+</project>
