@@ -38,10 +38,25 @@ import org.apache.commons.logging.LogFactory;
  */
 public class OptionsHandler extends ResponseHandlerBase {
 
+    /** 
+     * A set of all the allowed methods.
+     */
     private static Set<String> allowedMethods = new HashSet<String>();
+    
+    /** 
+     * The logger.
+     */
     private static Log log = LogFactory.getLog(OptionsHandler.class);
     
+    /** 
+     * Set a construction to indicate if the request is directed to the
+     * proxy directly by using Max-Forwards: 0.
+     */
     private boolean useOwnAllow;
+    
+    /** 
+     * The method used for this request.
+     */
     private OptionsMethod method;
 
     public OptionsHandler(OptionsMethod method) {
