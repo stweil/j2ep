@@ -169,8 +169,10 @@ public class BaseServer implements Server {
         doBasic(request, method);
         try {
             int max = request.getIntHeader("Max-Forwards");
-            
-            if (max == 0) {
+
+            if (max == -1) {
+                return;
+            } else if (max == 0) {
                 method.abort();
             } else {
                 method.setRequestHeader("Max-Forwards", ((Integer) (max - 1))

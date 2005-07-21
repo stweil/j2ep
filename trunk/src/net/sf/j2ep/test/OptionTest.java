@@ -76,13 +76,14 @@ public class OptionTest extends FilterTestCase {
 
     public void testMaxForwards() throws ServletException,
             IOException {
-        MethodWrappingRequest req = new MethodWrappingRequest("OPTIONS", "/",
+        MethodWrappingRequest req = new MethodWrappingRequest("OPTIONS", "/maxForwards",
                 null);
         req.addHeader("Max-Forwards", "0");
         proxy.doFilter(req, response, filterChain);
     }
     
     public void endMaxForwards(WebResponse theResponse) {
+        assertEquals("Status code check", 200, theResponse.getStatusCode());
         String allow = theResponse.getConnection().getHeaderField("Allow");
         /*
          * Reason we have to check all and not just compare to string is
