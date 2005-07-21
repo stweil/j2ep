@@ -18,8 +18,19 @@ package net.sf.j2ep.responsehandlers;
 
 import org.apache.commons.httpclient.methods.PostMethod;
 
+/**
+ * Handler for the POST method.
+ *
+ * @author Anders Nyman
+ */
 public class PostHandler extends BasicResponseHandler {
     
+    /**
+     * Default constructor, will only call the super-constructor
+     * for ResponseHandlerBase. 
+     * 
+     * @param method The method used for this response
+     */
     public PostHandler(PostMethod method) {
         super(method);
     }
