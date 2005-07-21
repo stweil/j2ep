@@ -78,7 +78,7 @@ public class ProxyFilter implements Filter {
             try {
                 handler = server.connect(httpRequest, uri, httpClient);
             } catch (IOException e) {
-                httpResponse.setStatus(504);
+                httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
                 return;
             }
             
