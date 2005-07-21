@@ -62,11 +62,7 @@ public class PostTest extends FilterTestCase {
         theRequest.setURL("localhost:8080", "/test", "/POST/param.jsp", null, null);
         theRequest.addHeader("Expect", "100-continue");
         theRequest.addHeader("TestHeader", "tst");
-        try {
-            theRequest.setUserData(new FileInputStream("net/sf/j2ep/test/testData.xml"));
-        } catch (FileNotFoundException e) {
-            fail("File was not found " + e.getMessage());
-        }
+        theRequest.addParameter("testParam", "testValue", WebRequest.POST_METHOD);
     }
     
     public void testExpectContinue() throws IOException, ServletException {
@@ -84,7 +80,6 @@ public class PostTest extends FilterTestCase {
     }
     
     public void endExpectContinue(WebResponse theResponse) {
-        //assertEquals("We should get status code 100", 100, theResponse.getStatusCode());
-       fail(theResponse.getText());
+        assertEquals("We should get status code 100", 100, theResponse.getStatusCode());
     }
 }
