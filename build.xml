@@ -257,6 +257,9 @@
 			<tarfileset dir="${docs.home}" fullpath="/CHANGELOG">
 				<include name="changelog.txt" />
 			</tarfileset>
+			<tarfileset dir="${docs.home}" fullpath="/RELEASE-NOTES">
+				<include name="releasenotes.txt" />
+			</tarfileset>
 			<tarfileset dir="${docs.home}" fullpath="/LICENSE">
 				<include name="license.txt" />
 			</tarfileset>
@@ -270,8 +273,6 @@
 				<include name="**/*.xml"/>
 			</tarfileset>
 
-			<tarfileset dir="${external.libs}" prefix="/lib" />
-
 			<tarfileset dir="${basedir}" >
 				<include name="build.xml" />
 			</tarfileset>
@@ -279,11 +280,14 @@
 		<bzip2 src="${dist.home}/src.tar" destfile="${dist.home}/${app.name}-${app.version}-src.tar.bz2"/>
 
 		<zip destfile="${dist.home}/${app.name}-${app.version}-src.zip">
-			<zipfileset dir="${docs.home}" fullpath="README">
+			<zipfileset dir="${docs.home}" fullpath="README.txt">
 				<include name="readme-src.txt" />
 			</zipfileset>
-			<zipfileset dir="${docs.home}" fullpath="CHANGELOG">
+			<zipfileset dir="${docs.home}" fullpath="CHANGELOG.txt">
 				<include name="changelog.txt" />
+			</zipfileset>
+			<zipfileset dir="${docs.home}" fullpath="RELEASE-NOTES.txt">
+				<include name="releasenotes.txt" />
 			</zipfileset>
 			<zipfileset dir="${docs.home}" fullpath="LICENSE">
 				<include name="license.txt" />
@@ -298,8 +302,6 @@
 				<include name="**/*.xml" />
 			</zipfileset>
 
-			<zipfileset dir="${external.libs}" prefix="lib" />
-
 			<zipfileset dir="${basedir}">
 				<include name="build.xml" />
 			</zipfileset>
@@ -311,6 +313,9 @@
 			</tarfileset>
 			<tarfileset dir="${docs.home}" fullpath="/CHANGELOG">
 				<include name="changelog.txt" />
+			</tarfileset>
+			<tarfileset dir="${docs.home}" fullpath="/RELEASE-NOTES">
+				<include name="releasenotes.txt" />
 			</tarfileset>
 			<tarfileset dir="${docs.home}" fullpath="/LICENSE">
 				<include name="license.txt" />
@@ -328,11 +333,14 @@
 		<bzip2 src="${dist.home}/release.tar" destfile="${dist.home}/${app.name}-${app.version}.tar.bz2" />
 
 		<zip destfile="${dist.home}/${app.name}-${app.version}.zip">
-			<zipfileset dir="${docs.home}" fullpath="README">
+			<zipfileset dir="${docs.home}" fullpath="README.txt">
 				<include name="readme.txt" />
 			</zipfileset>
-			<zipfileset dir="${docs.home}" fullpath="CHANGELOG">
+			<zipfileset dir="${docs.home}" fullpath="CHANGELOG.txt">
 				<include name="changelog.txt" />
+			</zipfileset>
+			<zipfileset dir="${docs.home}" fullpath="RELEASE-NOTES.txt">
+				<include name="releasenotes.txt" />
 			</zipfileset>
 			<zipfileset dir="${docs.home}" fullpath="LICENSE">
 				<include name="license.txt" />
