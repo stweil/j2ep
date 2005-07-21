@@ -31,6 +31,11 @@ import org.apache.commons.httpclient.methods.OptionsMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Handler for the OPTIONS method.
+ *
+ * @author Anders Nyman
+ */
 public class OptionsHandler extends ResponseHandlerBase {
 
     private static Set<String> allowedMethods = new HashSet<String>();
@@ -47,6 +52,14 @@ public class OptionsHandler extends ResponseHandlerBase {
         }
     }
 
+    /**
+     * Will check if we are to handle this request if so 
+     * the http methods allowed by this proxy is returned.
+     * If it is a request meant for the backing server its
+     * allowed method will be returned.
+     * 
+     * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
+     */
     public void process(HttpServletResponse response) {
         setHeaders(response);
         response.setHeader("allow", processAllowHeader());
@@ -69,6 +82,14 @@ public class OptionsHandler extends ResponseHandlerBase {
         }
     }
 
+    /**
+     * Will go through all the methods returned in the 
+     * Allow header. Each method will be checked to see
+     * that the method is allowed, if to it will be included
+     * in the returned value.
+     * 
+     * @return String the allowed headers for this request
+     */
     private String processAllowHeader() {
         StringBuffer allowToSend = new StringBuffer("");
         if (useOwnAllow) {
@@ -87,6 +108,12 @@ public class OptionsHandler extends ResponseHandlerBase {
         return allowToSend.toString();
     }
 
+    /**
+     * @see net.sf.j2ep.ResponseHandler#getStatusCode()
+     * 
+     * Returned 200 if the request is targeted to the proxy
+     * otherwise the normal status code is returned.
+     */
     public int getStatusCode() {
         if (useOwnAllow) {
             return 200;
@@ -95,10 +122,23 @@ public class OptionsHandler extends ResponseHandlerBase {
         }
     }
 
+
+    /**
+     * Adds a method to the list of allowed methods.
+     * 
+     * @param methodName The method to add
+     */
     public static void addAllowedMethod(String methodName) {
         allowedMethods.add(methodName);
     }
 
+    /**
+     * Adds all the methods in the input to the list 
+     * of allowed methods. The input string should be
+     * comma seperated e.g. "OPTIONS,GET,POST"
+     * 
+     * @param methodName
+     */
     public static void addAllowedMethods(String methodName) {
         StringTokenizer tokenizer = new StringTokenizer(methodName, ",");
         while (tokenizer.hasMoreTokens()) {

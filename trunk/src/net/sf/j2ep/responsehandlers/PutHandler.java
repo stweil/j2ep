@@ -16,22 +16,22 @@
 
 package net.sf.j2ep.responsehandlers;
 
-import javax.servlet.http.HttpServletResponse;
-
-import net.sf.j2ep.ResponseHandlerBase;
-
 import org.apache.commons.httpclient.methods.PutMethod;
 
-public class PutHandler extends ResponseHandlerBase {
+/**
+ * Handler for the PUT method.
+ *
+ * @author Anders Nyman
+ */
+public class PutHandler extends BasicResponseHandler {
     
+    /**
+     * Default constructor, will only call the super-constructor
+     * for ResponseHandlerBase. 
+     * 
+     * @param method The method used for this response
+     */
     public PutHandler(PutMethod method) {
         super(method);
     }
-
-    @Override
-    public void process(HttpServletResponse response) {
-        // TODO Auto-generated method stub
-        
-    }
-
 }

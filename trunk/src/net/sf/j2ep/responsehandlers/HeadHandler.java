@@ -22,13 +22,22 @@ import net.sf.j2ep.ResponseHandlerBase;
 
 import org.apache.commons.httpclient.methods.HeadMethod;
 
+/**
+ * Handler for the HEAD method.
+ *
+ * @author Anders Nyman
+ */
 public class HeadHandler extends ResponseHandlerBase {
     
     public HeadHandler(HeadMethod method) {
         super(method);
     }
 
-    @Override
+    /**
+     * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
+     * 
+     * Will only set the headers and status code, no response is sent.
+     */
     public void process(HttpServletResponse response) {
         setHeaders(response);
         response.setStatus(getStatusCode());
