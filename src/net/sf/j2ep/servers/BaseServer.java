@@ -18,6 +18,8 @@ package net.sf.j2ep.servers;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,8 +50,13 @@ public class BaseServer implements Server {
     
     private static Log log;
     
+    private static Set<String> bannedHeaders;
+    
     public BaseServer() {
         log = LogFactory.getLog(BaseServer.class);
+        bannedHeaders = new HashSet<String>();
+        bannedHeaders.add("connection");
+        bannedHeaders.add("accept-encoding");
     }
 
     /**
@@ -200,18 +207,24 @@ public class BaseServer implements Server {
         
         while (headers.hasMoreElements()) {
             String name = (String) headers.nextElement();
-            Enumeration value = request.getHeaders(name);
-            while (value.hasMoreElements()) {
-                String valueString = (String) value.nextElement();
-                boolean equals = (connectionToken != null && name
-                        .compareToIgnoreCase(connectionToken) == 0);
-                if (!equals) {
-                    method.addRequestHeader(name, valueString);
-                }
-            }
-        }
+            boolean isToken = (connectionToken != null && name.compareToIgnoreCase(connectionToken) == 0);
+            
+            if (!isToken && !bannedHeaders.contains(name.toLowerCase())) {
+                Enumeration value = request.getHeaders(name);
+                while (value.hasMoreElements()) {
+                    method.addRequestHeader(name, (String) value.nextElement());
+                } 
+            } 
+        } 
         
-        method.removeRequestHeader("connection");
+        String originalVia = request.getHeader("via");
+        StringBuffer via = new StringBuffer("");
+        if (originalVia != null) {
+            via.append(originalVia).append(", ");
+        }
+        via.append(request.getProtocol()).append(" ").append(request.getServerName());
+        
+        method.setRequestHeader("via", via.toString());
         method.setRequestHeader("accept-encoding", "gzip, deflate");
     }
 
