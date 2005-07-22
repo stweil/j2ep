@@ -98,8 +98,13 @@ public class RuleChain{
             currentRule = iter.next();
             currentMatches = currentRule.matches(request);
         }
-
-        return currentRule;
+        
+        if (currentMatches) {
+            return currentRule;
+        } else {
+            return null;
+        }
+        
     }
 
     /**
