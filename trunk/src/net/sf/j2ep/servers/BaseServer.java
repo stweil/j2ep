@@ -32,8 +32,10 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodBase;
 
 /**
- * A basic implementation of the Server interface using a single hostname to map
- * all connections.
+ * A basic implementation of the Server interface using a single host name to map
+ * all connections. Can be easily extended to create a server that gets it host
+ * name in some other way. For instance a server fetching the host name from the
+ * request could me made to change the proxy into a forwarding proxy.
  * 
  * @author Anders Nyman
  */
@@ -44,6 +46,9 @@ public class BaseServer implements Server {
      */
     private String hostName;
 
+    /**
+     * Empty constructor.
+     */
     public BaseServer() {
     }
 
@@ -51,7 +56,7 @@ public class BaseServer implements Server {
      * @see net.sf.j2ep.Server#connect(javax.servlet.http.HttpServletRequest,
      *      java.lang.String, org.apache.commons.httpclient.HttpClient)
      * 
-     * Will start a connection using the hostname specifed and the URI beeing
+     * Will start a connection using the host name specified and the URI being
      * sent in.
      */
     public ResponseHandler connect(HttpServletRequest request, String uri,
@@ -69,7 +74,7 @@ public class BaseServer implements Server {
          * Why does method.validate() return true when the method has been
          * aborted? I mean, if validate returns true the API says that means
          * that the method is ready to be executed. TODO I don't like doing
-         * typecasting here, see above.
+         * type casting here, see above.
          */
         if (!((HttpMethodBase) method).isAborted()) {
             httpClient.executeMethod(method);
@@ -79,18 +84,18 @@ public class BaseServer implements Server {
     }
 
     /**
-     * Returns the hostname.
+     * Returns the host name.
      * 
-     * @return String The hostname
+     * @return String The host name
      */
     private String getHostName() {
         return hostName;
     }
 
     /**
-     * Sets the hostname to use for connections.
+     * Sets the host name to use for connections.
      * 
-     * @param hostName The hostname to set
+     * @param hostName The host name to set
      */
     public void setHostName(String hostName) {
         if (hostName == null) {
