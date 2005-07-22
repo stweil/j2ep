@@ -84,39 +84,5 @@ public interface Rule {
      * @return String The server id
      */
     String getServerId();
-    
 
-    
-    /** 
-     * TODO maybe not that usefull even tough I like a NullObject more then 
-     * checking for null. The problem is that I will have to check for this anyways
-     * since Rule.NULL can't handel any requests. Will the use of a possible
-     * Server.NULL work?, if so this should stay. 
-     */
-    public static final Rule NULL = new Rule() {
-
-        public boolean matches(HttpServletRequest request) {
-            return false;
-        }
-
-        public String process(String uri){
-            return uri;
-        }
-        
-        public String revert(String uri){
-            return uri;
-        }
-        
-        public String getServerId() {
-            return "";
-        }
-        
-        public void setServer(Server server) {
-            
-        }
-        
-        public Server getServer() {
-            return null;
-        }
-    };
 }

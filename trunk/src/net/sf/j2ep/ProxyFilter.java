@@ -18,14 +18,16 @@ package net.sf.j2ep;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.j2ep.responsehandlers.OptionsHandler;
+import net.sf.j2ep.factories.MethodNotAllowedException;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.params.HttpClientParams;
@@ -59,31 +61,42 @@ public class ProxyFilter implements Filter {
             log.info("Not proxying, already commited.");
             filterChain.doFilter(request, response);
         } else if (!(request instanceof HttpServletRequest)) {
-            log
-                    .info("Request is not HttpRequest, will only handle HttpRequests.");
+            log.info("Request is not HttpRequest, will only handle HttpRequests.");
             filterChain.doFilter(request, response);
         } else if (!(response instanceof HttpServletResponse)) {
-            log
-                    .info("Request is not HttpResponse, will only handle HttpResponses.");
+            log.info("Request is not HttpResponse, will only handle HttpResponses.");
             filterChain.doFilter(request, response);
         } else {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
-
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            
             Rule rule = ruleChain.evaluate(httpRequest);
             Server server = rule.getServer();
             String uri = rule.process(getURI(httpRequest));
 
-            ResponseHandler handler = null;
+            ResponseHandler responseHandler = null;
             try {
-                handler = server.connect(httpRequest, uri, httpClient);
-            } catch (IOException e) {
+                responseHandler = server.connect(httpRequest, uri, httpClient);
+            } catch (HttpException e) {
+                log.error("Problem while connection to server", e);
+                httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            } catch (UnknownHostException e) {
+                log.error("Could not connection to the host specified", e);
                 httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
                 return;
+            } catch (IOException e) {
+                log.error("Problem probably with the input beeing send, either in a Header or as a Stream", e);
+                httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                throw e;
+            } catch (MethodNotAllowedException e) {
+                log.error("Incomming method could not be handled", e);
+                httpResponse.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                httpResponse.setHeader("Allow", e.getAllowedMethods());
             }
             
-            handler.process(httpResponse);
-            handler.close();
+            responseHandler.process(httpResponse);
+            responseHandler.close();
         }
 
     }
@@ -124,7 +137,6 @@ public class ProxyFilter implements Filter {
         httpClient.getParams().setBooleanParameter(HttpClientParams.USE_EXPECT_CONTINUE, false);
         httpClient.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
         httpClient.getParams().setIntParameter(HttpClientParams.MAX_REDIRECTS, 0);
-        OptionsHandler.addAllowedMethods("OPTIONS,GET,HEAD,POST,PUT,DELETE");
 
         String data = filterConfig.getInitParameter("dataUrl");
         if (data == null) {

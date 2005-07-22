@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.j2ep.factories.MethodNotAllowedException;
+
 import org.apache.commons.httpclient.HttpClient;
 
 /**
@@ -40,7 +42,8 @@ public interface Server {
      * @param httpClient A connection will be made using this HttpClient
      * @return ResponseHandler A class that can process any response that should be send to the client. 
      * @throws IOException Throws an exception when there is problem with connection to the server.
+     * @throws MethodNotAllowedException When a method beeing sent to the server isn't able to be handled.
      */
-    ResponseHandler connect(HttpServletRequest request, String uri, HttpClient httpClient) throws IOException;
+    ResponseHandler connect(HttpServletRequest request, String uri, HttpClient httpClient) throws IOException, MethodNotAllowedException;
     
 }

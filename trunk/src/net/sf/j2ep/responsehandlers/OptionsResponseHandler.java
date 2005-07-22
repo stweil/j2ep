@@ -152,10 +152,10 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
      * of allowed methods. The input string should be
      * comma seperated e.g. "OPTIONS,GET,POST"
      * 
-     * @param methodName
+     * @param methods The methods to set as allowed
      */
-    public static void addAllowedMethods(String methodName) {
-        StringTokenizer tokenizer = new StringTokenizer(methodName, ",");
+    public static void addAllowedMethods(String methods) {
+        StringTokenizer tokenizer = new StringTokenizer(methods, ",");
         while (tokenizer.hasMoreTokens()) {
             allowedMethods.add(tokenizer.nextToken().trim());
         }
