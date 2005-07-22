@@ -28,7 +28,7 @@ import org.apache.cactus.WebResponse;
 
 /**
  * Tests the GetHandler. Is the main testclass for this program since it will
- * test some simple default behaviour.
+ * test some simple default behavior.
  * 
  * @author Anders Nyman
  */
