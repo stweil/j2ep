@@ -30,7 +30,7 @@ public class DirectoryRuleTest extends TestCase {
     
     public void testSetDirectory() {
         dirRule.setDirectory("/test/");
-        assertEquals("The directory didn't get saves proparly", "/test/", dirRule.getDirectory());
+        assertEquals("The directory didn't get saves properly", "/test/", dirRule.getDirectory());
         
         dirRule.setDirectory("/test");
         assertEquals("The DirectoryRule should add a slash at the end if there isn't one in the input", "/test/", dirRule.getDirectory());
