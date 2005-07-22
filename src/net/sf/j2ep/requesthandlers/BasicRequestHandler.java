@@ -10,8 +10,20 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 
+/**
+ * A handler for GET, HEAD, DELETE. Since these methods basically
+ * only will need the headers set they can be handled by the same 
+ * handler.
+ *
+ * @author Anders Nyman
+ */
 public class BasicRequestHandler extends RequestHandlerBase {
 
+    /**
+     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
+     * 
+     * Will only set the headers.
+     */
     public HttpMethod process(HttpServletRequest request, String url) {
         
         HttpMethodBase method = null;
