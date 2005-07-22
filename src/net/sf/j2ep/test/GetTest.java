@@ -98,4 +98,18 @@ public class GetTest extends FilterTestCase {
         assertEquals("The response code should be 412", 412, theResponse.getStatusCode());
     }
     
+    public void testUnhandledMethod() throws ServletException, IOException {
+        MethodWrappingRequest req = new MethodWrappingRequest("JDFJDSJSN", "/",
+                null);
+        proxy.doFilter(req, response, filterChain);
+
+    }
+
+    public void endUnhandledMethod(WebResponse theResponse) {
+        assertEquals("Checking that we got a 405 response", 405, theResponse.getStatusCode());
+        assertEquals("Correct options not returned",
+                "OPTIONS,GET,HEAD,POST,PUT,DELETE", theResponse.getConnection()
+                        .getHeaderField("Allow"));
+    }
+    
 }
