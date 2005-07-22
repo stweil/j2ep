@@ -23,7 +23,7 @@ import org.apache.commons.httpclient.methods.PutMethod;
  *
  * @author Anders Nyman
  */
-public class PutHandler extends BasicResponseHandler {
+public class PutResponseHandler extends BasicResponseHandler {
     
     /**
      * Default constructor, will only call the super-constructor
@@ -31,7 +31,7 @@ public class PutHandler extends BasicResponseHandler {
      * 
      * @param method The method used for this response
      */
-    public PutHandler(PutMethod method) {
+    public PutResponseHandler(PutMethod method) {
         super(method);
     }
 }

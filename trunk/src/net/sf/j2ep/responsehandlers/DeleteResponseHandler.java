@@ -20,27 +20,30 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.j2ep.ResponseHandlerBase;
 
-import org.apache.commons.httpclient.methods.HeadMethod;
+import org.apache.commons.httpclient.methods.DeleteMethod;
 
 /**
- * Handler for the HEAD method.
+ * Handler for the DELETE method.
  *
  * @author Anders Nyman
  */
-public class HeadHandler extends ResponseHandlerBase {
+public class DeleteResponseHandler extends ResponseHandlerBase {
     
-    public HeadHandler(HeadMethod method) {
+    /**
+     * Default constructor, will only call the super-constructor
+     * for ResponseHandlerBase. 
+     * 
+     * @param method The method used for this response
+     */
+    public DeleteResponseHandler(DeleteMethod method) {
         super(method);
     }
 
     /**
      * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
-     * 
-     * Will only set the headers and status code, no response is sent.
      */
     public void process(HttpServletResponse response) {
-        setHeaders(response);
-        response.setStatus(getStatusCode());
+        
     }
 
 }

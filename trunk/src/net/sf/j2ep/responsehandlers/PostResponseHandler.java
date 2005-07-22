@@ -16,22 +16,22 @@
 
 package net.sf.j2ep.responsehandlers;
 
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 
 /**
- * Handler for the GET method.
+ * Handler for the POST method.
  *
  * @author Anders Nyman
  */
-public class GetHandler extends BasicResponseHandler {
+public class PostResponseHandler extends BasicResponseHandler {
     
     /**
      * Default constructor, will only call the super-constructor
-     * for BasicResponseHandler. 
+     * for ResponseHandlerBase. 
      * 
      * @param method The method used for this response
      */
-    public GetHandler(GetMethod method) {
+    public PostResponseHandler(PostMethod method) {
         super(method);
     }
 
