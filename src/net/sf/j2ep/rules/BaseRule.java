@@ -25,9 +25,9 @@ import net.sf.j2ep.Server;
 /**
  * The BaseRule is an empty rule
  * implementation which can be
- * subclassed for extension.
+ * extended.
  * This class is based on the work by Yoav Shapira
- * for the balancer webapp.
+ * for the balancer webapp supplied with Tomcat.
  *
  * @author Anders Nyman
  */
@@ -37,6 +37,7 @@ public abstract class BaseRule implements Rule {
      * The server this rule is bound to.
      */
     private Server server;
+    
     /** 
      * The servers id, used for mapping the correct server.
      */
