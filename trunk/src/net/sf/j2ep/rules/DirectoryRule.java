@@ -74,7 +74,7 @@ public class DirectoryRule extends BaseRule {
      */
     public boolean matches(HttpServletRequest request) {
         String uri = request.getServletPath();
-        return (uri.startsWith(directory) || uri.startsWith(".." + directory));
+        return (uri.startsWith(directory));
     }
     
     /**

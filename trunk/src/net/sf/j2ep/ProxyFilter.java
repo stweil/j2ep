@@ -88,33 +88,35 @@ public class ProxyFilter implements Filter {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             
             Rule rule = ruleChain.evaluate(httpRequest);
-            Server server = rule.getServer();
-            String uri = rule.process(getURI(httpRequest));
+            if (rule != null) {
+                Server server = rule.getServer();
+                String uri = rule.process(getURI(httpRequest));
 
-            ResponseHandler responseHandler = null;
-            try {
-                responseHandler = server.connect(httpRequest, uri, httpClient);
-            } catch (HttpException e) {
-                log.error("Problem while connection to server", e);
-                httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
-            } catch (UnknownHostException e) {
-                log.error("Could not connection to the host specified", e);
-                httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
-                return;
-            } catch (IOException e) {
-                log.error("Problem probably with the input being send, either in a Header or as a Stream", e);
-                httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
-            } catch (MethodNotAllowedException e) {
-                log.error("Incoming method could not be handled", e);
-                httpResponse.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-                httpResponse.setHeader("Allow", e.getAllowedMethods());
-                return;
+                ResponseHandler responseHandler = null;
+                try {
+                    responseHandler = server.connect(httpRequest, uri, httpClient);
+                } catch (HttpException e) {
+                    log.error("Problem while connection to server", e);
+                    httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    return;
+                } catch (UnknownHostException e) {
+                    log.error("Could not connection to the host specified", e);
+                    httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
+                    return;
+                } catch (IOException e) {
+                    log.error("Problem probably with the input being send, either in a Header or as a Stream", e);
+                    httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    return;
+                } catch (MethodNotAllowedException e) {
+                    log.error("Incoming method could not be handled", e);
+                    httpResponse.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                    httpResponse.setHeader("Allow", e.getAllowedMethods());
+                    return;
+                }
+                
+                responseHandler.process(httpResponse);
+                responseHandler.close();
             }
-            
-            responseHandler.process(httpResponse);
-            responseHandler.close();
         }
 
     }
