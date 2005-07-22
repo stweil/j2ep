@@ -254,12 +254,6 @@
 			<tarfileset dir="${docs.home}" fullpath="/README">
 				<include name="readme-src.txt" />
 			</tarfileset>
-			<tarfileset dir="${docs.home}" fullpath="/CHANGELOG">
-				<include name="changelog.txt" />
-			</tarfileset>
-			<tarfileset dir="${docs.home}" fullpath="/RELEASE-NOTES">
-				<include name="releasenotes.txt" />
-			</tarfileset>
 			<tarfileset dir="${docs.home}" fullpath="/LICENSE">
 				<include name="license.txt" />
 			</tarfileset>
@@ -283,12 +277,6 @@
 			<zipfileset dir="${docs.home}" fullpath="README.txt">
 				<include name="readme-src.txt" />
 			</zipfileset>
-			<zipfileset dir="${docs.home}" fullpath="CHANGELOG.txt">
-				<include name="changelog.txt" />
-			</zipfileset>
-			<zipfileset dir="${docs.home}" fullpath="RELEASE-NOTES.txt">
-				<include name="releasenotes.txt" />
-			</zipfileset>
 			<zipfileset dir="${docs.home}" fullpath="LICENSE">
 				<include name="license.txt" />
 			</zipfileset>
@@ -311,12 +299,6 @@
 			<tarfileset dir="${docs.home}" fullpath="/README">
 				<include name="readme.txt" />
 			</tarfileset>
-			<tarfileset dir="${docs.home}" fullpath="/CHANGELOG">
-				<include name="changelog.txt" />
-			</tarfileset>
-			<tarfileset dir="${docs.home}" fullpath="/RELEASE-NOTES">
-				<include name="releasenotes.txt" />
-			</tarfileset>
 			<tarfileset dir="${docs.home}" fullpath="/LICENSE">
 				<include name="license.txt" />
 			</tarfileset>
@@ -335,12 +317,6 @@
 		<zip destfile="${dist.home}/${app.name}-${app.version}.zip">
 			<zipfileset dir="${docs.home}" fullpath="README.txt">
 				<include name="readme.txt" />
-			</zipfileset>
-			<zipfileset dir="${docs.home}" fullpath="CHANGELOG.txt">
-				<include name="changelog.txt" />
-			</zipfileset>
-			<zipfileset dir="${docs.home}" fullpath="RELEASE-NOTES.txt">
-				<include name="releasenotes.txt" />
 			</zipfileset>
 			<zipfileset dir="${docs.home}" fullpath="LICENSE">
 				<include name="license.txt" />
