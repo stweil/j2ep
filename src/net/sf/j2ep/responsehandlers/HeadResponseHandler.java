@@ -29,6 +29,12 @@ import org.apache.commons.httpclient.methods.HeadMethod;
  */
 public class HeadResponseHandler extends ResponseHandlerBase {
     
+    /**
+     * Default constructor, will only call the super-constructor
+     * for BasicResponseHandler. 
+     * 
+     * @param method The method used for this response
+     */
     public HeadResponseHandler(HeadMethod method) {
         super(method);
     }
