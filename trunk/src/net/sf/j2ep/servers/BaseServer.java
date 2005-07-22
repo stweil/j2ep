@@ -35,7 +35,7 @@ import org.apache.commons.httpclient.HttpMethodBase;
  * A basic implementation of the Server interface using a single host name to map
  * all connections. Can be easily extended to create a server that gets it host
  * name in some other way. For instance a server fetching the host name from the
- * request could me made to change the proxy into a forwarding proxy.
+ * request could be made to change the proxy into a forwarding proxy.
  * 
  * @author Anders Nyman
  */
