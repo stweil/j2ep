@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package net.sf.j2ep;
+package net.sf.j2ep.factories;
 
+import net.sf.j2ep.ResponseHandler;
 import net.sf.j2ep.responsehandlers.*;
 
 import org.apache.commons.httpclient.HttpMethod;
@@ -23,7 +24,13 @@ import org.apache.commons.httpclient.methods.*;
 
 public class ResponseHandlerFactory {
     
-    public static ResponseHandler create(HttpMethod method) {
+    private static String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
+    
+    static {
+        OptionsResponseHandler.addAllowedMethods(getAllowedMethods());
+    }
+    
+    public static ResponseHandler createResponseHandler(HttpMethod method) throws MethodNotAllowedException {
         ResponseHandler handler = null;
 
         if (method.getName().equals("OPTIONS")) {
@@ -38,9 +45,15 @@ public class ResponseHandlerFactory {
             handler = new PutResponseHandler((PutMethod) method);
         } else if (method.getName().equals("DELETE")) {
             handler = new DeleteResponseHandler((DeleteMethod) method);
+        } else {
+            throw new MethodNotAllowedException("The method " + method.getName() + " is not handled by this Factory.", allowedMethods);
         }
 
         return handler;
+    }
+    
+    public static String getAllowedMethods() {
+        return allowedMethods;
     }
 
 }

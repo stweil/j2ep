@@ -91,7 +91,7 @@ public class RuleChain{
     public Rule evaluate(HttpServletRequest request) {
         Iterator<Rule> iter = getRuleIterator();
 
-        Rule currentRule = Rule.NULL;
+        Rule currentRule = null;
         boolean currentMatches = false;
 
         while (iter.hasNext() && !currentMatches) {
