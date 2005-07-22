@@ -27,7 +27,7 @@ public class ResponseHandlerFactory {
     private static String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
     
     static {
-        OptionsResponseHandler.addAllowedMethods(getAllowedMethods());
+        OptionsResponseHandler.addAllowedMethods(allowedMethods);
     }
     
     public static ResponseHandler createResponseHandler(HttpMethod method) throws MethodNotAllowedException {
@@ -50,10 +50,6 @@ public class ResponseHandlerFactory {
         }
 
         return handler;
-    }
-    
-    public static String getAllowedMethods() {
-        return allowedMethods;
     }
 
 }
