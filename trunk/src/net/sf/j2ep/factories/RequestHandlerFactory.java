@@ -17,7 +17,6 @@
 package net.sf.j2ep.factories;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 import net.sf.j2ep.RequestHandler;
 import net.sf.j2ep.RequestHandlerBase;
@@ -43,12 +42,15 @@ public class RequestHandlerFactory {
     /** 
      * These methods are handled by this factory.
      */
-    private static String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
+    private static final String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
+    
+    /** 
+     * List of banned headers that should not be set.
+     */
+    private static final String bannedHeaders = "connection,accept-encoding";
     
     static {
-        RequestHandlerBase.bannedHeaders = new HashSet<String>();
-        RequestHandlerBase.bannedHeaders.add("connection");
-        RequestHandlerBase.bannedHeaders.add("accept-encoding");
+        RequestHandlerBase.addBannedHeaders(bannedHeaders);
         
         requestHandlers = new HashMap<String, RequestHandler>();
         OptionsRequestHandler options = new OptionsRequestHandler();
