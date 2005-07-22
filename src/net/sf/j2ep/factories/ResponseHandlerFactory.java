@@ -35,7 +35,7 @@ public class ResponseHandlerFactory {
     /** 
      * The methods handled by this factory.
      */
-    private static String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
+    private static final String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
     
     static {
         OptionsResponseHandler.addAllowedMethods(allowedMethods);
