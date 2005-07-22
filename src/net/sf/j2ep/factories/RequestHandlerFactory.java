@@ -25,9 +25,24 @@ import net.sf.j2ep.requesthandlers.BasicRequestHandler;
 import net.sf.j2ep.requesthandlers.EntityEnclosingRequestHandler;
 import net.sf.j2ep.requesthandlers.OptionsRequestHandler;
 
+/**
+ * A factory creating RequestHandlers.
+ * This factory is used to get the handler for each request, it has
+ * a list of methods it can handle and will throw a MethodNotAllowedException
+ * when it can't handle a method.
+ *
+ * @author Anders Nyman
+ */
 public class RequestHandlerFactory {
     
+    /** 
+     * The RequestHandlers to return.
+     */
     private static HashMap<String, RequestHandler> requestHandlers;
+    
+    /** 
+     * These methods are handled by this factory.
+     */
     private static String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
     
     static {
@@ -48,6 +63,13 @@ public class RequestHandlerFactory {
         requestHandlers.put("DELETE", basic);
     }
     
+    /**
+     * Selects one suitable RequestMethod from the HashMap.
+     * 
+     * @param method The method of this request
+     * @return A RequestHandler that can handle this request
+     * @throws MethodNotAllowedException If there is no RequestHandler available an exception will be thrown
+     */
     public static RequestHandler createRequestMethod(String method) throws MethodNotAllowedException{
         RequestHandler handler = requestHandlers.get(method.toUpperCase());
         if (handler == null) {
@@ -55,9 +77,5 @@ public class RequestHandlerFactory {
         } else {
             return handler;
         }
-    }
-    
-    public static String getAllowedMethods() {
-        return allowedMethods;
     }
 }
