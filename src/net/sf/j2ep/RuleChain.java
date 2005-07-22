@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Yoav Shapira
  */
 public class RuleChain{
+    
     /**
      * The list of rules to evaluate.
      */
@@ -81,8 +82,7 @@ public class RuleChain{
      * Evaluates the given request to see if
      * any of the rules matches.  Returns the
      * the first matching rule.
-     * Returns Rule.NULL if no rules match
-     * the request.
+     * Returns null if no rule matched the request.
      *
      * @param request The request
      * @return URL The first matching rule URL

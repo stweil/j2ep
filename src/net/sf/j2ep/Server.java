@@ -35,14 +35,14 @@ import org.apache.commons.httpclient.HttpClient;
 public interface Server {
 
     /**
-     * Will open a connection to the server using the specifed URI.
+     * Will open a connection to the server using the specified URI.
      * 
      * @param request The request to use, is needed to get the connection type (GET, POST, etc.) and also to get any InputStream
      * @param uri The URI for this connection
      * @param httpClient A connection will be made using this HttpClient
      * @return ResponseHandler A class that can process any response that should be send to the client. 
-     * @throws IOException Throws an exception when there is problem with connection to the server.
-     * @throws MethodNotAllowedException When a method beeing sent to the server isn't able to be handled.
+     * @throws IOException Throws an exception when there is problem with connection to the server or with any input, output, etc.
+     * @throws MethodNotAllowedException Thrown when a method being sent to the server isn't able to be handled.
      */
     ResponseHandler connect(HttpServletRequest request, String uri, HttpClient httpClient) throws IOException, MethodNotAllowedException;
     
