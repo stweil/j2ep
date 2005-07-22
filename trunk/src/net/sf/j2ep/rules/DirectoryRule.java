@@ -69,10 +69,9 @@ public class DirectoryRule extends BaseRule {
     /**
      * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
      * 
-     * Will see if the directory specifed is the same as this rule
+     * Will see if the directory specified is the same as this rule
      * is set to match on.
      */
-    @Override
     public boolean matches(HttpServletRequest request) {
         String uri = request.getServletPath();
         return (uri.startsWith(directory) || uri.startsWith(".." + directory));
@@ -85,16 +84,13 @@ public class DirectoryRule extends BaseRule {
      */
     public String process(String uri) {
         return uri.substring(directory.length()-1);
-        //TODO should we have a control if the user calls process
-        //and there isn't a match?
-        
     }
     
     /**
      * @see net.sf.j2ep.Rule#revert(java.lang.String)
      * 
      * Does the opposite of process. revert(String uri) will add the directory
-     * specifed to the start of the incomming uri.
+     * specified to the start of the incoming uri.
      */
     public String revert(String uri) {
         if (uri.startsWith("/")) {
