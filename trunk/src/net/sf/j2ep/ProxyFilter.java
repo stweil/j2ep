@@ -37,28 +37,45 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A reverse proxy using a set of Rules to identify which resource to proxy.
  * 
+ * At first the rule chain is traversed trying to find a matching rule.
+ * When the rule is found it is given the option to rewrite the URL.
+ * The rewritten URL is then sent to a Server creating a Response Handler
+ * that can be used to process the response with streams and headers.
+ * 
+ * The rules and servers are created dynamically and are specified in the
+ * XML data file. This allows the proxy to be easily extended by creating
+ * new rules and new servers.
+ * 
  * @author Anders Nyman
  */
 public class ProxyFilter implements Filter {
 
+    /** 
+     * Logging element supplied by commons-logging.
+     */
     private static Log log;
+    
+    /** 
+     * The rule chain, will be traversed to find a matching rule.
+     */
     private RuleChain ruleChain;
+    
+    /** 
+     * The httpclient used to make all connections with, supplied by commons-httpclient.
+     */
     private HttpClient httpClient;
 
     /**
-     * Simple implementation of a reverse-proxy. All request go through here.
-     * 
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
      *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
-     */
-    /**
-     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+     *      
+     * Simple implementation of a reverse-proxy. All request go through here.
      */
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain filterChain) throws IOException, ServletException {
 
         if (response.isCommitted()) {
-            log.info("Not proxying, already commited.");
+            log.info("Not proxying, already committed.");
             filterChain.doFilter(request, response);
         } else if (!(request instanceof HttpServletRequest)) {
             log.info("Request is not HttpRequest, will only handle HttpRequests.");
@@ -103,11 +120,10 @@ public class ProxyFilter implements Filter {
     }
 
     /**
-     * Will build a URI but including the Query String. That means that it realy
+     * Will build a URI but including the Query String. That means that it really
      * isn't a real URI but quite near.
      * 
-     * @param httpRequest
-     *            Request to get the uri and query string from
+     * @param httpRequest Request to get the URI and query string from
      * @return String The URI for this request including the query string
      */
     private String getURI(HttpServletRequest httpRequest) {
@@ -120,19 +136,21 @@ public class ProxyFilter implements Filter {
 
     /**
      * Called upon initialization, Will create the ConfigParser and get the
-     * RuleChain back.
+     * RuleChain back. Will also configure the httpclient.
      * 
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
     public void init(FilterConfig filterConfig) throws ServletException {
         log = LogFactory.getLog("org.apache.webapp.reverseproxy");
         
+        /*
         //TODO only temporary debug, need output to console directly since 
         //I'm running tomcat inside eclipse.
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
         System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
         System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
+        */
 
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
         httpClient.getParams().setBooleanParameter(HttpClientParams.USE_EXPECT_CONTINUE, false);
@@ -154,7 +172,8 @@ public class ProxyFilter implements Filter {
     }
 
     /**
-     * Called when this filter is destoryed.
+     * Called when this filter is destroyed.
+     * Releases the fields.
      * 
      * @see javax.servlet.Filter#destroy()
      */

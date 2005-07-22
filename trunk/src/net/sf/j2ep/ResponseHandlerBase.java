@@ -26,30 +26,55 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 
+/**
+ * Basic implementation of a Response Handler. This class
+ * can write the headers and process the output stream.
+ *
+ * @author Anders Nyman
+ */
 public abstract class ResponseHandlerBase implements ResponseHandler{
     
+    /** 
+     * Method we are using for this request.
+     */
     protected HttpMethod method;
     
+    /**
+     * Basic constructor only setting the method.
+     * 
+     * @param method The method we are using
+     */
     public ResponseHandlerBase(HttpMethod method) {
         this.method = method;
     }
 
+    /**
+     * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
+     */
     public abstract void process(HttpServletResponse response) throws IOException;
     
+    /**
+     * @see net.sf.j2ep.ResponseHandler#close()
+     * 
+     * Will release the connetion for the method.
+     */
     public  void close() {
         method.releaseConnection();
     }
 
+    /**
+     * @see net.sf.j2ep.ResponseHandler#getStatusCode()
+     */
     public int getStatusCode() {
         return method.getStatusCode();
     }
     
     /**
-     * Writes the entire stream from the method to the stream given from the
-     * response.
+     * Writes the entire stream from the method to the response
+     * stream.
      * 
      * @param response Response to send data to
-     * @throws IOException
+     * @throws IOException An IOException is thrown when we are having problems with reading the streams
      */
     protected void sendStreamToClient(ServletResponse response) throws IOException {
         InputStream streamFromServer = method.getResponseBodyAsStream();
@@ -69,9 +94,9 @@ public abstract class ResponseHandlerBase implements ResponseHandler{
     }
     
     /**
-     * Will write all response headers stored in the method to the response.
-     * One header connection is however omitted since we will only want the 
-     * client to keep his connection to this proxy not to the server.
+     * Will write all response headers received in the method to the response.
+     * One header, connection, is however omitted since we will only want the 
+     * client to keep his connection to the proxy not to the backing server.
      * 
      * @param response The response that will have headers written to it
      */

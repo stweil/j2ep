@@ -29,10 +29,14 @@ import org.apache.commons.logging.LogFactory;
  * The config parser uses Digester
  * to parse the config file. A rule chain
  * with links to the servers will be constructed.
+ * 
+ * Based on the work by Yoav Shapira for the
+ * balancer webapp distributed with Tomcat.
  *
  * @author Anders Nyman, Yoav Shapira
  */
 public class ConfigParser {
+    
     /**
      * The resulting rule chain.
      */
@@ -49,11 +53,11 @@ public class ConfigParser {
     private static Log log;
 
     /**
-     * Standard constructor only specifying the inputfile.
+     * Standard constructor only specifying the input file.
      * The constructor will parse the config and build a 
-     * corresponding rulechain with the servermappings included.
+     * corresponding rule chain with the server mappings included.
      * 
-     * @param data The config file containing the xml data structure.
+     * @param data The config file containing the XML data structure.
      */
     public ConfigParser(File data) {
         log = LogFactory.getLog("org.apache.webapp.reverseproxy");
@@ -76,7 +80,6 @@ public class ConfigParser {
         return ruleChain;
     }
 
-
     /**
      * Creates the rules.
      *
@@ -94,7 +97,7 @@ public class ConfigParser {
         digester.addSetProperties("config/rules/rule");   
         digester.addSetNext("config/rules/rule", "addRule", "net.sf.j2ep.Rule");
 
-        // Constuct composite rule
+        // Construct composite rule
         digester.addObjectCreate("config/rules/composite-rule", "net.sf.j2ep.rules.CompositeRule");
         digester.addSetProperties("config/rules/composite-rule"); 
         // Construct rule for the composite rule
@@ -110,7 +113,7 @@ public class ConfigParser {
     /**
      * Creates the server
      *
-     * @return HashMap<String, Server> A hashmap containg all the servers
+     * @return HashMap<String, Server> A hash map containing all the servers
      */
     @SuppressWarnings("unchecked")
     private HashMap<String, Server> createServerMap(File data) throws Exception{
