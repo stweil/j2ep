@@ -33,6 +33,9 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Handler for the OPTIONS method.
+ * Will process the Allow header so that
+ * no methods that the backing server can handle
+ * but we can't are being sent to the client.
  *
  * @author Anders Nyman
  */
@@ -59,6 +62,12 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
      */
     private OptionsMethod method;
 
+    /**
+     * Constructor checking if we should handle the Allow header
+     * ourself or response with the backing servers header.
+     * 
+     * @param method The method for this response
+     */
     public OptionsResponseHandler(OptionsMethod method) {
         super(method);
         this.method = method;
@@ -68,8 +77,9 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
     }
 
     /**
-     * Will check if we are to handle this request if so 
-     * the http methods allowed by this proxy is returned.
+     * Will check if we are to handle this request, if so 
+     * the http methods allowed by this proxy is returned in the 
+     * Allow header.
      * If it is a request meant for the backing server its
      * allowed method will be returned.
      * 
@@ -100,7 +110,7 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
     /**
      * Will go through all the methods returned in the 
      * Allow header. Each method will be checked to see
-     * that the method is allowed, if to it will be included
+     * that the method is allowed, if it's allowed it will be included
      * in the returned value.
      * 
      * @return String the allowed headers for this request
@@ -126,7 +136,7 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
     /**
      * @see net.sf.j2ep.ResponseHandler#getStatusCode()
      * 
-     * Returned 200 if the request is targeted to the proxy
+     * Returns 200 if the request is targeted to the proxy
      * otherwise the normal status code is returned.
      */
     public int getStatusCode() {
@@ -150,7 +160,11 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
     /**
      * Adds all the methods in the input to the list 
      * of allowed methods. The input string should be
-     * comma seperated e.g. "OPTIONS,GET,POST"
+     * comma separated e.g. "OPTIONS,GET,POST"
+     * 
+     * This method is normally called by the factory that
+     * is using this response handler for it's OPTIONS 
+     * requests. 
      * 
      * @param methods The methods to set as allowed
      */
