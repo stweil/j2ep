@@ -66,7 +66,7 @@ public class DirectoryRuleTest extends TestCase {
             }
         }));
         
-        assertTrue("This URI should be matched", dirRule.matches( new MockHttpServletRequest() {
+        assertFalse("This URI shouldn't be matched", dirRule.matches( new MockHttpServletRequest() {
             public String getServletPath() {
                 return "../test/hej.html";
             }
