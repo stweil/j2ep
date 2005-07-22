@@ -39,6 +39,3 @@ public class AcceptEverythingRule extends BaseRule {
     }
     
 }
-
-
-// End of file: AcceptEverythingRule.java
