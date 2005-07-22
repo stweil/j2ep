@@ -22,14 +22,33 @@ import net.sf.j2ep.responsehandlers.*;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.*;
 
+/**
+ * A factory creating ResponseHandlers.
+ * This factory is used to get the handler for each request, it has
+ * a list of methods it can handle and will throw a MethodNotAllowedException
+ * when it can't handle a method.
+ *
+ * @author Anders Nyman
+ */
 public class ResponseHandlerFactory {
     
+    /** 
+     * The methods handled by this factory.
+     */
     private static String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
     
     static {
         OptionsResponseHandler.addAllowedMethods(allowedMethods);
     }
     
+    /**
+     * Checks the method being received and created a 
+     * suitable ResponseHandler for this method.
+     * 
+     * @param method Method to handle
+     * @return ResponseHandler The handler for this response
+     * @throws MethodNotAllowedException If no method could be choose this exception is thrown
+     */
     public static ResponseHandler createResponseHandler(HttpMethod method) throws MethodNotAllowedException {
         ResponseHandler handler = null;
 
