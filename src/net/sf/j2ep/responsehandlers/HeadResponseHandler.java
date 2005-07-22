@@ -16,23 +16,31 @@
 
 package net.sf.j2ep.responsehandlers;
 
-import org.apache.commons.httpclient.methods.PostMethod;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.j2ep.ResponseHandlerBase;
+
+import org.apache.commons.httpclient.methods.HeadMethod;
 
 /**
- * Handler for the POST method.
+ * Handler for the HEAD method.
  *
  * @author Anders Nyman
  */
-public class PostHandler extends BasicResponseHandler {
+public class HeadResponseHandler extends ResponseHandlerBase {
     
-    /**
-     * Default constructor, will only call the super-constructor
-     * for ResponseHandlerBase. 
-     * 
-     * @param method The method used for this response
-     */
-    public PostHandler(PostMethod method) {
+    public HeadResponseHandler(HeadMethod method) {
         super(method);
+    }
+
+    /**
+     * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
+     * 
+     * Will only set the headers and status code, no response is sent.
+     */
+    public void process(HttpServletResponse response) {
+        setHeaders(response);
+        response.setStatus(getStatusCode());
     }
 
 }

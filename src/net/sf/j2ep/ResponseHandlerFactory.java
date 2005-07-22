@@ -27,17 +27,17 @@ public class ResponseHandlerFactory {
         ResponseHandler handler = null;
 
         if (method.getName().equals("OPTIONS")) {
-            handler = new OptionsHandler((OptionsMethod) method);
+            handler = new OptionsResponseHandler((OptionsMethod) method);
         } else if (method.getName().equals("GET")) {
-            handler = new GetHandler((GetMethod) method);
+            handler = new GetResponseHandler((GetMethod) method);
         } else if (method.getName().equals("HEAD")) {
-            handler = new HeadHandler((HeadMethod) method);
+            handler = new HeadResponseHandler((HeadMethod) method);
         } else if (method.getName().equals("POST")) {
-            handler = new PostHandler((PostMethod) method);
+            handler = new PostResponseHandler((PostMethod) method);
         } else if (method.getName().equals("PUT")) {
-            handler = new PutHandler((PutMethod) method);
+            handler = new PutResponseHandler((PutMethod) method);
         } else if (method.getName().equals("DELETE")) {
-            handler = new DeleteHandler((DeleteMethod) method);
+            handler = new DeleteResponseHandler((DeleteMethod) method);
         }
 
         return handler;

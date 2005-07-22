@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Anders Nyman
  */
-public class OptionsHandler extends ResponseHandlerBase {
+public class OptionsResponseHandler extends ResponseHandlerBase {
 
     /** 
      * A set of all the allowed methods.
@@ -46,7 +46,7 @@ public class OptionsHandler extends ResponseHandlerBase {
     /** 
      * The logger.
      */
-    private static Log log = LogFactory.getLog(OptionsHandler.class);
+    private static Log log = LogFactory.getLog(OptionsResponseHandler.class);
     
     /** 
      * Set a construction to indicate if the request is directed to the
@@ -59,7 +59,7 @@ public class OptionsHandler extends ResponseHandlerBase {
      */
     private OptionsMethod method;
 
-    public OptionsHandler(OptionsMethod method) {
+    public OptionsResponseHandler(OptionsMethod method) {
         super(method);
         this.method = method;
         if (!method.hasBeenUsed()) {
