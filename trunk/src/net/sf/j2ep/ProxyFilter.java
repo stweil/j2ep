@@ -86,13 +86,14 @@ public class ProxyFilter implements Filter {
                 httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
                 return;
             } catch (IOException e) {
-                log.error("Problem probably with the input beeing send, either in a Header or as a Stream", e);
+                log.error("Problem probably with the input being send, either in a Header or as a Stream", e);
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                throw e;
+                return;
             } catch (MethodNotAllowedException e) {
-                log.error("Incomming method could not be handled", e);
+                log.error("Incoming method could not be handled", e);
                 httpResponse.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 httpResponse.setHeader("Allow", e.getAllowedMethods());
+                return;
             }
             
             responseHandler.process(httpResponse);
