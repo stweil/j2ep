@@ -39,7 +39,7 @@ public class CompositeRule extends BaseRule {
     private LinkedList<Rule> rules;
     
     /**
-     * Empty constructur, will only create the list of rules.
+     * Empty constructor, will only create the list of rules.
      */
     public CompositeRule() {
         rules = new LinkedList<Rule>();
@@ -92,9 +92,9 @@ public class CompositeRule extends BaseRule {
     /**
      * @see net.sf.j2ep.Rule#revert(java.lang.String)
      * 
-     * Will do the oposite of process, that is revert all URIs to there default
+     * Will do the opposite of process, that is revert all URIs to there default
      * value. This method will call all rules in the rule list and call revert on them.
-     * Rules are called in a reversed order in comparisin with process.
+     * Rules are called in a reversed order in comparison with process.
      */
     public String revert(String uri) {
         String returnString = uri;

@@ -32,6 +32,7 @@ public class IPRule extends BaseRule {
      * The starting IP range.
      */
     private String startRange;
+    
     /** 
      * The ending IP range.
      */
@@ -41,7 +42,7 @@ public class IPRule extends BaseRule {
      * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
      * 
      * Check the IP for the remote user, if it's in the specified
-     * range it's ok otherwise it will not be covered by this rule.
+     * range it's a match, otherwise it will not be covered by this rule.
      */
     public boolean matches(HttpServletRequest request) {
         boolean match = false;
@@ -54,9 +55,9 @@ public class IPRule extends BaseRule {
     }
 
     /**
-     * Checkes to see is a specifed IP range is OK. By OK means
+     * Checks to see is a specified IP range is OK. OK means
      * that it's in the range 0.0.0.0 to 255.255.255.255 and
-     * that the value is a correct IP adress.
+     * that the value is a correct IP address.
      * 
      * @param range The value to check
      * @return Will give true if the range is ok
@@ -81,7 +82,7 @@ public class IPRule extends BaseRule {
     }
 
     /**
-     * Sets the begining range that a connection has to be made from to be
+     * Sets the beginning range that a connection has to be made from to be
      * triggered by this rule.
      * 
      * @param startRange The start of the IP range
@@ -98,7 +99,7 @@ public class IPRule extends BaseRule {
     }
 
     /**
-     * Returns the begining range that a connection has to be made from
+     * Returns the beginning range that a connection has to be made from
      * to be triggered by this rule.
      * 
      * @return String The start of the IP range

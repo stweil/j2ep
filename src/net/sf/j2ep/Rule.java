@@ -41,8 +41,12 @@ public interface Rule {
      * Returns the redirect URI for
      * requests that match this rule.
      * Process is used in order to let the rules
-     * to do rewriting of the URI before beeing handled
+     * to do rewriting of the URI before being handled
      * by the server.
+     * 
+     * The user using this method has to make sure that
+     * the rule in fact matches. The rule will not have to
+     * do any check that a URI is matched before processing it.
      * 
      * @param uri URI to be processed
      * @return String The final URI
