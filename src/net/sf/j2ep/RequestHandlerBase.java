@@ -2,7 +2,9 @@ package net.sf.j2ep;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,7 +22,7 @@ public abstract class RequestHandlerBase implements RequestHandler {
      * A set of headers that are not to be set in the request,
      * these headers are for example Connection.
      */
-    public static Set<String> bannedHeaders;
+    private static Set<String> bannedHeaders = new HashSet<String>();
 
     public abstract HttpMethod process(HttpServletRequest request, String url) throws IOException;
     
@@ -59,6 +61,32 @@ public abstract class RequestHandlerBase implements RequestHandler {
         
         method.setRequestHeader("via", via.toString());
         method.setRequestHeader("accept-encoding", "gzip, deflate");
+    }
+    
+    /**
+     * Adds a headers to the list of banned headers.
+     * 
+     * @param header The header to add
+     */
+    public static void addBannedHeader(String header) {
+        bannedHeaders.add(header);
+    }
+
+    /**
+     * Adds all the headers in the input to the list 
+     * of banned headers. The input string should be
+     * comma separated e.g. "Server,Connection,Via"
+     * 
+     * This method is normally called by the factory that
+     * is using this request handler.
+     * 
+     * @param headers The headers that are banned
+     */
+    public static void addBannedHeaders(String headers) {
+        StringTokenizer tokenizer = new StringTokenizer(headers, ",");
+        while (tokenizer.hasMoreTokens()) {
+            bannedHeaders.add(tokenizer.nextToken().trim().toLowerCase());
+        }
     }
 
 }
