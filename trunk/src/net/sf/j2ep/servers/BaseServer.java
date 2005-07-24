@@ -53,11 +53,11 @@ public class BaseServer implements Server {
     }
 
     /**
-     * @see net.sf.j2ep.Server#connect(javax.servlet.http.HttpServletRequest,
-     *      java.lang.String, org.apache.commons.httpclient.HttpClient)
-     * 
      * Will start a connection using the host name specified and the URI being
      * sent in.
+     * 
+     * @see net.sf.j2ep.Server#connect(javax.servlet.http.HttpServletRequest,
+     *      java.lang.String, org.apache.commons.httpclient.HttpClient)
      */
     public ResponseHandler connect(HttpServletRequest request, String uri,
             HttpClient httpClient) throws IOException, MethodNotAllowedException {
@@ -86,7 +86,7 @@ public class BaseServer implements Server {
     /**
      * Returns the host name.
      * 
-     * @return String The host name
+     * @return The host name
      */
     private String getHostName() {
         return hostName;

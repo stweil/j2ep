@@ -39,10 +39,10 @@ public class IPRule extends BaseRule {
     private String endRange;
 
     /**
-     * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
+     * Checks the IP for the remote user, if it's in the specified
+     * range it's a match.
      * 
-     * Check the IP for the remote user, if it's in the specified
-     * range it's a match, otherwise it will not be covered by this rule.
+     * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
      */
     public boolean matches(HttpServletRequest request) {
         boolean match = false;
@@ -60,7 +60,7 @@ public class IPRule extends BaseRule {
      * that the value is a correct IP address.
      * 
      * @param range The value to check
-     * @return Will give true if the range is ok
+     * @return Will give true if the range is OK
      */
     private boolean validRange(String range) {
         StringTokenizer tokenizer = new StringTokenizer(range, ".");
@@ -102,7 +102,7 @@ public class IPRule extends BaseRule {
      * Returns the beginning range that a connection has to be made from
      * to be triggered by this rule.
      * 
-     * @return String The start of the IP range
+     * @return The start of the IP range
      */
     protected String getStartRange() {
         return startRange;

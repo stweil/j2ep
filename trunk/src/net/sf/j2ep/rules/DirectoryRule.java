@@ -67,10 +67,10 @@ public class DirectoryRule extends BaseRule {
     }
     
     /**
-     * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
+     * Will see if the directory for the incoming URI is the same
+     * as this rule is set to match on.
      * 
-     * Will see if the directory specified is the same as this rule
-     * is set to match on.
+     * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
      */
     public boolean matches(HttpServletRequest request) {
         String uri = request.getServletPath();
@@ -78,19 +78,19 @@ public class DirectoryRule extends BaseRule {
     }
     
     /**
-     * @see net.sf.j2ep.Rule#process(java.lang.String)
+     * Removes the specified mapping directory from the URI.
      * 
-     * Will remove the specified mapping directory from the URI.
+     * @see net.sf.j2ep.Rule#process(java.lang.String)
      */
     public String process(String uri) {
         return uri.substring(directory.length()-1);
     }
     
     /**
-     * @see net.sf.j2ep.Rule#revert(java.lang.String)
+     * Does the opposite of process. revert(String URI) will add the directory
+     * specified to the start of the incoming URI.
      * 
-     * Does the opposite of process. revert(String uri) will add the directory
-     * specified to the start of the incoming uri.
+     * @see net.sf.j2ep.Rule#revert(java.lang.String)
      */
     public String revert(String uri) {
         if (uri.startsWith("/")) {
