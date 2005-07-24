@@ -65,7 +65,7 @@ public abstract class BaseRule implements Rule {
     /**
      * Returns a String representation of this object.
      *
-     * @return String
+     * @return The string representation
      */
     public String toString() {
         StringBuffer buffer = new StringBuffer();

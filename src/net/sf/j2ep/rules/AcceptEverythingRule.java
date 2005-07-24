@@ -30,9 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 public class AcceptEverythingRule extends BaseRule {
     
     /**
-     * @see net.sf.j2ep.Rule#matches(HttpServletRequest)
-     *
      * This implementation always matches.
+     * 
+     * @see net.sf.j2ep.Rule#matches(HttpServletRequest)
      */
     public boolean matches(HttpServletRequest request) {
         return true;

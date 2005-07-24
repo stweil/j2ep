@@ -58,11 +58,10 @@ public class CompositeRule extends BaseRule {
     }
     
     /**
-     * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
+     * Iterates over all the rules in the list checking that they all match.
      * 
-     * Iterate over all the rules in the list checking that they all match.
-     * In the case where the composite rule consists of no rules this will return
-     * true.
+     * @return true if all the rules match or there are no rules, false otherwise
+     * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
      */
     public boolean matches(HttpServletRequest request) {
         Iterator<Rule> itr = rules.iterator();
@@ -76,10 +75,10 @@ public class CompositeRule extends BaseRule {
     }
     
     /**
-     * @see net.sf.j2ep.Rule#process(java.lang.String)
-     * 
      * Process all the rules in the list, allowing them all to change
      * the URI.
+     * 
+     * @see net.sf.j2ep.Rule#process(java.lang.String)
      */
     public String process(String uri) {
         String returnString = uri;
@@ -90,11 +89,11 @@ public class CompositeRule extends BaseRule {
     }
     
     /**
-     * @see net.sf.j2ep.Rule#revert(java.lang.String)
-     * 
      * Will do the opposite of process, that is revert all URIs to there default
      * value. This method will call all rules in the rule list and call revert on them.
      * Rules are called in a reversed order in comparison with process.
+     * 
+     * @see net.sf.j2ep.Rule#revert(java.lang.String)
      */
     public String revert(String uri) {
         String returnString = uri;
@@ -109,7 +108,7 @@ public class CompositeRule extends BaseRule {
     /**
      * Returns a String representation of this object.
      *
-     * @return String
+     * @return A string representation
      */
     public String toString() {
         StringBuffer buffer = new StringBuffer();
