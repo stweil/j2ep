@@ -46,7 +46,7 @@ public class ResponseHandlerFactory {
      * suitable ResponseHandler for this method.
      * 
      * @param method Method to handle
-     * @return ResponseHandler The handler for this response
+     * @return The handler for this response
      * @throws MethodNotAllowedException If no method could be choose this exception is thrown
      */
     public static ResponseHandler createResponseHandler(HttpMethod method) throws MethodNotAllowedException {

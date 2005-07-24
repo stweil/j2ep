@@ -36,9 +36,9 @@ import org.apache.commons.httpclient.methods.HeadMethod;
 public class BasicRequestHandler extends RequestHandlerBase {
 
     /**
-     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
-     * 
      * Will only set the headers.
+     * 
+     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
      */
     public HttpMethod process(HttpServletRequest request, String url) {
         

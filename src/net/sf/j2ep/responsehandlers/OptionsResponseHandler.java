@@ -111,7 +111,7 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
      * that the method is allowed, if it's allowed it will be included
      * in the returned value.
      * 
-     * @return String the allowed headers for this request
+     * @return The allowed headers for this request
      */
     private String processAllowHeader() {
         StringBuffer allowToSend = new StringBuffer("");
@@ -132,10 +132,10 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
     }
 
     /**
-     * @see net.sf.j2ep.ResponseHandler#getStatusCode()
-     * 
      * Returns 200 if the request is targeted to the proxy
      * otherwise the normal status code is returned.
+     * 
+     * @see net.sf.j2ep.ResponseHandler#getStatusCode()
      */
     public int getStatusCode() {
         if (useOwnAllow) {

@@ -33,11 +33,11 @@ import net.sf.j2ep.RequestHandlerBase;
 public class OptionsRequestHandler extends RequestHandlerBase {
 
     /**
-     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
-     * 
      * Sets the headers and does some checking for if this request
      * is meant for the server or for the proxy. This check is done
-     * by looking at the Max-Forwards header. 
+     * by looking at the Max-Forwards header.
+     * 
+     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
      */
     public HttpMethod process(HttpServletRequest request, String url) throws IOException {
         OptionsMethod method = new OptionsMethod(url);

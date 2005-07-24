@@ -36,11 +36,11 @@ import org.apache.commons.httpclient.methods.PutMethod;
 public class EntityEnclosingRequestHandler extends RequestHandlerBase {
 
     /**
-     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
-     * 
      * Will set the input stream and the Content-Type header to match this request.
      * Will also set the other headers send in the request.
+     * 
      * @throws IOException An exception is throws when there is a problem getting the input stream
+     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
      */
     public HttpMethod process(HttpServletRequest request, String url) throws IOException {
         
