@@ -24,6 +24,9 @@ public abstract class RequestHandlerBase implements RequestHandler {
      */
     private static Set<String> bannedHeaders = new HashSet<String>();
 
+    /**
+     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
+     */
     public abstract HttpMethod process(HttpServletRequest request, String url) throws IOException;
     
     /**

@@ -66,10 +66,11 @@ public class ProxyFilter implements Filter {
     private HttpClient httpClient;
 
     /**
+     * Implementation of a reverse-proxy. All request go through here.
+     * This is the main class where are handling starts.
+     * 
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
      *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
-     *      
-     * Simple implementation of a reverse-proxy. All request go through here.
      */
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain filterChain) throws IOException, ServletException {
@@ -126,7 +127,7 @@ public class ProxyFilter implements Filter {
      * isn't a real URI but quite near.
      * 
      * @param httpRequest Request to get the URI and query string from
-     * @return String The URI for this request including the query string
+     * @return The URI for this request including the query string
      */
     private String getURI(HttpServletRequest httpRequest) {
         String uri = httpRequest.getServletPath();
@@ -137,10 +138,10 @@ public class ProxyFilter implements Filter {
     }
 
     /**
+     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+     * 
      * Called upon initialization, Will create the ConfigParser and get the
      * RuleChain back. Will also configure the httpclient.
-     * 
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
     public void init(FilterConfig filterConfig) throws ServletException {
         log = LogFactory.getLog("org.apache.webapp.reverseproxy");
@@ -165,10 +166,10 @@ public class ProxyFilter implements Filter {
     }
 
     /**
+     * @see javax.servlet.Filter#destroy()
+     * 
      * Called when this filter is destroyed.
      * Releases the fields.
-     * 
-     * @see javax.servlet.Filter#destroy()
      */
     public void destroy() {
         log = null;

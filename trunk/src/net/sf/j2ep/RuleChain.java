@@ -49,7 +49,7 @@ public class RuleChain{
      * Returns the list of rules
      * to evaluate.
      *
-     * @return List
+     * @return The rules
      */
     protected List<Rule> getRules() {
         return rules;
@@ -59,7 +59,7 @@ public class RuleChain{
      * Returns an iterator over
      * the list of rules to evaluate.
      *
-     * @return Iterator
+     * @return The iterator
      */
     protected Iterator<Rule> getRuleIterator() {
         return getRules().iterator();
@@ -82,10 +82,9 @@ public class RuleChain{
      * Evaluates the given request to see if
      * any of the rules matches.  Returns the
      * the first matching rule.
-     * Returns null if no rule matched the request.
      *
      * @param request The request
-     * @return URL The first matching rule URL
+     * @return The first matching rule URL, null if no rule matched the request
      * @see Rule#matches(HttpServletRequest)
      */
     public Rule evaluate(HttpServletRequest request) {
@@ -110,7 +109,7 @@ public class RuleChain{
     /**
      * Returns a String representation of this object.
      *
-     * @return String
+     * @return A string representation
      */
     public String toString() {
         StringBuffer buffer = new StringBuffer();

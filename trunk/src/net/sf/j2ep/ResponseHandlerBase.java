@@ -54,9 +54,9 @@ public abstract class ResponseHandlerBase implements ResponseHandler{
     public abstract void process(HttpServletResponse response) throws IOException;
     
     /**
-     * @see net.sf.j2ep.ResponseHandler#close()
+     * Will release the connection for the method.
      * 
-     * Will release the connetion for the method.
+     * @see net.sf.j2ep.ResponseHandler#close()
      */
     public  void close() {
         method.releaseConnection();
