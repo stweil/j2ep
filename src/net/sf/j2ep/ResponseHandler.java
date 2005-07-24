@@ -41,7 +41,7 @@ public interface ResponseHandler {
     /**
      * Returns the HTTP status code we received from the server
      * 
-     * @return int The status code
+     * @return The status code
      */
     public int getStatusCode();
     

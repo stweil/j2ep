@@ -83,7 +83,7 @@ public class ConfigParser {
     /**
      * Creates the rules.
      *
-     * @return RuleChain The rules all put into a rule chain
+     * @return The rules all put into a rule chain
      */
     private RuleChain createRuleChain(File data) throws Exception{
         Digester digester = new Digester();
@@ -111,9 +111,9 @@ public class ConfigParser {
     }
     
     /**
-     * Creates the server
+     * Creates the servers.
      *
-     * @return HashMap<String, Server> A hash map containing all the servers
+     * @return A hash map containing all the servers
      */
     @SuppressWarnings("unchecked")
     private HashMap<String, Server> createServerMap(File data) throws Exception{

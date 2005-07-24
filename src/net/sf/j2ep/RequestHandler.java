@@ -31,13 +31,13 @@ import org.apache.commons.httpclient.HttpMethod;
 public interface RequestHandler {
     
     /**
-     * Created a new HttpMethod for this request. Will then
+     * Creates a new HttpMethod for this request. Will then
      * set the headers and any other information needed for this
      * request.
      * 
      * @param request The request we are processing
      * @param url URL to bind the method to
-     * @return HttpMethod The method we have created
+     * @return The method we have created
      * @throws IOException An exception is thrown when there is a problem with the input supplied by the request
      */
     public HttpMethod process(HttpServletRequest request, String url) throws IOException;

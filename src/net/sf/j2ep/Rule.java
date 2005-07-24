@@ -29,11 +29,11 @@ import javax.servlet.http.HttpServletRequest;
 public interface Rule {
     
     /**
-     * Determine if the given request
+     * Determines if the given request
      * matches the rule.
      *
      * @param request The request
-     * @return boolean True if matches, will be redirected.
+     * @return true if the request is matched, otherwise false
      */
     boolean matches(HttpServletRequest request);
 
@@ -41,27 +41,28 @@ public interface Rule {
      * Returns the redirect URI for
      * requests that match this rule.
      * Process is used in order to let the rules
-     * to do rewriting of the URI before being handled
+     * do rewriting of the URI before being handled
      * by the server.
      * 
-     * The user using this method has to make sure that
-     * the rule in fact matches. The rule will not have to
-     * do any check that a URI is matched before processing it.
+     * The rule will not any check that a URI is matched
+     * before processing it. If you want this type of 
+     * control make make sure the calling class checks that 
+     * there is a match before processing.
      * 
      * @param uri URI to be processed
-     * @return String The final URI
+     * @return The final URI
      */
     String process(String uri);
     
     /**
-     * Returns the reverted URI, this means¨
+     * Returns the reverted URI, this means
      * that if a URI is processed and then reverted
-     * it should be the same URI. That means 
-     * revert(process("some random string)) should
-     * return 'some random string'.
+     * it should be the same URI.
+     * revert(process("some random string")) should
+     * return "some random string".
      * 
      * @param uri URI to be reverted
-     * @return String The reverted URI
+     * @return The reverted URI
      */
     String revert(String uri);
     
@@ -69,7 +70,7 @@ public interface Rule {
      * Returns the server this rule is mapped to.
      * Use this to get the server and issue a connection.
      * 
-     * @return Server The server
+     * @return The server
      */
     Server getServer();
     
@@ -83,9 +84,9 @@ public interface Rule {
     /**
      * Returns the server id for the server connected with this rule.
      * This should only be used when creating rules from a XML mapping,
-     * on other circumstances use the setServer instead.
+     * on other circumstances use the getServer method instead.
      * 
-     * @return String The server id
+     * @return The server id
      */
     String getServerId();
 
