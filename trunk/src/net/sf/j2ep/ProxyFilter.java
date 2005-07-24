@@ -145,15 +145,6 @@ public class ProxyFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         log = LogFactory.getLog("org.apache.webapp.reverseproxy");
         
-        /*
-        //TODO only temporary debug, need output to console directly since 
-        //I'm running tomcat inside eclipse.
-        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-        System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
-        */
-
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
         httpClient.getParams().setBooleanParameter(HttpClientParams.USE_EXPECT_CONTINUE, false);
         httpClient.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
