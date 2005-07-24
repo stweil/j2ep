@@ -64,16 +64,14 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
 
     /**
      * Constructor checking if we should handle the Allow header
-     * ourself or response with the backing servers header.
+     * ourself or respond with the backing servers header.
      * 
      * @param method The method for this response
      */
     public OptionsResponseHandler(OptionsMethod method) {
         super(method);
         this.method = method;
-        if (!method.hasBeenUsed()) {
-            useOwnAllow = true;
-        }
+        useOwnAllow = !method.hasBeenUsed();
     }
 
     /**
@@ -123,7 +121,7 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
             }
         } else {
             Enumeration<String> tokenizer = method.getAllowedMethods();
-                while (tokenizer.hasMoreElements()) {
+            while (tokenizer.hasMoreElements()) {
                 String token = tokenizer.nextElement();
                 if (allowedMethods.contains(token)) {
                     allowToSend.append(token).append(",");
@@ -163,7 +161,7 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
      * comma separated e.g. "OPTIONS,GET,POST"
      * 
      * This method is normally called by the factory that
-     * is using this response handler for it's OPTIONS 
+     * is using this response handler for incoming OPTIONS 
      * requests. 
      * 
      * @param methods The methods to set as allowed
