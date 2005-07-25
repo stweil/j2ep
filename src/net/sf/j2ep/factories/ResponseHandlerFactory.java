@@ -16,6 +16,8 @@
 
 package net.sf.j2ep.factories;
 
+import java.util.StringTokenizer;
+
 import net.sf.j2ep.ResponseHandler;
 import net.sf.j2ep.responsehandlers.*;
 
@@ -36,11 +38,7 @@ public class ResponseHandlerFactory {
      * The methods handled by this factory.
      */
     private static final String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
-    
-    static {
-        OptionsResponseHandler.addAllowedMethods(allowedMethods);
-    }
-    
+
     /**
      * Checks the method being received and created a 
      * suitable ResponseHandler for this method.
@@ -69,6 +67,32 @@ public class ResponseHandlerFactory {
         }
 
         return handler;
+    }
+
+    /**
+     * Will go through all the methods sent in
+     * checking to see that the method is allowed.
+     * If it's allowed it will be included
+     * in the returned value.
+     * 
+     * @param allowSent The header returned by the server
+     * @return The allowed headers for this request
+     */
+    public static String processAllowHeader(String allowSent) {
+        StringBuffer allowToSend = new StringBuffer("");
+        StringTokenizer tokenizer = new StringTokenizer(allowSent, ",");
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken().trim().toUpperCase();
+            if (allowedMethods.matches("[A-Z,]*\\b" + token + "\\b[A-Z,]*")) {
+                allowToSend.append(token).append(",");
+            }
+        }
+
+        return allowToSend.toString();
+    }
+    
+    public static String getAllowHeader() {
+        return allowedMethods;
     }
 
 }

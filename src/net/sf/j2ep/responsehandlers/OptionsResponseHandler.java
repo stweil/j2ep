@@ -17,14 +17,11 @@
 package net.sf.j2ep.responsehandlers;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.j2ep.ResponseHandlerBase;
+import net.sf.j2ep.factories.ResponseHandlerFactory;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.OptionsMethod;
@@ -41,11 +38,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class OptionsResponseHandler extends ResponseHandlerBase {
 
-    /** 
-     * A set of all the allowed methods.
-     */
-    private static Set<String> allowedMethods = new HashSet<String>();
-    
     /** 
      * The logger.
      */
@@ -85,12 +77,18 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
      */
     public void process(HttpServletResponse response) {
         setHeaders(response);
-        response.setHeader("allow", processAllowHeader());
         response.setStatus(getStatusCode());
 
         if (useOwnAllow) {
+            response.setHeader("allow", ResponseHandlerFactory.getAllowHeader());
             response.setHeader("content-length", "0");
         } else {
+            String allow = method.getResponseHeader("allow").getValue();
+            System.out.println();
+            System.out.println(allow);
+            ResponseHandlerFactory.processAllowHeader(allow);
+            System.out.println();
+            response.setHeader("allow", ResponseHandlerFactory.processAllowHeader(allow));
             Header contentLength = method.getResponseHeader("Content-Length");
             if (contentLength == null || contentLength.getValue().equals("0")) {
                 response.setHeader("Content-Length", "0");
@@ -103,32 +101,6 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
                 }
             }
         }
-    }
-
-    /**
-     * Will go through all the methods returned in the 
-     * Allow header. Each method will be checked to see
-     * that the method is allowed, if it's allowed it will be included
-     * in the returned value.
-     * 
-     * @return The allowed headers for this request
-     */
-    private String processAllowHeader() {
-        StringBuffer allowToSend = new StringBuffer("");
-        if (useOwnAllow) {
-            for (String value : allowedMethods) {
-                allowToSend.append(value).append(",");
-            }
-        } else {
-            Enumeration<String> tokenizer = method.getAllowedMethods();
-            while (tokenizer.hasMoreElements()) {
-                String token = tokenizer.nextElement();
-                if (allowedMethods.contains(token)) {
-                    allowToSend.append(token).append(",");
-                }
-            }
-        }
-        return allowToSend.toString();
     }
 
     /**
@@ -145,31 +117,4 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
         }
     }
 
-
-    /**
-     * Adds a method to the list of allowed methods.
-     * 
-     * @param methodName The method to add
-     */
-    public static void addAllowedMethod(String methodName) {
-        allowedMethods.add(methodName);
-    }
-
-    /**
-     * Adds all the methods in the input to the list 
-     * of allowed methods. The input string should be
-     * comma separated e.g. "OPTIONS,GET,POST"
-     * 
-     * This method is normally called by the factory that
-     * is using this response handler for incoming OPTIONS 
-     * requests. 
-     * 
-     * @param methods The methods to set as allowed
-     */
-    public static void addAllowedMethods(String methods) {
-        StringTokenizer tokenizer = new StringTokenizer(methods, ",");
-        while (tokenizer.hasMoreTokens()) {
-            allowedMethods.add(tokenizer.nextToken().trim());
-        }
-    }
 }

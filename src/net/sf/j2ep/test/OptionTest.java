@@ -84,7 +84,7 @@ public class OptionTest extends FilterTestCase {
     
     public void endMaxForwards(WebResponse theResponse) {
         assertEquals("Status code check", 200, theResponse.getStatusCode());
-        String allow = theResponse.getConnection().getHeaderField("Allow");
+        String allow = theResponse.getConnection().getHeaderField("allow");
         /*
          * Reason we have to check all and not just compare to string is
          * that the order of the methods returned cannot is unknown and unimportant.
