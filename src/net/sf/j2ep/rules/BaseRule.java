@@ -106,4 +106,11 @@ public abstract class BaseRule implements Rule {
     public void setServerId(String serverId) {
         this.serverId = serverId;
     }
+    
+    /**
+     * @see net.sf.j2ep.Rule#isRewriting()
+     */
+    public boolean isRewriting() {
+        return false;
+    }
 }

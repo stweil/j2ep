@@ -126,5 +126,12 @@ public class CompositeRule extends BaseRule {
 
         return buffer.toString();
     }
+    
+    /**
+     * @see net.sf.j2ep.Rule#isRewriting()
+     */
+    public boolean isRewriting() {
+        return true;
+    }
 
 }
