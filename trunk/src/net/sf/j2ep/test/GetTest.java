@@ -112,4 +112,22 @@ public class GetTest extends FilterTestCase {
                         .getHeaderField("Allow"));
     }
     
+    public void begin405(WebRequest theRequest) {
+        theRequest.setURL("localhost:8080", "/test", "/GET/405.jsp", null, null);
+    }
+    
+    public void test405() throws IOException, ServletException {
+        proxy.doFilter(request, response, filterChain);
+    }
+    
+    public void end405(WebResponse theResponse) {
+        assertEquals("The response code should be 405", 405, theResponse.getStatusCode());
+        String allow = theResponse.getConnection().getHeaderField("Allow");
+
+        assertTrue("Should include OPTIONS", allow.contains("OPTIONS"));
+        assertTrue("Should include GET", allow.contains("GET"));
+        assertFalse("Shouldn't include MYOWNHEADER", allow.contains("MYOWNHEADER"));
+        assertFalse("Shouldn't include PROPFIND", allow.contains("PROPFIND"));
+    }
+    
 }

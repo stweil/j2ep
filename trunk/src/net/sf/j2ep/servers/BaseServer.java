@@ -27,6 +27,7 @@ import net.sf.j2ep.factories.MethodNotAllowedException;
 import net.sf.j2ep.factories.RequestHandlerFactory;
 import net.sf.j2ep.factories.ResponseHandlerFactory;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -78,6 +79,12 @@ public class BaseServer implements Server {
          */
         if (!((HttpMethodBase) method).isAborted()) {
             httpClient.executeMethod(method);
+            
+            if (method.getStatusCode() == 405) {
+                Header allow = method.getResponseHeader("allow");
+                String value = allow.getValue();
+                throw new MethodNotAllowedException("405 error", ResponseHandlerFactory.processAllowHeader(value));
+            }
         }
 
         return ResponseHandlerFactory.createResponseHandler(method);
