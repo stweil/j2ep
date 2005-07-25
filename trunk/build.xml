@@ -159,6 +159,7 @@
 			<classpath refid="compile.classpath" />
 			<formatter type="plain" />
 
+			<test name="net.sf.j2ep.test.AllowHeaderTest" todir="${reports.test}" />
 			<test name="net.sf.j2ep.test.CompositeRuleTest" todir="${reports.test}" />
 			<test name="net.sf.j2ep.test.DirectoryRuleTest" todir="${reports.test}" />
 			<test name="net.sf.j2ep.test.IPRuleTest" todir="${reports.test}" />
