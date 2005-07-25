@@ -91,6 +91,11 @@ public class ResponseHandlerFactory {
         return allowToSend.toString();
     }
     
+    /**
+     * Returns the allow methods for this factory.
+     * 
+     * @return Allowed methods
+     */ 
     public static String getAllowHeader() {
         return allowedMethods;
     }
