@@ -16,10 +16,6 @@
 
 package net.sf.j2ep.responsehandlers;
 
-import javax.servlet.http.HttpServletResponse;
-
-import net.sf.j2ep.ResponseHandlerBase;
-
 import org.apache.commons.httpclient.methods.DeleteMethod;
 
 /**
@@ -27,23 +23,16 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
  *
  * @author Anders Nyman
  */
-public class DeleteResponseHandler extends ResponseHandlerBase {
+public class DeleteResponseHandler extends BasicResponseHandler {
     
     /**
      * Default constructor, will only call the super-constructor
-     * for ResponseHandlerBase. 
+     * for BasicResponseHandler. 
      * 
      * @param method The method used for this response
      */
     public DeleteResponseHandler(DeleteMethod method) {
         super(method);
-    }
-
-    /**
-     * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
-     */
-    public void process(HttpServletResponse response) {
-        
     }
 
 }
