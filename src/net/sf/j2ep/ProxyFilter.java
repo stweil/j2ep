@@ -66,8 +66,8 @@ public class ProxyFilter implements Filter {
     private HttpClient httpClient;
 
     /**
-     * Implementation of a reverse-proxy. All request go through here.
-     * This is the main class where are handling starts.
+     * Implementation of a reverse-proxy. All request go through here. This is
+     * the main class where are handling starts.
      * 
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
      *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
@@ -75,49 +75,41 @@ public class ProxyFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain filterChain) throws IOException, ServletException {
 
-        if (response.isCommitted()) {
-            log.info("Not proxying, already committed.");
-            filterChain.doFilter(request, response);
-        } else if (!(request instanceof HttpServletRequest)) {
-            log.info("Request is not HttpRequest, will only handle HttpRequests.");
-            filterChain.doFilter(request, response);
-        } else if (!(response instanceof HttpServletResponse)) {
-            log.info("Request is not HttpResponse, will only handle HttpResponses.");
-            filterChain.doFilter(request, response);
-        } else {
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            
-            Rule rule = ruleChain.evaluate(httpRequest);
-            if (rule != null) {
-                Server server = rule.getServer();
-                String uri = rule.process(getURI(httpRequest));
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-                ResponseHandler responseHandler = null;
-                try {
-                    responseHandler = server.connect(httpRequest, uri, httpClient);
-                } catch (HttpException e) {
-                    log.error("Problem while connection to server", e);
-                    httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    return;
-                } catch (UnknownHostException e) {
-                    log.error("Could not connection to the host specified", e);
-                    httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
-                    return;
-                } catch (IOException e) {
-                    log.error("Problem probably with the input being send, either in a Header or as a Stream", e);
-                    httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    return;
-                } catch (MethodNotAllowedException e) {
-                    log.error("Incoming method could not be handled", e);
-                    httpResponse.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-                    httpResponse.setHeader("Allow", e.getAllowedMethods());
-                    return;
-                }
-                
-                responseHandler.process(httpResponse);
-                responseHandler.close();
+        Rule rule = ruleChain.evaluate(httpRequest);
+        if (rule != null) {
+            Server server = rule.getServer();
+            String uri = rule.process(getURI(httpRequest));
+
+            ResponseHandler responseHandler = null;
+            
+            try {
+                responseHandler = server.connect(httpRequest, uri, httpClient);
+            } catch (HttpException e) {
+                log.error("Problem while connection to server", e);
+                httpResponse
+                        .setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            } catch (UnknownHostException e) {
+                log.error("Could not connection to the host specified", e);
+                httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
+                return;
+            } catch (IOException e) {
+                log.error("Problem probably with the input being send, either in a Header or as a Stream", e);
+                httpResponse
+                        .setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            } catch (MethodNotAllowedException e) {
+                log.error("Incoming method could not be handled", e);
+                httpResponse.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                httpResponse.setHeader("Allow", e.getAllowedMethods());
+                return;
             }
+
+            responseHandler.process(httpResponse);
+            responseHandler.close();
         }
 
     }
@@ -149,8 +141,7 @@ public class ProxyFilter implements Filter {
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
         httpClient.getParams().setBooleanParameter(HttpClientParams.USE_EXPECT_CONTINUE, false);
         httpClient.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-        httpClient.getParams().setIntParameter(HttpClientParams.MAX_REDIRECTS, 0);
-
+        
         String data = filterConfig.getInitParameter("dataUrl");
         if (data == null) {
             throw new ServletException("dataUrl is required.");

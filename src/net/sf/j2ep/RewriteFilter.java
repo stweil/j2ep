@@ -1,5 +1,22 @@
+/*
+ * Copyright 2000,2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.sf.j2ep;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.*;
@@ -15,7 +32,18 @@ public class RewriteFilter implements Filter {
      * Logging element supplied by commons-logging.
      */
     private static Log log;
+    
+    /** 
+     * The rule chain, will be traversed to find a matching rule.
+     */
+    private RuleChain ruleChain;
 
+    /**
+     * Rewrites the outgoing stream to make sure URLs and headers
+     * are correct.
+     * 
+     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+     */
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain filterChain) throws IOException, ServletException {
         
@@ -29,22 +57,55 @@ public class RewriteFilter implements Filter {
             log.info("Request is not HttpResponse, will only handle HttpResponses.");
             return;
         } else {
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
-            UrlRewritingResponseWrapper wrappedResponse;
-            wrappedResponse = new UrlRewritingResponseWrapper(httpResponse);
             
-            filterChain.doFilter(request, wrappedResponse);
             
-            wrappedResponse.rewrite();
+            Rule rule = ruleChain.evaluate(httpRequest);
+            if (rule != null) {
+                
+                //TODO make better way for this, some permanent check at init maybe?
+                String server = request.getServerName() + ":" + request.getServerPort();
+                UrlRewritingResponseWrapper wrappedResponse;
+                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, rule, server);
+
+                filterChain.doFilter(request, wrappedResponse);
+
+                wrappedResponse.rewriteStream();
+            }
         }
     }
     
-    public void init(FilterConfig arg0) throws ServletException {
+    /**
+     * Initialize.
+     * 
+     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+     */
+    public void init(FilterConfig filterConfig) throws ServletException {
         log = LogFactory.getLog("org.apache.webapp.reverseproxy");
+        
+        String data = filterConfig.getInitParameter("dataUrl");
+        if (data == null) {
+            throw new ServletException("dataUrl is required.");
+        }
+        try {
+            File dataFile = new File(filterConfig.getServletContext()
+                    .getRealPath(data));
+            ConfigParser parser = new ConfigParser(dataFile);
+            ruleChain = parser.getRuleChain();
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
     }
 
+    /**
+     * Release resources.
+     * 
+     * @see javax.servlet.Filter#destroy()
+     */
     public void destroy() {
         log = null;
+        ruleChain = null;
     }
 
 }
