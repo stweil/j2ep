@@ -70,6 +70,10 @@ public class BaseServer implements Server {
                 .createRequestMethod(request.getMethod());
 
         HttpMethod method = requestHandler.process(request, url);
+        //TODO anyway to set this in the HttpClient instead?
+        //MAX_REDIRECTS and REJECT_RELATIVE_REDIRECT doesn't
+        //do what I need.
+        method.setFollowRedirects(false);
 
         /*
          * Why does method.validate() return true when the method has been
