@@ -60,20 +60,44 @@ public class RewriteFilter implements Filter {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             
-            
             Rule rule = ruleChain.evaluate(httpRequest);
-            if (rule != null) {
+            if (rule == null) {
+                log.error("Could not find a rule for this request, will not do anything.");
+                return;
+            } else {
+                String server = rule.getServer();
+                String uri = rule.process(getURI(httpRequest));
+                
+                String url = new StringBuffer(request.getScheme()).append("://")
+                .append(server).append(uri).toString();
+
+                httpRequest.setAttribute("proxyURL", url);
                 
                 //TODO make better way for this, some permanent check at init maybe?
-                String server = request.getServerName() + ":" + request.getServerPort();
+                String currentServer = request.getServerName() + ":" + request.getServerPort();
                 UrlRewritingResponseWrapper wrappedResponse;
-                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, rule, server);
+                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, rule, currentServer);
 
-                filterChain.doFilter(request, wrappedResponse);
+                filterChain.doFilter(httpRequest, wrappedResponse);
 
                 wrappedResponse.rewriteStream();
             }
         }
+    }
+    
+    /**
+     * Will build a URI but including the Query String. That means that it really
+     * isn't a URI, but quite near.
+     * 
+     * @param httpRequest Request to get the URI and query string from
+     * @return The URI for this request including the query string
+     */
+    private String getURI(HttpServletRequest httpRequest) {
+        String uri = httpRequest.getServletPath();
+        if (httpRequest.getQueryString() != null) {
+            uri += "?" + httpRequest.getQueryString();
+        }
+        return uri;
     }
     
     /**

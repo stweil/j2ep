@@ -16,21 +16,7 @@
 
 package net.sf.j2ep.servers;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-
-import net.sf.j2ep.RequestHandler;
-import net.sf.j2ep.ResponseHandler;
 import net.sf.j2ep.Server;
-import net.sf.j2ep.factories.MethodNotAllowedException;
-import net.sf.j2ep.factories.RequestHandlerFactory;
-import net.sf.j2ep.factories.ResponseHandlerFactory;
-
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpMethodBase;
 
 /**
  * A basic implementation of the Server interface using a single host name to map
@@ -45,62 +31,13 @@ public class BaseServer implements Server {
     /**
      * The host to connect to.
      */
-    private String hostName;
+    private String name;
 
     /**
-     * Empty constructor.
+     * @see net.sf.j2ep.Server#getName()
      */
-    public BaseServer() {
-    }
-
-    /**
-     * Will start a connection using the host name specified and the URI being
-     * sent in.
-     * 
-     * @see net.sf.j2ep.Server#connect(javax.servlet.http.HttpServletRequest,
-     *      java.lang.String, org.apache.commons.httpclient.HttpClient)
-     */
-    public ResponseHandler connect(HttpServletRequest request, String uri,
-            HttpClient httpClient) throws IOException, MethodNotAllowedException {
-
-        String url = new StringBuffer(request.getScheme()).append("://")
-                .append(getHostName()).append(uri).toString();
-
-        RequestHandler requestHandler = RequestHandlerFactory
-                .createRequestMethod(request.getMethod());
-
-        HttpMethod method = requestHandler.process(request, url);
-        //TODO anyway to set this in the HttpClient instead?
-        //MAX_REDIRECTS and REJECT_RELATIVE_REDIRECT doesn't
-        //do what I need.
-        method.setFollowRedirects(false);
-
-        /*
-         * Why does method.validate() return true when the method has been
-         * aborted? I mean, if validate returns true the API says that means
-         * that the method is ready to be executed. TODO I don't like doing
-         * type casting here, see above.
-         */
-        if (!((HttpMethodBase) method).isAborted()) {
-            httpClient.executeMethod(method);
-            
-            if (method.getStatusCode() == 405) {
-                Header allow = method.getResponseHeader("allow");
-                String value = allow.getValue();
-                throw new MethodNotAllowedException("405 error", ResponseHandlerFactory.processAllowHeader(value));
-            }
-        }
-
-        return ResponseHandlerFactory.createResponseHandler(method);
-    }
-
-    /**
-     * Returns the host name.
-     * 
-     * @return The host name
-     */
-    private String getHostName() {
-        return hostName;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -108,12 +45,12 @@ public class BaseServer implements Server {
      * 
      * @param hostName The host name to set
      */
-    public void setHostName(String hostName) {
+    public void setName(String hostName) {
         if (hostName == null) {
             throw new IllegalArgumentException(
-                    "The hostname string cannot be null.");
+                    "The host name string cannot be null.");
         } else {
-            this.hostName = hostName;
+            this.name = hostName;
         }
     }
 
