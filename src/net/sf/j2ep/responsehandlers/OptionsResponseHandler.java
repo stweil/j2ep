@@ -84,10 +84,7 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
             response.setHeader("content-length", "0");
         } else {
             String allow = method.getResponseHeader("allow").getValue();
-            System.out.println();
-            System.out.println(allow);
             ResponseHandlerFactory.processAllowHeader(allow);
-            System.out.println();
             response.setHeader("allow", ResponseHandlerFactory.processAllowHeader(allow));
             Header contentLength = method.getResponseHeader("Content-Length");
             if (contentLength == null || contentLength.getValue().equals("0")) {
