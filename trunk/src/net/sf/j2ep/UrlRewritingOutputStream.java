@@ -86,7 +86,6 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
         Matcher matcher = linkPattern.matcher(stream.toString());
         while (matcher.find()) {
            String link = rule.revert(matcher.group(3));
-           System.out.println(link);
            matcher.appendReplacement(page, "$1$2" + link + "$2");
         }
         matcher.appendTail(page);
