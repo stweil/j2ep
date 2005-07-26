@@ -433,6 +433,7 @@
 		<get src="http://j2ep.sourceforge.net/lib/xercesImpl.jar" dest="${external.libs}/xercesImpl.jar" verbose="true"/>
 		<get src="http://j2ep.sourceforge.net/lib/junit.jar" dest="${external.libs}/junit.jar" verbose="true"/>
 		<get src="http://j2ep.sourceforge.net/lib/catalina-ant.jar" dest="${external.libs}/catalina-ant.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/servlet-api.jar" dest="${external.libs}/servlet-api.jar" verbose="true"/>
 	</target>
 
 
