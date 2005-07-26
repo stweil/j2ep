@@ -18,9 +18,13 @@ package net.sf.j2ep.test;
 
 import java.io.IOException;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import net.sf.j2ep.ProxyFilter;
+import net.sf.j2ep.RewriteFilter;
 
 import org.apache.cactus.FilterTestCase;
 import org.apache.cactus.WebRequest;
@@ -28,15 +32,24 @@ import org.apache.cactus.WebResponse;
 
 public class DirectoryMappingTest extends FilterTestCase {
 
-    private ProxyFilter proxy;
+    private RewriteFilter rewriteFilter;
+    private FilterChain mockFilterChain;
 
-    public void setUp() {
-        proxy = new ProxyFilter();
+    public void setUp() {        
+        rewriteFilter = new RewriteFilter();
 
-        config.setInitParameter("dataUrl",
-                        "/WEB-INF/classes/net/sf/j2ep/test/testData.xml");
+        mockFilterChain = new FilterChain() {
+            ProxyFilter proxyFilter = new ProxyFilter();
+
+            public void doFilter(ServletRequest theRequest, ServletResponse theResponse) throws IOException, ServletException {
+                proxyFilter.init(config);
+                proxyFilter.doFilter(theRequest, theResponse, this);
+            }
+        };
+
+        config.setInitParameter("dataUrl", "/WEB-INF/classes/net/sf/j2ep/test/testData.xml");
         try {
-            proxy.init(config);
+            rewriteFilter.init(config);
         } catch (ServletException e) {
             fail("Problem with init, error given was " + e.getMessage());
         }
@@ -47,7 +60,7 @@ public class DirectoryMappingTest extends FilterTestCase {
     }
     
     public void testBasicMapping() throws IOException, ServletException {
-        proxy.doFilter(request, response, filterChain);
+        rewriteFilter.doFilter(request, response, mockFilterChain);
     }
     
     public void endBasicMapping(WebResponse theResponse) {

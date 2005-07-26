@@ -18,9 +18,10 @@ package net.sf.j2ep.test;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
+import javax.servlet.*;
 
 import net.sf.j2ep.ProxyFilter;
+import net.sf.j2ep.RewriteFilter;
 
 import org.apache.cactus.FilterTestCase;
 import org.apache.cactus.WebRequest;
@@ -34,15 +35,24 @@ import org.apache.cactus.WebResponse;
  */
 public class GetTest extends FilterTestCase {
 
-    private ProxyFilter proxy;
+    private RewriteFilter rewriteFilter;
+    private FilterChain mockFilterChain;
 
-    public void setUp() {
-        proxy = new ProxyFilter();
+    public void setUp() {        
+        rewriteFilter = new RewriteFilter();
 
-        config.setInitParameter("dataUrl",
-                        "/WEB-INF/classes/net/sf/j2ep/test/testData.xml");
+        mockFilterChain = new FilterChain() {
+            ProxyFilter proxyFilter = new ProxyFilter();
+
+            public void doFilter(ServletRequest theRequest, ServletResponse theResponse) throws IOException, ServletException {
+                proxyFilter.init(config);
+                proxyFilter.doFilter(theRequest, theResponse, this);
+            }
+        };
+
+        config.setInitParameter("dataUrl", "/WEB-INF/classes/net/sf/j2ep/test/testData.xml");
         try {
-            proxy.init(config);
+            rewriteFilter.init(config);
         } catch (ServletException e) {
             fail("Problem with init, error given was " + e.getMessage());
         }
@@ -53,7 +63,7 @@ public class GetTest extends FilterTestCase {
     }
     
     public void testNormalRequest() throws IOException, ServletException {
-        proxy.doFilter(request, response, filterChain);
+        rewriteFilter.doFilter(request, response, mockFilterChain);
     }
     
     public void endNormalRequest(WebResponse theResponse) {
@@ -66,7 +76,7 @@ public class GetTest extends FilterTestCase {
     }
     
     public void test404() throws IOException, ServletException {
-        proxy.doFilter(request, response, filterChain);
+        rewriteFilter.doFilter(request, response, mockFilterChain);
     }
     
     public void end404(WebResponse theResponse) {
@@ -78,7 +88,7 @@ public class GetTest extends FilterTestCase {
     }
     
     public void testNonExistentServer() throws IOException, ServletException {
-        proxy.doFilter(request, response, filterChain);
+        rewriteFilter.doFilter(request, response, mockFilterChain);
     }
     
     public void endNonExistentServer(WebResponse theResponse) {
@@ -91,17 +101,21 @@ public class GetTest extends FilterTestCase {
     }
     
     public void testConditional() throws IOException, ServletException {
-        proxy.doFilter(request, response, filterChain);
+        rewriteFilter.doFilter(request, response, mockFilterChain);
     }
     
     public void endConditional(WebResponse theResponse) {
         assertEquals("The response code should be 412", 412, theResponse.getStatusCode());
     }
     
+    public void beginUnhandledMethod(WebRequest theRequest) {
+        theRequest.setURL("localhost:8080", "/test", "/", null, null);
+    }
+    
     public void testUnhandledMethod() throws ServletException, IOException {
-        MethodWrappingRequest req = new MethodWrappingRequest("JDFJDSJSN", "/",
-                null);
-        proxy.doFilter(req, response, filterChain);
+        
+        MethodWrappingRequest req = new MethodWrappingRequest(request, "JDFJDSJSN");
+        rewriteFilter.doFilter(req, response, mockFilterChain);
 
     }
 
@@ -117,7 +131,7 @@ public class GetTest extends FilterTestCase {
     }
     
     public void test405() throws IOException, ServletException {
-        proxy.doFilter(request, response, filterChain);
+        rewriteFilter.doFilter(request, response, mockFilterChain);
     }
     
     public void end405(WebResponse theResponse) {

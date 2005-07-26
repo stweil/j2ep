@@ -16,85 +16,19 @@
 
 package net.sf.j2ep.test;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.StringTokenizer;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
-import javax.servlet.ServletInputStream;
+public class MethodWrappingRequest extends HttpServletRequestWrapper {
 
-public class MethodWrappingRequest extends MockHttpServletRequest {
-
-    private String uri;
-    private String queryString;
     private String method;
-    private HashMap<String, String> headers;
     
-    public MethodWrappingRequest(String method, String uri, String queryString) {
-        this.uri = uri;
-        this.queryString = queryString;
+    public MethodWrappingRequest(HttpServletRequest request, String method) {
+        super(request);
         this.method = method;
-        headers = new HashMap<String, String>();
     }
     
     public String getMethod() {
         return method;
-    }
-    
-    public String getRequestURI() {
-        return uri;
-    }
-    
-    public StringBuffer getRequestURL() {
-        return new StringBuffer("http://mockrequest").append(uri);
-    }
-    
-    public String getQueryString() {
-        return queryString;
-    }
-    
-    public String getServletPath() {
-        return uri;
-    }
-    
-    public String getScheme() {
-        return "http";
-    }
-    
-    public ServletInputStream getInputStream() {
-        return new ServletInputStream() {
-            public int readLine(byte[] b, int off, int len) throws IOException {
-                return -1;
-            }
-            public int read() throws IOException {
-                return -1;
-            }
-        };
-    }
-    
-    public Enumeration getHeaderNames() {
-        StringBuffer headerString = new StringBuffer("");
-        for (String name : headers.keySet()) {
-            headerString.append(name).append(";");
-        }
-        return new StringTokenizer(headerString.toString(), ";");
-    }
-    
-    public Enumeration getHeaders(String name) {
-        return new StringTokenizer(headers.get(name), ";");
-    }
-    
-    public void addHeader(String name, String value) {
-        headers.put(name, value);
-    }
-    
-    public int getIntHeader(String name) throws NumberFormatException {
-        String value = headers.get(name);
-        if (value != null) {
-            return Integer.parseInt(value);
-        } else {
-            return -1;
-        }
-        
     }
 }
