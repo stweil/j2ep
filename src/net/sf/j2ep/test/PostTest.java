@@ -18,9 +18,13 @@ package net.sf.j2ep.test;
 
 import java.io.IOException;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import net.sf.j2ep.ProxyFilter;
+import net.sf.j2ep.RewriteFilter;
 
 import org.apache.cactus.FilterTestCase;
 import org.apache.cactus.WebRequest;
@@ -28,18 +32,27 @@ import org.apache.cactus.WebResponse;
 
 public class PostTest extends FilterTestCase {
     
-    private ProxyFilter proxy;
-    
-    public void setUp() {
-        proxy = new ProxyFilter();
+    private RewriteFilter rewriteFilter;
+    private FilterChain mockFilterChain;
 
-        config.setInitParameter("dataUrl",
-                        "/WEB-INF/classes/net/sf/j2ep/test/testData.xml");
+    public void setUp() {        
+        rewriteFilter = new RewriteFilter();
+
+        mockFilterChain = new FilterChain() {
+            ProxyFilter proxyFilter = new ProxyFilter();
+
+            public void doFilter(ServletRequest theRequest, ServletResponse theResponse) throws IOException, ServletException {
+                proxyFilter.init(config);
+                proxyFilter.doFilter(theRequest, theResponse, this);
+            }
+        };
+
+        config.setInitParameter("dataUrl", "/WEB-INF/classes/net/sf/j2ep/test/testData.xml");
         try {
-            proxy.init(config);
+            rewriteFilter.init(config);
         } catch (ServletException e) {
             fail("Problem with init, error given was " + e.getMessage());
-        } 
+        }
     }
 
     
@@ -49,7 +62,7 @@ public class PostTest extends FilterTestCase {
     }
     
     public void testSendParam() throws IOException, ServletException {
-        proxy.doFilter(request, response, filterChain);
+        rewriteFilter.doFilter(request, response, mockFilterChain);
     }
     
     public void endSendParam(WebResponse theResponse) {
@@ -64,7 +77,7 @@ public class PostTest extends FilterTestCase {
     }
     
     public void testExpectContinue() throws IOException, ServletException {
-        proxy.doFilter(request, response, filterChain);
+        rewriteFilter.doFilter(request, response, mockFilterChain);
         /*
          * Will not send any body, but that shouldn't be a problem since the server
          * will send back a 100 - continue first 

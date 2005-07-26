@@ -18,11 +18,16 @@ package net.sf.j2ep.test;
 
 import java.io.IOException;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import net.sf.j2ep.ProxyFilter;
+import net.sf.j2ep.RewriteFilter;
 
 import org.apache.cactus.FilterTestCase;
+import org.apache.cactus.WebRequest;
 import org.apache.cactus.WebResponse;
 
 /**
@@ -32,24 +37,36 @@ import org.apache.cactus.WebResponse;
  */
 public class OptionTest extends FilterTestCase {
     
-    private ProxyFilter proxy;
-    
-    public void setUp() {
-        proxy = new ProxyFilter();
+    private RewriteFilter rewriteFilter;
+    private FilterChain mockFilterChain;
 
-        config.setInitParameter("dataUrl",
-                        "/WEB-INF/classes/net/sf/j2ep/test/testData.xml");
+    public void setUp() {        
+        rewriteFilter = new RewriteFilter();
+
+        mockFilterChain = new FilterChain() {
+            ProxyFilter proxyFilter = new ProxyFilter();
+
+            public void doFilter(ServletRequest theRequest, ServletResponse theResponse) throws IOException, ServletException {
+                proxyFilter.init(config);
+                proxyFilter.doFilter(theRequest, theResponse, this);
+            }
+        };
+
+        config.setInitParameter("dataUrl", "/WEB-INF/classes/net/sf/j2ep/test/testData.xml");
         try {
-            proxy.init(config);
+            rewriteFilter.init(config);
         } catch (ServletException e) {
             fail("Problem with init, error given was " + e.getMessage());
-        } 
+        }
+    }
+    
+    public void beginNoMaxFowards(WebRequest theRequest) {
+        theRequest.setURL("localhost:8080", "/test", "/", null, null);
     }
 
     public void testNoMaxFowards() throws ServletException, IOException {
-        MethodWrappingRequest req = new MethodWrappingRequest("OPTIONS", "/",
-                null);
-        proxy.doFilter(req, response, filterChain);
+        MethodWrappingRequest req = new MethodWrappingRequest(request, "OPTIONS");
+        rewriteFilter.doFilter(req, response, mockFilterChain);
 
     }
 
@@ -59,12 +76,15 @@ public class OptionTest extends FilterTestCase {
                         .getHeaderField("Allow"));
     }
     
-    public void testStarUri() throws ServletException, IOException {
+    public void beginStarUri(WebRequest theRequest) {
         //TODO change this to * if that functionally really is required.
         //Will take some time since httpclient doesn't support it.
-        MethodWrappingRequest req = new MethodWrappingRequest("OPTIONS", "/*",
-                null);
-        proxy.doFilter(req, response, filterChain);
+        theRequest.setURL("localhost:8080", "/test", "/*", null, null);
+    }
+    
+    public void testStarUri() throws ServletException, IOException {
+        MethodWrappingRequest req = new MethodWrappingRequest(request, "OPTIONS");
+        rewriteFilter.doFilter(req, response, mockFilterChain);
 
     }
 
@@ -74,12 +94,16 @@ public class OptionTest extends FilterTestCase {
                         .getHeaderField("Allow"));
     }
 
+    
+    public void beginMaxForwards(WebRequest theRequest) {
+        theRequest.setURL("localhost:8080", "/test", "/maxForwards", null, null);
+        theRequest.addHeader("Max-Forwards", "0");
+    }
+
     public void testMaxForwards() throws ServletException,
             IOException {
-        MethodWrappingRequest req = new MethodWrappingRequest("OPTIONS", "/maxForwards",
-                null);
-        req.addHeader("Max-Forwards", "0");
-        proxy.doFilter(req, response, filterChain);
+        MethodWrappingRequest req = new MethodWrappingRequest(request, "OPTIONS");
+        rewriteFilter.doFilter(req, response, mockFilterChain);
     }
     
     public void endMaxForwards(WebResponse theResponse) {
@@ -98,10 +122,13 @@ public class OptionTest extends FilterTestCase {
         assertEquals("Content Length should be 0", "0", theResponse.getConnection().getHeaderField("Content-Length"));
     }
     
+    public void beginServerWithUnsupportedMethods(WebRequest theRequest) {
+        theRequest.setURL("localhost:8080", "/test", "/testUnsupportedMethods", null, null);
+    }
+    
     public void testServerWithUnsupportedMethods() throws ServletException, IOException {
-        MethodWrappingRequest req = new MethodWrappingRequest("OPTIONS", "/testUnsupportedMethods/",
-                null);
-        proxy.doFilter(req, response, filterChain);
+        MethodWrappingRequest req = new MethodWrappingRequest(request, "OPTIONS");
+        rewriteFilter.doFilter(req, response, mockFilterChain);
     }
     
     public void endServerWithUnsupportedMethods(WebResponse theResponse) {
