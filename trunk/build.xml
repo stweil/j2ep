@@ -369,14 +369,11 @@
         <!-- Define the Cactus tasks -->
         <taskdef resource="cactus.tasks" classpathref="compile.classpath" />
 
-
         <!-- Tomcat specifc tasks -->
         <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="compile.classpath"/>
         <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="compile.classpath"/>
         <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" classpathref="compile.classpath"/>
-
-
-
+    
     </target>
 
 
