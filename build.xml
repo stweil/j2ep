@@ -22,6 +22,7 @@
 	*	manager.password - Password for the manager role.
 	
 	-->
+	<property file="build.properties.default"/>
 	<property file="build.properties"/>
 
 
@@ -46,15 +47,6 @@
 	<property name="compile.deprecation"	value="false"/>
 	<property name="compile.optimize"		value="true"/>
 
-	<property name="commons-httpclient-3.0-rc3.jar" 
-		value="${external.libs}/commons-httpclient-3.0-rc3.jar"/>
-	<property name="commons-digester-1.7.jar" 
-		value="${external.libs}/commons-digester-1.7.jar"/>
-	<property name="commons-beanutils.jar" 
-		value="${external.libs}/commons-beanutils.jar"/>
-	<property name="commons-codec-1.3.jar.jar" 
-		value="${external.libs}/commons-codec-1.3.jar"/>
-
 
 	<!--
 
@@ -68,6 +60,11 @@
 		<pathelement location="${commons-digester-1.7.jar}"/>
 		<pathelement location="${commons-beanutils.jar}"/>
 		<pathelement location="${commons-codec-1.3.jar.jar}"/>
+
+		<!-- Include all the external libs -->
+		<fileset dir="${external.libs}">
+			<include name="*.jar" />
+		</fileset>
 
 		<!-- Tomcat specific JAR files, change this to match your container -->
 		<pathelement location="${catalina.home}/common/classes"/>
@@ -102,6 +99,7 @@
 			<pathelement location="lib/aspectjrt.jar" />
 		</classpath>
 	</taskdef>
+
 
 	<!-- 
 	
@@ -369,10 +367,10 @@
 	
 	-->
 	<target name="redeploy.cactuswar" unless="notdeployed">
-		
+
 		<undeploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/test" />
 		<deploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/test" localWar="file://${dist.home}/${app.name}-${app.version}-CACTUS.war" />
-		
+
 	</target>
 
 
@@ -384,7 +382,7 @@
 	<target name="deploy.cactuswar" if="notdeployed">
 
 		<deploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/test" localWar="file://${dist.home}/${app.name}-${app.version}-CACTUS.war" />
-	
+
 	</target>
 
 
@@ -394,6 +392,11 @@
 	
 	-->
 	<target name="prepare">
+
+		<property name="commons-httpclient-3.0-rc3.jar" value="${external.libs}/commons-httpclient-3.0-rc3.jar" />
+		<property name="commons-digester-1.7.jar" value="${external.libs}/commons-digester-1.7.jar" />
+		<property name="commons-beanutils.jar" value="${external.libs}/commons-beanutils.jar" />
+		<property name="commons-codec-1.3.jar.jar" value="${external.libs}/commons-codec-1.3.jar" />
 
 		<!-- Create build directories as needed -->
 		<mkdir  dir="${build.home}"/>
@@ -408,6 +411,29 @@
 		<copy todir="${lib.home}" file="${commons-beanutils.jar}"/>
 		<copy todir="${lib.home}" file="${commons-codec-1.3.jar.jar}"/>
 
+
 	</target>
+
+
+	<!--
+	
+	Downloads all the necesarry libarays to the external.libs
+	
+	-->
+	<target name="download">
+		<mkdir dir="${external.libs}" />
+		<get src="http://j2ep.sourceforge.net/lib/cactus-ant-1.7.jar" dest="${external.libs}/cactus-ant-1.7.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/commons-beanutils.jar" dest="${external.libs}/commons-beanutils.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/commons-codec-1.3.jar" dest="${external.libs}/commons-codec-1.3.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/commons-digester-1.7.jar" dest="${external.libs}/commons-digester-1.7.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/commons-httpclient-3.0-rc3.jar" dest="${external.libs}/commons-httpclient-3.0-rc3.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/commons-logging-1.0.4.jar" dest="${external.libs}/commons-logging-1.0.4.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/aspectjrt-1.2.1.jar" dest="${external.libs}/aspectjrt-1.2.1.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/cactus-1.7.jar" dest="${external.libs}/cactus-1.7.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/xercesImpl.jar" dest="${external.libs}/xercesImpl.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/junit.jar" dest="${external.libs}/junit.jar" verbose="true"/>
+		<get src="http://j2ep.sourceforge.net/lib/catalina-ant.jar" dest="${external.libs}/catalina-ant.jar" verbose="true"/>
+	</target>
+
 
 </project>
