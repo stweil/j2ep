@@ -34,7 +34,17 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      * Regex to find absolute links.
      */
     private static Pattern linkPattern = Pattern.compile("\\b([^/]+://)([^/]+)([\\w/]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
-
+    
+    /** 
+     * Regex to find the path in Set-Cookie headers.
+     */
+    private static Pattern pathPattern = Pattern.compile("\\b(path=)([^;\\s]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    
+    /** 
+     * Regex to find absolute domain in Set-Cookie headers.
+     */
+    private static Pattern domainPattern = Pattern.compile("\\b(domain=)([^;\\s]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    
     /**
      * Basic constructor.
      * 
@@ -62,6 +72,8 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
         String value;
         if (name.toLowerCase().equals("location")) {
             value = rewriteHeader(originalValue);
+        } else if (name.toLowerCase().equals("set-cookie")) {
+            value = rewriteSetCookie(originalValue);
         } else {
             value = originalValue;
         }
@@ -78,7 +90,10 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
         String value;
         if (name.toLowerCase().equals("location")) {
             value = rewriteHeader(originalValue);
-        } else {
+        } else if (name.toLowerCase().equals("set-cookie")) {
+            value = rewriteSetCookie(originalValue);
+        }
+        else {
             value = originalValue;
         }
         super.setHeader(name, value);
@@ -86,8 +101,8 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
 
     
     /**
-     * Rewrites the header. Will first locate any
-     * links in the header and then rewrite them.
+     * Rewrites a header containing absolute paths.
+     * Will first locate any links in the header and then rewrite them.
      * 
      * @param value The header value we are to rewrite
      * @return A rewritten header
@@ -101,7 +116,33 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
             matcher.appendReplacement(header, "$1" + server + link);
         }
         matcher.appendTail(header);
+        return header.toString();
+    }
+    
+    /**
+     * Rewrites the header Set-Cookie so that path and domain 
+     * is correct.
+     * 
+     * @param value The original header
+     * @return The rewritten header
+     */
+    private String rewriteSetCookie(String value) {
+        StringBuffer header = new StringBuffer();
+
+        Matcher matcher = pathPattern.matcher(value);
+        while (matcher.find()) {
+            String path = rule.revert(matcher.group(2));
+            matcher.appendReplacement(header, "$1" + path);
+        }
+        matcher.appendTail(header);
+
+        matcher = domainPattern.matcher(header.toString());
+        header.delete(0, header.length());
         
+        while (matcher.find()) {
+            matcher.appendReplacement(header, "");
+        }
+        matcher.appendTail(header);
         return header.toString();
     }
     
