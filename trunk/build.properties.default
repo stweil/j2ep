@@ -12,7 +12,7 @@ manager.password= password for user above
 external.libs=${catalina.home}/webapps/j2ep/lib/
 
 #Here are the libs downloaded from
-download.lib=http://j2ep.sourceforge.net/lib
+download.libs=http://j2ep.sourceforge.net/lib
 
 #server
 server.url = http://localhost:8080
