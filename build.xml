@@ -387,18 +387,18 @@
 	-->
 	<target name="download">
 		<mkdir dir="${external.libs}" />
-		<get src="http://j2ep.sourceforge.net/lib/cactus-ant-1.7.jar" dest="${external.libs}/cactus-ant-1.7.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/commons-beanutils.jar" dest="${external.libs}/commons-beanutils.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/commons-codec-1.3.jar" dest="${external.libs}/commons-codec-1.3.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/commons-digester-1.7.jar" dest="${external.libs}/commons-digester-1.7.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/commons-httpclient-3.0-rc3.jar" dest="${external.libs}/commons-httpclient-3.0-rc3.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/commons-logging-1.0.4.jar" dest="${external.libs}/commons-logging-1.0.4.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/aspectjrt-1.2.1.jar" dest="${external.libs}/aspectjrt-1.2.1.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/cactus-1.7.jar" dest="${external.libs}/cactus-1.7.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/xercesImpl.jar" dest="${external.libs}/xercesImpl.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/junit.jar" dest="${external.libs}/junit.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/catalina-ant.jar" dest="${external.libs}/catalina-ant.jar" verbose="true"/>
-		<get src="http://j2ep.sourceforge.net/lib/servlet-api.jar" dest="${external.libs}/servlet-api.jar" verbose="true"/>
+		<get src="${download.lib}/cactus-ant-1.7.jar" dest="${external.libs}/cactus-ant-1.7.jar"/>
+		<get src="${download.lib}/commons-beanutils.jar" dest="${external.libs}/commons-beanutils.jar"/>
+		<get src="${download.lib}/commons-codec-1.3.jar" dest="${external.libs}/commons-codec-1.3.jar"/>
+		<get src="${download.lib}/commons-digester-1.7.jar" dest="${external.libs}/commons-digester-1.7.jar"/>
+		<get src="${download.lib}/lib/commons-httpclient-3.0-rc3.jar" dest="${external.libs}/commons-httpclient-3.0-rc3.jar"/>
+		<get src="${download.lib}/lib/commons-logging-1.0.4.jar" dest="${external.libs}/commons-logging-1.0.4.jar"/>
+		<get src="${download.lib}/lib/aspectjrt-1.2.1.jar" dest="${external.libs}/aspectjrt-1.2.1.jar"/>
+		<get src="${download.lib}/lib/cactus-1.7.jar" dest="${external.libs}/cactus-1.7.jar"/>
+		<get src="${download.lib}/lib/xercesImpl.jar" dest="${external.libs}/xercesImpl.jar"/>
+		<get src="${download.lib}/lib/junit.jar" dest="${external.libs}/junit.jar"/>
+		<get src="${download.lib}/lib/catalina-ant.jar" dest="${external.libs}/catalina-ant.jar"/>
+		<get src="${download.lib}/lib/servlet-api.jar" dest="${external.libs}/servlet-api.jar"/>
 	</target>
 
 
