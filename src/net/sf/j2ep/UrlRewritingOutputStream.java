@@ -99,10 +99,8 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
      * doing any link rewriting.
      * @throws IOException Is thrown when there is a problem with the streams
      */
-    public void process() throws IOException {
-        originalStream.write(stream.toByteArray());
-        stream.close();
-        originalStream.close();
+    public void process() throws IOException {   
+        stream.writeTo(originalStream);
     }
     
     
