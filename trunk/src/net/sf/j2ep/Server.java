@@ -16,13 +16,6 @@
 
 package net.sf.j2ep;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-
-import net.sf.j2ep.factories.MethodNotAllowedException;
-
-import org.apache.commons.httpclient.HttpClient;
 
 /**
  * A representation of the server. Its main use it to be able to open
@@ -35,15 +28,8 @@ import org.apache.commons.httpclient.HttpClient;
 public interface Server {
 
     /**
-     * Will open a connection to the server using the specified URI.
-     * 
-     * @param request The request to use, is needed for acquiring the connection type (GET, POST, etc.) and also to get any InputStream
-     * @param uri The URI for this connection
-     * @param httpClient A connection will be made using this HttpClient
-     * @return A ResponseHandler for the current method
-     * @throws IOException Throws an exception when there is a problem with the connection to the server or with input, output, etc.
-     * @throws MethodNotAllowedException Thrown when a method being sent to the server isn't able to be handled
+     * Returns the host name and port for this server.
+     * @return Host name and port
      */
-    ResponseHandler connect(HttpServletRequest request, String uri, HttpClient httpClient) throws IOException, MethodNotAllowedException;
-    
+    String getName();
 }

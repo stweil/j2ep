@@ -16,7 +16,6 @@
 
 package net.sf.j2ep;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
@@ -25,10 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.j2ep.factories.MethodNotAllowedException;
+import net.sf.j2ep.factories.RequestHandlerFactory;
+import net.sf.j2ep.factories.ResponseHandlerFactory;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.logging.Log;
@@ -56,11 +55,6 @@ public class ProxyFilter implements Filter {
     private static Log log;
     
     /** 
-     * The rule chain, will be traversed to find a matching rule.
-     */
-    private RuleChain ruleChain;
-    
-    /** 
      * The httpclient used to make all connections with, supplied by commons-httpclient.
      */
     private HttpClient httpClient;
@@ -78,28 +72,27 @@ public class ProxyFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        Rule rule = ruleChain.evaluate(httpRequest);
-        if (rule != null) {
-            Server server = rule.getServer();
-            String uri = rule.process(getURI(httpRequest));
-
-            ResponseHandler responseHandler = null;
+        ResponseHandler responseHandler = null;  
+        
+        String url = (String) httpRequest.getAttribute("proxyURL");
+        if (url == null) {
+            log.error("Didn't receive incoming URL specifying proxy location");
+            httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        } else {
             
             try {
-                responseHandler = server.connect(httpRequest, uri, httpClient);
+                responseHandler = executeRequest(httpRequest, url);
             } catch (HttpException e) {
                 log.error("Problem while connection to server", e);
-                httpResponse
-                        .setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
             } catch (UnknownHostException e) {
                 log.error("Could not connection to the host specified", e);
                 httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
                 return;
             } catch (IOException e) {
-                log.error("Problem probably with the input being send, either in a Header or as a Stream", e);
-                httpResponse
-                        .setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                log.error( "Problem probably with the input being send, either with a Header or the Stream", e);
+                httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
             } catch (MethodNotAllowedException e) {
                 log.error("Incoming method could not be handled", e);
@@ -114,19 +107,32 @@ public class ProxyFilter implements Filter {
 
     }
 
-    /**
-     * Will build a URI but including the Query String. That means that it really
-     * isn't a real URI but quite near.
-     * 
-     * @param httpRequest Request to get the URI and query string from
-     * @return The URI for this request including the query string
-     */
-    private String getURI(HttpServletRequest httpRequest) {
-        String uri = httpRequest.getServletPath();
-        if (httpRequest.getQueryString() != null) {
-            uri += "?" + httpRequest.getQueryString();
+    private ResponseHandler executeRequest(HttpServletRequest httpRequest, String url) throws MethodNotAllowedException, IOException, HttpException {
+        ResponseHandler responseHandler;
+        RequestHandler requestHandler = RequestHandlerFactory.createRequestMethod(httpRequest.getMethod());
+
+        HttpMethod method = requestHandler.process(httpRequest, url);
+        method.setFollowRedirects(false);
+
+        /*
+         * Why does method.validate() return true when the method has been aborted?
+         * I mean, if validate returns true the API says that means that the method
+         * is ready to be executed. TODO I don't like doing type casting here, see
+         * above.
+         */
+        if (!((HttpMethodBase) method).isAborted()) {
+            httpClient.executeMethod(method);
+
+            if (method.getStatusCode() == 405) {
+                Header allow = method.getResponseHeader("allow");
+                String value = allow.getValue();
+                throw new MethodNotAllowedException("Status code 405 from server",
+                        ResponseHandlerFactory.processAllowHeader(value));
+            }
         }
-        return uri;
+
+        responseHandler = ResponseHandlerFactory.createResponseHandler(method);
+        return responseHandler;
     }
 
     /**
@@ -141,19 +147,6 @@ public class ProxyFilter implements Filter {
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
         httpClient.getParams().setBooleanParameter(HttpClientParams.USE_EXPECT_CONTINUE, false);
         httpClient.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-        
-        String data = filterConfig.getInitParameter("dataUrl");
-        if (data == null) {
-            throw new ServletException("dataUrl is required.");
-        }
-        try {
-            File dataFile = new File(filterConfig.getServletContext()
-                    .getRealPath(data));
-            ConfigParser parser = new ConfigParser(dataFile);
-            ruleChain = parser.getRuleChain();
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
     }
 
     /**
@@ -164,7 +157,6 @@ public class ProxyFilter implements Filter {
      */
     public void destroy() {
         log = null;
-        ruleChain = null;
         httpClient = null;
     }
 }

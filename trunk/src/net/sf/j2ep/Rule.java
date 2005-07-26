@@ -68,11 +68,11 @@ public interface Rule {
     
     /**
      * Returns the server this rule is mapped to.
-     * Use this to get the server and issue a connection.
+     * The returned value is both the host name and port.
      * 
      * @return The server
      */
-    Server getServer();
+    String getServer();
     
     /**
      * Used to specify which server this rule is linked to.
