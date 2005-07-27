@@ -29,9 +29,14 @@ import net.sf.j2ep.Server;
 public class BaseServer implements Server {
 
     /**
-     * The host to connect to.
+     * The full path to connect to.
      */
     private String name;
+    
+    /**
+     * The host and port for this server
+     */
+    private String hostAndPort;
 
     /**
      * @see net.sf.j2ep.Server#getName()
@@ -39,19 +44,34 @@ public class BaseServer implements Server {
     public String getName() {
         return name;
     }
+    
+    /**
+     * @see net.sf.j2ep.Server#getHostAndPort()
+     */
+    public String getHostAndPort() {
+        return hostAndPort;
+    }
 
     /**
      * Sets the host name to use for connections.
      * 
-     * @param hostName The host name to set
+     * @param name The host name to set
      */
-    public void setName(String hostName) {
-        if (hostName == null) {
+    public void setName(String name) {
+        if (name == null) {
             throw new IllegalArgumentException(
                     "The host name string cannot be null.");
         } else {
-            this.name = hostName;
+            this.name = name;
+            int firstSlash = name.indexOf("/");
+            if (firstSlash != -1) {
+                hostAndPort = name.substring(0, firstSlash);
+            } else {
+                hostAndPort = name;
+            }
         }
     }
+
+
 
 }

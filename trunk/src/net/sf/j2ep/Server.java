@@ -31,5 +31,12 @@ public interface Server {
      * Returns the host name and port for this server.
      * @return Host name and port
      */
+    String getHostAndPort();
+    
+    /**
+     * Returns the full URL to this server including
+     * directories on the server
+     * @return The full server path
+     */
     String getName();
 }

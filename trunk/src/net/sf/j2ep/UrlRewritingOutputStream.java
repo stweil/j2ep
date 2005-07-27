@@ -36,17 +36,31 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
     private ByteArrayOutputStream stream;
     
     /** 
+     * The server, needed when we rewrite absolute links.
+     */
+    private String server;
+    
+    /** 
+     * The contextPath, needed when we rewrite links.
+     */
+    private String contextPath;
+    
+    /** 
      * Regex matching links in the HTML.
      */
-    private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=)([\"?\'?])(/[^\"\'\\s>]+)[\"?\'?\\s]", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=)([\"?\'?])(([^/]+://)([^/]+))?(/[^\"\\s\'>]+)[\"?\'?\\s]", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    //private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=)([\"?\'?])(/[^\"\'\\s>]+)[\"?\'?\\s]", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
 
     /**
      * Basic constructor.
      * 
      * @param originalStream The stream we are wrapping
      */
-    public UrlRewritingOutputStream(ServletOutputStream originalStream) {
+    public UrlRewritingOutputStream(ServletOutputStream originalStream, String server, String contextPath) {
         this.originalStream = originalStream;
+        this.server = server;
+        this.contextPath = contextPath;
+        
         stream = new ByteArrayOutputStream();
     }
 
@@ -80,14 +94,49 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
      * @throws IOException Is thrown when there is a problem with the streams
      */
     public void rewrite(Rule rule) throws IOException {
-        
+        /*
+         * Using regex can be quite harsh sometimes so here is how
+         * the regex trying to find links works
+         * 
+         * \\b(href=|src=|action=)([\"?\'?])
+         * This part is the identification of links, matching
+         * something like href=", href=' and href=
+         * 
+         * (([^/]+://)([^/]+))?
+         * This is to identify absolute paths. A link doesn't have
+         * to be absolute therefor there is a ?.
+         * 
+         * (/[^\"\\s\'>]+)
+         * This is the link, has to start with a / since relative
+         * links shouldn't be rewritten
+         * 
+         * [\"?\'?\\s]
+         * Ending ", ' or whitespace
+         * 
+         * $1 - link type, e.g. href=
+         * $2 - ", ' or whitespace
+         * $3 - The entire http://www.server.com if present
+         * $4 - e.g http:// or ftp:// if present
+         * $5 - The host name, e.g. www.server.com
+         * $6 - The link
+         */
         StringBuffer page = new StringBuffer();
         
         Matcher matcher = linkPattern.matcher(stream.toString());
         while (matcher.find()) {
-           String link = rule.revert(matcher.group(3));
-           matcher.appendReplacement(page, "$1$2" + link + "$2");
+
+           if (matcher.group(4) != null) {
+               String endServer = rule.getServerHostAndPort();
+               if (matcher.group(5).compareToIgnoreCase(endServer) == 0) {
+                   String link = rule.revert(matcher.group(6));
+                   matcher.appendReplacement(page, "$1$2$4" + server + contextPath + link + "$2"); 
+               }
+           } else {
+               String link = rule.revert(matcher.group(6));
+               matcher.appendReplacement(page, "$1$2" + contextPath + link + "$2"); 
+           }
         }
+        
         matcher.appendTail(page);
         originalStream.print(page.toString());
         stream.close();

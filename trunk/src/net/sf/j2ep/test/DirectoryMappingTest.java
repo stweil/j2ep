@@ -65,6 +65,22 @@ public class DirectoryMappingTest extends FilterTestCase {
     
     public void endBasicMapping(WebResponse theResponse) {
         assertEquals("The response code should be 200", 200, theResponse.getStatusCode());
-        assertEquals("The that we got the right page", "/GET/main.jsp", theResponse.getText());
+        assertEquals("Test that we got the right page", "/GET/main.jsp", theResponse.getText());
+    }
+    
+    public void beginRewrite(WebRequest theRequest) {
+        theRequest.setURL("localhost:8080", "/test", "/testDirectoryMapping/links.jsp", null, null);
+    }
+    
+    public void testRewrite() throws IOException, ServletException {
+        rewriteFilter.doFilter(request, response, mockFilterChain);
+    }
+    
+    public void endRewrite(WebResponse theResponse) {
+        assertEquals("The response code should be 200", 200, theResponse.getStatusCode());
+        assertTrue("Test absolute path", theResponse.getText().contains("<a href=\"http://localhost:8080/test/testDirectoryMapping/test1.jsp\">"));
+        assertTrue("Test / path", theResponse.getText().contains("<a href=\"/test/testDirectoryMapping/test2.jsp\">"));
+        assertTrue("Test relative path", theResponse.getText().contains("<a href=\"test3.jsp\">"));
+        assertTrue("Test absolute path not mapped", theResponse.getText().contains("<a href=\"http://localhost:80/test4.jsp\">"));
     }
 }

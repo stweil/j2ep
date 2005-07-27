@@ -31,6 +31,11 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     private String server;
     
     /** 
+     * The contextPath, needed when we rewrite links.
+     */
+    private String contextPath;
+    
+    /** 
      * Regex to find absolute links.
      */
     private static Pattern linkPattern = Pattern.compile("\\b([^/]+://)([^/]+)([\\w/]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
@@ -38,12 +43,8 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     /** 
      * Regex to find the path in Set-Cookie headers.
      */
-    private static Pattern pathPattern = Pattern.compile("\\b(path=)([^;\\s]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
-    
-    /** 
-     * Regex to find absolute domain in Set-Cookie headers.
-     */
-    private static Pattern domainPattern = Pattern.compile("\\b(domain=)([^;\\s]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    private static Pattern pathAndDomainPattern = Pattern.compile("\\b(path=|domain=)([^;\\s]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+
     
     /**
      * Basic constructor.
@@ -53,13 +54,14 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      * @param server String we are rewriting servers to
      * @throws IOException When there is a problem with the streams
      */
-    public UrlRewritingResponseWrapper(HttpServletResponse response, Rule rule, String server) throws IOException {
+    public UrlRewritingResponseWrapper(HttpServletResponse response, Rule rule, String server, String contextPath) throws IOException {
         super(response);
         this.response = response;
         this.rule = rule;
         this.server = server;
+        this.contextPath = contextPath;
         
-        outStream = new UrlRewritingOutputStream(response.getOutputStream());
+        outStream = new UrlRewritingOutputStream(response.getOutputStream(), server, contextPath);
     }
     
     /**
@@ -71,7 +73,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     public void addHeader(String name, String originalValue) {
         String value;
         if (name.toLowerCase().equals("location")) {
-            value = rewriteHeader(originalValue);
+            value = rewriteLocation(originalValue);
         } else if (name.toLowerCase().equals("set-cookie")) {
             value = rewriteSetCookie(originalValue);
         } else {
@@ -89,7 +91,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     public void setHeader(String name, String originalValue) {
         String value;
         if (name.toLowerCase().equals("location")) {
-            value = rewriteHeader(originalValue);
+            value = rewriteLocation(originalValue);
         } else if (name.toLowerCase().equals("set-cookie")) {
             value = rewriteSetCookie(originalValue);
         }
@@ -101,19 +103,19 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
 
     
     /**
-     * Rewrites a header containing absolute paths.
+     * Rewrites the location header.
      * Will first locate any links in the header and then rewrite them.
      * 
      * @param value The header value we are to rewrite
      * @return A rewritten header
      */
-    private String rewriteHeader(String value) {
+    private String rewriteLocation(String value) {
         StringBuffer header = new StringBuffer();
 
         Matcher matcher = linkPattern.matcher(value);
         while (matcher.find()) {
             String link = rule.revert(matcher.group(3));
-            matcher.appendReplacement(header, "$1" + server + link);
+            matcher.appendReplacement(header, "$1" + server + contextPath + link);
         }
         matcher.appendTail(header);
         return header.toString();
@@ -129,18 +131,15 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     private String rewriteSetCookie(String value) {
         StringBuffer header = new StringBuffer();
 
-        Matcher matcher = pathPattern.matcher(value);
+        Matcher matcher = pathAndDomainPattern.matcher(value);
         while (matcher.find()) {
-            String path = rule.revert(matcher.group(2));
-            matcher.appendReplacement(header, "$1" + path);
-        }
-        matcher.appendTail(header);
-
-        matcher = domainPattern.matcher(header.toString());
-        header.delete(0, header.length());
-        
-        while (matcher.find()) {
-            matcher.appendReplacement(header, "");
+            if (matcher.group(1).equals("path=")) {
+                String path = rule.revert(matcher.group(2));
+                matcher.appendReplacement(header, "$1" + path); 
+            } else {
+                matcher.appendReplacement(header, "");
+            }
+            
         }
         matcher.appendTail(header);
         return header.toString();
@@ -162,10 +161,22 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      */
     public void rewriteStream() throws IOException {
         String contentType = response.getContentType();
-        if (contentType != null && rule.isRewriting() && (contentType.contains("text") || contentType.contains("script"))) {
+        if (rule.isRewriting() && contentType != null && shouldRewrite(contentType)) {
             outStream.rewrite(rule);
         } else {
             outStream.process();
         }
+    }
+    
+    /**
+     * Checks the contentType to evaluate if we should do 
+     * link rewriting for this content.
+     * 
+     * @param contentType The Content-Type header
+     * @return true if we need to rewrite links, false otherwise
+     */
+    private boolean shouldRewrite(String contentType) {
+        String lowerCased = contentType.toLowerCase();
+        return (lowerCased.contains("html") || lowerCased.contains("css") || lowerCased.contains("javascript"));
     }
 }
