@@ -27,22 +27,26 @@ import net.sf.j2ep.Server;
  * @author Anders Nyman
  */
 public class BaseServer implements Server {
-
-    /**
-     * The full path to connect to.
-     */
-    private String name;
+    
+    public BaseServer() {
+        directory = "";
+    }
     
     /**
      * The host and port for this server
      */
     private String hostAndPort;
+    
+    /**
+     * The host and port for this server
+     */
+    private String directory;
 
     /**
-     * @see net.sf.j2ep.Server#getName()
+     * @see net.sf.j2ep.Server#getFullPath()
      */
-    public String getName() {
-        return name;
+    public String getFullPath() {
+        return hostAndPort + directory;
     }
     
     /**
@@ -51,26 +55,41 @@ public class BaseServer implements Server {
     public String getHostAndPort() {
         return hostAndPort;
     }
-
+    
     /**
-     * Sets the host name to use for connections.
-     * 
-     * @param name The host name to set
+     * @see net.sf.j2ep.Server#getDirectory()
      */
-    public void setName(String name) {
-        if (name == null) {
+    public String getDirectory() {
+        return directory;
+    }
+    
+    /**
+     * Sets the host and port we are mapping to.
+     * 
+     * @param hostAndPort Value to set
+     */
+    public void setHostAndPort(String hostAndPort) {
+        if (hostAndPort == null) {
             throw new IllegalArgumentException(
-                    "The host name string cannot be null.");
+                    "The hostAndPort string cannot be null.");
         } else {
-            this.name = name;
-            int firstSlash = name.indexOf("/");
-            if (firstSlash != -1) {
-                hostAndPort = name.substring(0, firstSlash);
-            } else {
-                hostAndPort = name;
-            }
+            this.hostAndPort = hostAndPort;
         }
     }
+    
+    /**
+     * Sets the directory we are mapping to.
+     * @param directory The directory
+     */
+    public void setDirectory(String directory) {
+        if (directory == null) {
+            directory = "";
+        } else {
+            this.directory = directory;
+        }
+    }
+
+    
 
 
 

@@ -23,6 +23,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,6 +38,7 @@ public class RewriteFilter implements Filter {
      * The rule chain, will be traversed to find a matching rule.
      */
     private RuleChain ruleChain;
+
 
     /**
      * Rewrites the outgoing stream to make sure URLs and headers
@@ -65,11 +67,12 @@ public class RewriteFilter implements Filter {
                 log.info("Could not find a rule for this request, will not do anything.");
                 filterChain.doFilter(request, response);
             } else {
-                String server = rule.getServer();
-                String uri = rule.process(getURI(httpRequest));
+                String server = rule.getServerFullPath();
+                String uri;
+                uri = rule.process(getURI(httpRequest));
                 
                 String url = request.getScheme() + "://" + server + uri;
-
+                //url = new URI(url, false).getEscapedURI();
                 httpRequest.setAttribute("proxyURL", url);
                 
                 //TODO make better way for this, some permanent check at init maybe?

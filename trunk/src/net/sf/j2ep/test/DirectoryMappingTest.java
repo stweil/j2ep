@@ -78,9 +78,10 @@ public class DirectoryMappingTest extends FilterTestCase {
     
     public void endRewrite(WebResponse theResponse) {
         assertEquals("The response code should be 200", 200, theResponse.getStatusCode());
-        assertTrue("Test absolute path", theResponse.getText().contains("<a href=\"http://localhost:8080/test/testDirectoryMapping/test1.jsp\">"));
+        assertTrue("Test absolute path", theResponse.getText().contains("<a href=\"http://localhost:8080/test/testDirectoryMapping/test.jsp\">"));
         assertTrue("Test / path", theResponse.getText().contains("<a href=\"/test/testDirectoryMapping/test2.jsp\">"));
-        assertTrue("Test relative path", theResponse.getText().contains("<a href=\"test3.jsp\">"));
-        assertTrue("Test absolute path not mapped", theResponse.getText().contains("<a href=\"http://localhost:80/test4.jsp\">"));
+        assertTrue("Test / path but not relative to servers mapping ", theResponse.getText().contains("<a href=\"/test3.jsp\">"));
+        assertTrue("Test relative path", theResponse.getText().contains("<a href=\"test4.jsp\">"));
+        assertTrue("Test absolute path not mapped", theResponse.getText().contains("<a href=\"http://localhost:8080/test-response/GETT/test5.jsp\">"));
     }
 }

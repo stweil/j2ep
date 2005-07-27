@@ -34,9 +34,19 @@ public interface Server {
     String getHostAndPort();
     
     /**
+     * Returns the directory being mapped for this server.
+     * The directory starts with a / but doesn't end with 
+     * a /. A mapping to the root results in
+     * directory being an empty string "".
+     * 
+     * @return Directory The directory
+     */
+    String getDirectory();
+    
+    /**
      * Returns the full URL to this server including
      * directories on the server
      * @return The full server path
      */
-    String getName();
+    String getFullPath();
 }
