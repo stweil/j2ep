@@ -116,7 +116,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
          * $1 - link type, e.g. href=
          * $2 - ", ' or whitespace
          * $3 - The entire http://www.server.com if present
-         * $4 - e.g http:// or ftp:// if present
+         * $4 - The protocol, if present e.g http:// or ftp:// 
          * $5 - The host name, e.g. www.server.com
          * $6 - The link
          */
@@ -124,17 +124,22 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
         
         Matcher matcher = linkPattern.matcher(stream.toString());
         while (matcher.find()) {
+            
+           String serverDir = rule.getServerDirectory();
+           String link = matcher.group(6);
 
-           if (matcher.group(4) != null) {
-               String endServer = rule.getServerHostAndPort();
-               if (matcher.group(5).compareToIgnoreCase(endServer) == 0) {
-                   String link = rule.revert(matcher.group(6));
-                   matcher.appendReplacement(page, "$1$2$4" + server + contextPath + link + "$2"); 
+           if ( serverDir.equals("") || link.startsWith(serverDir+"/") ) {
+               link = rule.revert( link.substring(serverDir.length()) );
+               if (matcher.group(4) != null) {
+                   String endServer = rule.getServerHostAndPort();
+                   if (matcher.group(5).compareToIgnoreCase(endServer) == 0 ) {
+                       matcher.appendReplacement(page, "$1$2$4" + server + contextPath + link + "$2"); 
+                   }
+               } else {
+                   matcher.appendReplacement(page, "$1$2" + contextPath + link + "$2"); 
                }
-           } else {
-               String link = rule.revert(matcher.group(6));
-               matcher.appendReplacement(page, "$1$2" + contextPath + link + "$2"); 
            }
+           
         }
         
         matcher.appendTail(page);

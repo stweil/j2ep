@@ -68,11 +68,18 @@ public interface Rule {
     
     /**
      * Returns the server this rule is mapped to.
-     * The returned value is both the host name and port b
+     * The returned value is both the host name and port.
      * 
      * @return The server
      */
     String getServerHostAndPort();
+    
+    /**
+     * Returns the directory on the server this rule is mapped to.
+     * 
+     * @return The server's directory
+     */
+    String getServerDirectory();
     
     /**
      * Returns the full mapping for this server including any
@@ -80,7 +87,7 @@ public interface Rule {
      * 
      * @return The server
      */
-    String getServer();
+    String getServerFullPath();
     
     /**
      * Used to specify which server this rule is linked to.

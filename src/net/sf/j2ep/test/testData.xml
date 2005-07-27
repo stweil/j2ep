@@ -3,18 +3,20 @@
 
 	<servers>
 		<server id="1" className="net.sf.j2ep.servers.BaseServer"
-			name="localhost:8080/test-response"
+			hostAndPort="localhost:8080"
+			directory="/test-response"
 		/>
 		
 		<!--
 			Here is a host that doesn't exist
 		-->
 		<server id="3" className="net.sf.j2ep.servers.BaseServer"
-			name="www.dfsdf.dkdks"
+			hostAndPort="www.dfsdf.dkdks"
 		/>
 		
 		<server id="4" className="net.sf.j2ep.servers.BaseServer"
-			name="localhost:8080/test-response/GET"
+			hostAndPort="localhost:8080"
+			directory="/test-response/GET"
 		/>
 		
 		<!-- 
@@ -23,7 +25,8 @@
 			rewritted to only include supported http methods.
 		-->
 		<server id="2" className="net.sf.j2ep.servers.BaseServer"
-			name="localhost:8080/webdav"
+			hostAndPort="localhost:8080"
+			directory="/webdav"
 		/>
 	</servers>
 
