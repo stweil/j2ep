@@ -62,14 +62,13 @@ public class RewriteFilter implements Filter {
             
             Rule rule = ruleChain.evaluate(httpRequest);
             if (rule == null) {
-                log.error("Could not find a rule for this request, will not do anything.");
-                return;
+                log.info("Could not find a rule for this request, will not do anything.");
+                filterChain.doFilter(request, response);
             } else {
                 String server = rule.getServer();
                 String uri = rule.process(getURI(httpRequest));
                 
-                String url = new StringBuffer(request.getScheme()).append("://")
-                .append(server).append(uri).toString();
+                String url = request.getScheme() + "://" + server + uri;
 
                 httpRequest.setAttribute("proxyURL", url);
                 
@@ -77,7 +76,7 @@ public class RewriteFilter implements Filter {
                 String currentServer = request.getServerName() + ":" + request.getServerPort();
                 UrlRewritingResponseWrapper wrappedResponse;
                 wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, rule, currentServer);
-
+                
                 filterChain.doFilter(httpRequest, wrappedResponse);
 
                 wrappedResponse.rewriteStream();
