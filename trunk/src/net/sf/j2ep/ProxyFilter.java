@@ -76,8 +76,8 @@ public class ProxyFilter implements Filter {
         
         String url = (String) httpRequest.getAttribute("proxyURL");
         if (url == null) {
-            log.error("Didn't receive incoming URL specifying proxy location");
-            httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.info("Didn't receive incoming URL specifying proxy location");
+            filterChain.doFilter(request, response);
         } else {
             
             try {
