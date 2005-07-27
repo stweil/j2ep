@@ -107,6 +107,17 @@ public class ProxyFilter implements Filter {
 
     }
 
+    /**
+     * Will create the method and execute it. After this the method
+     * is sent to a ResponseHandler that is returned.
+     * 
+     * @param httpRequest Request we are receiving from the client
+     * @param url The location we are proxying to
+     * @return A ResponseHandler that can be used to write the response
+     * @throws MethodNotAllowedException If the method specified by the request isn't handled
+     * @throws IOException When there is a problem with the streams
+     * @throws HttpException The httpclient can throw HttpExcetion when executing the method
+     */
     private ResponseHandler executeRequest(HttpServletRequest httpRequest, String url) throws MethodNotAllowedException, IOException, HttpException {
         ResponseHandler responseHandler;
         RequestHandler requestHandler = RequestHandlerFactory.createRequestMethod(httpRequest.getMethod());
