@@ -75,7 +75,7 @@ public class RewriteFilter implements Filter {
                 //TODO make better way for this, some permanent check at init maybe?
                 String currentServer = request.getServerName() + ":" + request.getServerPort();
                 UrlRewritingResponseWrapper wrappedResponse;
-                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, rule, currentServer);
+                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, rule, currentServer, httpRequest.getContextPath());
                 
                 filterChain.doFilter(httpRequest, wrappedResponse);
 

@@ -85,6 +85,14 @@ public abstract class BaseRule implements Rule {
     public String getServer() {
         return server.getName();
     }
+    
+
+    /**
+     * @see net.sf.j2ep.Rule#getServerHostAndPort()
+     */
+    public String getServerHostAndPort() {
+        return server.getHostAndPort();
+    }
 
     /**
      * @see net.sf.j2ep.Rule#setServer(net.sf.j2ep.Server)
