@@ -144,17 +144,14 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
         
         matcher.appendTail(page);
         originalStream.print(page.toString());
-        stream.close();
-        originalStream.close();
+        
     }
     
     /**
-     * Sends the output to the original response stream without
-     * doing any link rewriting.
-     * @throws IOException Is thrown when there is a problem with the streams
+     * @see java.io.Closeable#close()
      */
-    public void process() throws IOException {   
-        stream.writeTo(originalStream);
+    public void close() throws IOException {
+        stream.close();
     }
     
     

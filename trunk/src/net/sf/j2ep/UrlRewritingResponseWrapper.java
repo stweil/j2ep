@@ -19,11 +19,6 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     private UrlRewritingOutputStream outStream;
     
     /** 
-     * The response we are wrapping
-     */
-    private HttpServletResponse response;
-    
-    /** 
      * Rule used for this page
      */
     private Rule rule;
@@ -53,6 +48,11 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      */
     private static Log log;
     
+    /** 
+     * Marks if we are rewriting the stream or not.
+     */
+    private boolean isRewriting;
+    
     /**
      * Basic constructor.
      * 
@@ -63,10 +63,10 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      */
     public UrlRewritingResponseWrapper(HttpServletResponse response, Rule rule, String server, String contextPath) throws IOException {
         super(response);
-        this.response = response;
         this.rule = rule;
         this.server = server;
         this.contextPath = contextPath;
+        isRewriting = false;
         
         log = LogFactory.getLog("net.sf.j2ep.rewriter");        
         outStream = new UrlRewritingOutputStream(response.getOutputStream(), server, contextPath);
@@ -161,7 +161,13 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      * @see javax.servlet.ServletResponse#getOutputStream()
      */
     public ServletOutputStream getOutputStream() throws IOException {
-        return outStream;
+        String contentType = getContentType();
+        isRewriting = rule.isRewriting() && contentType != null && shouldRewrite(contentType);
+        if (isRewriting) {
+            return outStream;
+        } else {
+            return super.getOutputStream();
+        }
     }
     
     /**
@@ -169,13 +175,14 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      * 
      * @throws IOException Is thrown when there is a problem with the streams
      */
-    public void rewriteStream() throws IOException {
-        String contentType = response.getContentType();
-        if (rule.isRewriting() && contentType != null && shouldRewrite(contentType)) {
+    public void processStream() throws IOException {
+        if (isRewriting) {
             outStream.rewrite(rule);
-        } else {
-            outStream.process();
         }
+        super.getOutputStream().flush();
+        super.getOutputStream().close();
+        outStream.close();
+        
     }
     
     /**

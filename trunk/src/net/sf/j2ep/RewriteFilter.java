@@ -82,7 +82,7 @@ public class RewriteFilter implements Filter {
                 
                 filterChain.doFilter(httpRequest, wrappedResponse);
 
-                wrappedResponse.rewriteStream();
+                wrappedResponse.processStream();
             }
         }
     }
