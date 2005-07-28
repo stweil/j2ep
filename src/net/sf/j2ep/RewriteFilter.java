@@ -22,8 +22,9 @@ import java.io.IOException;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.URIException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -72,7 +73,8 @@ public class RewriteFilter implements Filter {
                 uri = rule.process(getURI(httpRequest));
                 
                 String url = request.getScheme() + "://" + server + uri;
-                //url = new URI(url, false).getEscapedURI();
+                System.out.println();
+                System.out.println(url);
                 httpRequest.setAttribute("proxyURL", url);
                 
                 //TODO make better way for this, some permanent check at init maybe?
@@ -96,6 +98,12 @@ public class RewriteFilter implements Filter {
      */
     private String getURI(HttpServletRequest httpRequest) {
         String uri = httpRequest.getServletPath();
+        try {
+            uri = (new URI(uri, false)).getEscapedURI();
+        } catch (URIException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         if (httpRequest.getQueryString() != null) {
             uri += "?" + httpRequest.getQueryString();
         }
@@ -133,5 +141,7 @@ public class RewriteFilter implements Filter {
         log = null;
         ruleChain = null;
     }
+    
+    
 
 }
