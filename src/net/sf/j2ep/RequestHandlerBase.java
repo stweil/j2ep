@@ -77,9 +77,20 @@ public abstract class RequestHandlerBase implements RequestHandler {
             via.append(originalVia).append(", ");
         }
         via.append(request.getProtocol()).append(" ").append(request.getServerName());
-        
+         
         method.setRequestHeader("via", via.toString());
+        method.setRequestHeader("x-forwarded-for", request.getRemoteAddr());
+        
+        StringBuffer url = request.getRequestURL();
+        int start = url.indexOf("://") + 3;
+        int end = url.indexOf("/", start);
+        
+        method.setRequestHeader("x-forwarded-host", url.substring(start, end));
+        method.setRequestHeader("x-forwarded-server", request.getServerName());
         method.setRequestHeader("accept-encoding", "gzip, deflate");
+        
+        System.out.println();
+        System.out.println(url.substring(start, end));
     }
     
     /**
