@@ -73,8 +73,6 @@ public class RewriteFilter implements Filter {
                 uri = rule.process(getURI(httpRequest));
                 
                 String url = request.getScheme() + "://" + server + uri;
-                System.out.println();
-                System.out.println(url);
                 httpRequest.setAttribute("proxyURL", url);
                 
                 //TODO make better way for this, some permanent check at init maybe?
@@ -116,7 +114,7 @@ public class RewriteFilter implements Filter {
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
     public void init(FilterConfig filterConfig) throws ServletException {
-        log = LogFactory.getLog("org.apache.webapp.reverseproxy");
+        log = LogFactory.getLog("net.sf.j2ep");
         
         String data = filterConfig.getInitParameter("dataUrl");
         if (data == null) {

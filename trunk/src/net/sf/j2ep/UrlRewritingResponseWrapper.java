@@ -8,6 +8,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     
     /** 
@@ -45,6 +48,10 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      */
     private static Pattern pathAndDomainPattern = Pattern.compile("\\b(path=|domain=)([^;\\s]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
 
+    /** 
+     * Logging element supplied by commons-logging.
+     */
+    private static Log log;
     
     /**
      * Basic constructor.
@@ -61,6 +68,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
         this.server = server;
         this.contextPath = contextPath;
         
+        log = LogFactory.getLog("net.sf.j2ep.rewriter");        
         outStream = new UrlRewritingOutputStream(response.getOutputStream(), server, contextPath);
     }
     
@@ -118,6 +126,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
             matcher.appendReplacement(header, "$1" + server + contextPath + link);
         }
         matcher.appendTail(header);
+        log.debug("Location header rewritten "+ value + " >> " + header.toString());
         return header.toString();
     }
     
@@ -141,6 +150,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
             }
             
         }
+        log.debug("Set-Cookie header rewritten "+ value + " >> " + header.toString());
         matcher.appendTail(header);
         return header.toString();
     }
