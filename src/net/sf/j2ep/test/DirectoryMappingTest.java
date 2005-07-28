@@ -79,9 +79,27 @@ public class DirectoryMappingTest extends FilterTestCase {
     public void endRewrite(WebResponse theResponse) {
         assertEquals("The response code should be 200", 200, theResponse.getStatusCode());
         assertTrue("Test absolute path", theResponse.getText().contains("<a href=\"http://localhost:8080/test/testDirectoryMapping/test.jsp\">"));
-        assertTrue("Test / path", theResponse.getText().contains("<a href=\"/test/testDirectoryMapping/test2.jsp\">"));
-        assertTrue("Test / path but not relative to servers mapping ", theResponse.getText().contains("<a href=\"/test3.jsp\">"));
-        assertTrue("Test relative path", theResponse.getText().contains("<a href=\"test4.jsp\">"));
-        assertTrue("Test absolute path not mapped", theResponse.getText().contains("<a href=\"http://localhost:8080/test-response/GETT/test5.jsp\">"));
+        assertTrue("Test no \" path", theResponse.getText().contains("<a href=/test-response/GET/test2.jsp >Test2</a>"));
+        assertTrue("Test ' path", theResponse.getText().contains("<a href=\'/test/testDirectoryMapping/test3.jsp\'>Test2</a>"));
+        assertTrue("Test path not in directory", theResponse.getText().contains("<a href=\"/test4.jsp\">"));
+        assertTrue("Test relative path", theResponse.getText().contains("<a href=\"test5.jsp\">"));
+        assertTrue("Test absolute path not mapped", theResponse.getText().contains("<a href=\"http://localhost:8080/test-response/GETT/test6.jsp\">"));
+        assertTrue("Test mixed containers", theResponse.getText().contains("src=\"/test/testDirectoryMapping/test11.jsp\""));
+    }
+    
+    public void beginCSS(WebRequest theRequest) {
+        theRequest.setURL("localhost:8080", "/test", "/testDirectoryMapping/links.css", null, null);
+    }
+    
+    public void testCSS() throws IOException, ServletException {
+        rewriteFilter.doFilter(request, response, mockFilterChain);
+    }
+    
+    public void endCSS(WebResponse theResponse) {
+        assertEquals("The response code should be 200", 200, theResponse.getStatusCode());
+        assertTrue("The content is css", theResponse.getConnection().getContentType().contains("css"));
+        assertTrue("Test absolute path", theResponse.getText().contains("url(\"/test/testDirectoryMapping/test7.jsp\")"));
+        assertTrue("Test only rewrite with container", theResponse.getText().contains("url(http://localhost:8080/test-response/GET/test8.jsp"));
+        assertTrue("Test only rewrite with container", theResponse.getText().contains("url(\"http://localhost:8080/test/testDirectoryMapping/test9.jsp\")"));
     }
 }
