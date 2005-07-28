@@ -88,9 +88,7 @@ public abstract class RequestHandlerBase implements RequestHandler {
         method.setRequestHeader("x-forwarded-host", url.substring(start, end));
         method.setRequestHeader("x-forwarded-server", request.getServerName());
         method.setRequestHeader("accept-encoding", "gzip, deflate");
-        
-        System.out.println();
-        System.out.println(url.substring(start, end));
+
     }
     
     /**
