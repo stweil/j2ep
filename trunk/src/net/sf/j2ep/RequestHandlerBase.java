@@ -78,7 +78,7 @@ public abstract class RequestHandlerBase implements RequestHandler {
         }
         via.append(request.getProtocol()).append(" ").append(request.getServerName());
         
-        //method.setRequestHeader("via", via.toString());
+        method.setRequestHeader("via", via.toString());
         method.setRequestHeader("accept-encoding", "gzip, deflate");
     }
     
