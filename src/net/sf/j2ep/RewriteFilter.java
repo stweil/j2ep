@@ -22,8 +22,6 @@ import java.io.IOException;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.URIException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,13 +93,8 @@ public class RewriteFilter implements Filter {
      * @return The URI for this request including the query string
      */
     private String getURI(HttpServletRequest httpRequest) {
-        String uri = httpRequest.getServletPath();
-        try {
-            uri = (new URI(uri, false)).getEscapedURI();
-        } catch (URIException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        String contextPath = httpRequest.getContextPath();
+        String uri = httpRequest.getRequestURI().substring(contextPath.length());
         if (httpRequest.getQueryString() != null) {
             uri += "?" + httpRequest.getQueryString();
         }
