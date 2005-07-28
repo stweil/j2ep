@@ -17,6 +17,8 @@
 package net.sf.j2ep;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +27,7 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A basic implementation of the RequestHandler.
@@ -79,14 +82,13 @@ public abstract class RequestHandlerBase implements RequestHandler {
         via.append(request.getProtocol()).append(" ").append(request.getServerName());
          
         method.setRequestHeader("via", via.toString());
-        method.setRequestHeader("x-forwarded-for", request.getRemoteAddr());
-        
-        StringBuffer url = request.getRequestURL();
-        int start = url.indexOf("://") + 3;
-        int end = url.indexOf("/", start);
-        
-        method.setRequestHeader("x-forwarded-host", url.substring(start, end));
-        method.setRequestHeader("x-forwarded-server", request.getServerName());
+        method.setRequestHeader("x-forwarded-for", request.getRemoteAddr());     
+        method.setRequestHeader("x-forwarded-host", request.getServerName());
+        try {
+            method.setRequestHeader("x-forwarded-server", InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            LogFactory.getLog(RequestHandlerBase.class).error("Couldn't write the x-forwarded-server header", e);
+        }
         method.setRequestHeader("accept-encoding", "gzip, deflate");
 
     }
