@@ -96,9 +96,11 @@ public class CompositeRule extends BaseRule {
      * @see net.sf.j2ep.Rule#revert(java.lang.String)
      */
     public String revert(String uri) {
+        System.out.println();
         String returnString = uri;
-        ListIterator<Rule> itr = rules.listIterator();
+        ListIterator<Rule> itr = rules.listIterator(rules.indexOf(rules.getLast()));
         while (itr.hasPrevious()) {
+            System.out.println(returnString);
             Rule rule = itr.previous();
             returnString = rule.revert(returnString);
         }
@@ -125,13 +127,6 @@ public class CompositeRule extends BaseRule {
         buffer.append("]");
 
         return buffer.toString();
-    }
-    
-    /**
-     * @see net.sf.j2ep.Rule#isRewriting()
-     */
-    public boolean isRewriting() {
-        return true;
     }
 
 }
