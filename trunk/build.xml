@@ -223,6 +223,7 @@
 
             <tarfileset dir="${basedir}" >
                 <include name="build.xml" />
+            	<include name="build.properties.default" />
             </tarfileset>
         </tar>
         <bzip2 src="${dist.home}/src.tar" destfile="${dist.home}/${app.name}-${app.version}-src.tar.bz2"/>
@@ -246,6 +247,7 @@
 
             <zipfileset dir="${basedir}">
                 <include name="build.xml" />
+            	<include name="build.properties.default" />
             </zipfileset>
         </zip>
 
