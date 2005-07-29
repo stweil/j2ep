@@ -18,6 +18,8 @@ package net.sf.j2ep;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +48,12 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
     private String contextPath;
     
     /** 
+     * A collection of the servers.
+     */
+    private Collection<Server> serverCollection;
+    
+    
+    /** 
      * Regex matching links in the HTML.
      */
     private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=|url\\()([\"\'])(([^/]+://)([^/]+))?(/[^\"\\s\'>]+)[\"\'\\s]", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
@@ -56,10 +64,11 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
      * 
      * @param originalStream The stream we are wrapping
      */
-    public UrlRewritingOutputStream(ServletOutputStream originalStream, String ownHostName, String contextPath) {
+    public UrlRewritingOutputStream(ServletOutputStream originalStream, String ownHostName, String contextPath, Collection<Server> serverCollection) {
         this.originalStream = originalStream;
         this.ownHostName = ownHostName;
         this.contextPath = contextPath;
+        this.serverCollection = serverCollection;
         
         stream = new ByteArrayOutputStream();
     }
@@ -125,29 +134,53 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
         Matcher matcher = linkPattern.matcher(stream.toString());
         while (matcher.find()) {
             
-           String serverDir = rule.getServer().getDirectory();
            String link = matcher.group(6).replace("$", "\\$");
-
-           if ( serverDir.equals("") || link.startsWith(serverDir+"/") ) {
-               link = rule.revert( link.substring(serverDir.length()) );
-               if (matcher.group(4) != null) {
-                   String endServer = rule.getServer().getHostAndPort();
-                    if (matcher.group(5).compareToIgnoreCase(endServer) == 0) {
-                        matcher.appendReplacement(page, "$1$2$4" + ownHostName
-                                + contextPath + link + "$2");
-                    }
-                } else {
-                    matcher.appendReplacement(page, "$1$2" + contextPath + link
-                            + "$2");
-
-                }
-            }
-           
+            
+           if (matcher.group(4) != null) {
+               String location = matcher.group(5) + matcher.group(6);
+               Server matchingServer = getServerMapped(location);
+               
+               if (matchingServer != null) {
+                   link = link.substring(matchingServer.getDirectory().length()); 
+                   link = matchingServer.getRule().revert(link);
+                   matcher.appendReplacement(page, "$1$2$4" + ownHostName
+                           + contextPath + link + "$2");
+               }
+           } else {
+               String serverDir = rule.getServer().getDirectory();
+               if ( serverDir.equals("") || link.startsWith(serverDir+"/") ) {
+                   link = rule.revert( link.substring(serverDir.length()) );
+                   matcher.appendReplacement(page, "$1$2" + contextPath + link
+                       + "$2");
+               }
+           }
         }
         
         matcher.appendTail(page);
         originalStream.print(page.toString());
         
+    }
+
+    /**
+     * Finds a server with the fullPath specified by the 
+     * location sent in.
+     * 
+     * @param location The location we want a server for.
+     * @return The matching server, if no server is found null is returned
+     */
+    private Server getServerMapped(String location) {
+        Iterator<Server> itr = serverCollection.iterator();
+        Server match = null;
+
+        while (itr.hasNext() && match == null) {
+            Server next = itr.next();
+            String fullPath = next.getFullPath() + "/";
+            if (location.startsWith(fullPath)) {
+                match = next;
+            }
+        }
+
+        return match;
     }
     
     /**

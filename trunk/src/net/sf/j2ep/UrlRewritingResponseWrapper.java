@@ -17,6 +17,7 @@
 package net.sf.j2ep;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,7 +78,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      * @param ownHostName String we are rewriting servers to
      * @throws IOException When there is a problem with the streams
      */
-    public UrlRewritingResponseWrapper(HttpServletResponse response, Rule rule, String ownHostName, String contextPath) throws IOException {
+    public UrlRewritingResponseWrapper(HttpServletResponse response, Rule rule, String ownHostName, String contextPath, Collection serverCollection) throws IOException {
         super(response);
         this.rule = rule;
         this.ownHostName = ownHostName;
@@ -85,7 +86,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
         isRewriting = false;
         
         log = LogFactory.getLog("net.sf.j2ep.rewriter");        
-        outStream = new UrlRewritingOutputStream(response.getOutputStream(), ownHostName, contextPath);
+        outStream = new UrlRewritingOutputStream(response.getOutputStream(), ownHostName, contextPath, serverCollection);
     }
     
     /**

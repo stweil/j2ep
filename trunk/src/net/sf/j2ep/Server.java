@@ -49,4 +49,20 @@ public interface Server {
      * @return The full server path
      */
     String getFullPath();
+    
+    /**
+     * Sets the rule that is mapped for this server. Will
+     * be used when we rewrite links to know how a absolute 
+     * path should be rewritten.
+     * 
+     * @param rule The rule
+     */
+    void setRule(Rule rule);
+    
+    /**
+     * Returns the mapped rule so we can rewrite links.
+     * 
+     * @return The rule we are mapped to
+     */
+    Rule getRule();
 }

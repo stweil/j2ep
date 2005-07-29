@@ -18,7 +18,7 @@ package net.sf.j2ep;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.Collection;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -40,9 +40,9 @@ public class RewriteFilter implements Filter {
     private RuleChain ruleChain;
     
     /** 
-     * A map of servers, used when we are rewriting absolute links.
+     * A collection of servers, used when we are rewriting absolute links.
      */
-    private Map<String, Server> serverMap;
+    private Collection<Server> serverCollection;
 
 
     /**
@@ -81,7 +81,7 @@ public class RewriteFilter implements Filter {
                 //TODO make better way for this, some permanent check at init maybe?
                 String ownHostName = request.getServerName() + ":" + request.getServerPort();
                 UrlRewritingResponseWrapper wrappedResponse;
-                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, rule, ownHostName, httpRequest.getContextPath());
+                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, rule, ownHostName, httpRequest.getContextPath(), serverCollection);
                 
                 filterChain.doFilter(httpRequest, wrappedResponse);
 
@@ -123,7 +123,8 @@ public class RewriteFilter implements Filter {
                     .getRealPath(data));
             ConfigParser parser = new ConfigParser(dataFile);
             ruleChain = parser.getRuleChain();
-            serverMap = parser.getServerLocationMap();
+            serverCollection = parser.getServerCollection();
+            
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -137,7 +138,7 @@ public class RewriteFilter implements Filter {
     public void destroy() {
         log = null;
         ruleChain = null;
-        serverMap = null;
+        serverCollection = null;
     }
     
     

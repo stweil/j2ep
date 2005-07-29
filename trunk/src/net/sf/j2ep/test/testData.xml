@@ -19,6 +19,11 @@
 			directory="/test-response/GET"
 		/>
 		
+		<server id="5" className="net.sf.j2ep.servers.BaseServer"
+			hostAndPort="www.test.com"
+			directory="/folder"
+		/>
+		
 		<!-- 
 			Here is a server that has to support some special methods
 			like PROPFIND. It is used to test that a Allow will be
@@ -45,6 +50,11 @@
   		<rule className="net.sf.j2ep.rules.DirectoryRule"
   			directory="/testDirectoryMapping"
   			serverId="4"
+  		/>
+  		
+  		<rule className="net.sf.j2ep.rules.DirectoryRule"
+  			directory="/testRewriteAbsoluteOther"
+  			serverId="5"
   		/>
   		
   		<rule className="net.sf.j2ep.rules.AcceptEverythingRule"

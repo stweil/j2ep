@@ -16,6 +16,7 @@
 
 package net.sf.j2ep.servers;
 
+import net.sf.j2ep.Rule;
 import net.sf.j2ep.Server;
 
 /**
@@ -27,6 +28,11 @@ import net.sf.j2ep.Server;
  * @author Anders Nyman
  */
 public class BaseServer implements Server {
+    
+    /** 
+     * The rule we are mapped to.
+     */
+    private Rule rule;
     
     public BaseServer() {
         directory = "";
@@ -88,6 +94,26 @@ public class BaseServer implements Server {
             this.directory = directory;
         }
     }
+
+    /**
+     * @see net.sf.j2ep.Server#setRule(net.sf.j2ep.Rule)
+     */
+    public void setRule(Rule rule) {
+        if (rule == null) {
+            throw new IllegalArgumentException("The rule cannot be null.");
+        } else {
+            this.rule = rule;
+        }
+    }
+
+    /**
+     * @see net.sf.j2ep.Server#getRule()
+     */
+    public Rule getRule() {
+        return rule;
+    }
+    
+    
 
     
 
