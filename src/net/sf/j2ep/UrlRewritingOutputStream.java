@@ -56,7 +56,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
     /** 
      * Regex matching links in the HTML.
      */
-    private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=|url\\()([\"\'])(([^/]+://)([^/]+))?(/[^\"\\s\'>]+)[\"\'\\s]", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=|url\\()([\"\'])(([^/]+://)([^/<>]+))?(/[^\"\'>]*)[\"\']", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
     //private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=)([\"?\'?])(/[^\"\'\\s>]+)[\"?\'?\\s]", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
 
     /**
@@ -111,11 +111,11 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
          * This part is the identification of links, matching
          * something like href=", href=' and href=
          * 
-         * (([^/]+://)([^/]+))?
+         * (([^/]+://)([^/<>]+))?
          * This is to identify absolute paths. A link doesn't have
          * to be absolute therefor there is a ?.
          * 
-         * (/[^\"\\s\'>]+)
+         * (/[^\"\'>]*)
          * This is the link, has to start with a / since relative
          * links shouldn't be rewritten
          * 
