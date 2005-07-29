@@ -126,19 +126,22 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
         while (matcher.find()) {
             
            String serverDir = rule.getServerDirectory();
-           String link = matcher.group(6);
+           String link = matcher.group(6).replace("$", "\\$");
 
            if ( serverDir.equals("") || link.startsWith(serverDir+"/") ) {
                link = rule.revert( link.substring(serverDir.length()) );
                if (matcher.group(4) != null) {
                    String endServer = rule.getServerHostAndPort();
-                   if (matcher.group(5).compareToIgnoreCase(endServer) == 0 ) {
-                       matcher.appendReplacement(page, "$1$2$4" + server + contextPath + link + "$2"); 
-                   }
-               } else {
-                   matcher.appendReplacement(page, "$1$2" + contextPath + link + "$2"); 
-               }
-           }
+                    if (matcher.group(5).compareToIgnoreCase(endServer) == 0) {
+                        matcher.appendReplacement(page, "$1$2$4" + server
+                                + contextPath + link + "$2");
+                    }
+                } else {
+                    matcher.appendReplacement(page, "$1$2" + contextPath + link
+                            + "$2");
+
+                }
+            }
            
         }
         
