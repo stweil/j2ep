@@ -5,6 +5,7 @@
 		<server id="1" className="net.sf.j2ep.servers.BaseServer"
 			hostAndPort="localhost:8080"
 			directory="/test-response"
+			isRewriting="true"
 		/>
 		
 		<!--
@@ -12,16 +13,19 @@
 		-->
 		<server id="3" className="net.sf.j2ep.servers.BaseServer"
 			hostAndPort="www.dfsdf.dkdks"
+			isRewriting="true"
 		/>
 		
 		<server id="4" className="net.sf.j2ep.servers.BaseServer"
 			hostAndPort="localhost:8080"
 			directory="/test-response/GET"
+			isRewriting="true"
 		/>
 		
 		<server id="5" className="net.sf.j2ep.servers.BaseServer"
 			hostAndPort="www.test.com"
 			directory="/folder"
+			isRewriting="true"
 		/>
 		
 		<!-- 
@@ -32,6 +36,7 @@
 		<server id="2" className="net.sf.j2ep.servers.BaseServer"
 			hostAndPort="localhost:8080"
 			directory="/webdav"
+			isRewriting="true"
 		/>
 	</servers>
 

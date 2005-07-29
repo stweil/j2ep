@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.apache.commons.digester.CallMethodRule;
 import org.apache.commons.digester.Digester;
@@ -70,7 +71,7 @@ public class ConfigParser {
         try {
             ruleChain = createRuleChain(data);
             serverIdMap = createServerIdMap(data);
-            serverCollection = serverIdMap.values();
+            serverCollection = createServerCollection(serverIdMap);
             mapServersToRules(ruleChain, serverIdMap);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -147,6 +148,24 @@ public class ConfigParser {
         
         // Construct server
         return (HashMap<String, Server>) digester.parse(data);
+    }
+    
+    /**
+     * Creates a collection with all the servers that want to 
+     * do rewriting of absolute links.
+     * 
+     * @param map A map of all the servers
+     * @return The collection with the rewriting servers
+     */
+    private Collection<Server> createServerCollection(HashMap<String, Server> map) {
+        Collection<Server> col = new LinkedList<Server>();
+        for (Server server : map.values()) {
+            if (server.isRewriting()) {
+                col.add(server);
+            }
+        }
+        
+        return col;
     }
     
     /**

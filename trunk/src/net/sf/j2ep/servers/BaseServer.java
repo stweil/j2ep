@@ -34,8 +34,15 @@ public class BaseServer implements Server {
      */
     private Rule rule;
     
+    /** 
+     * Marks if this rule server will do any
+     * rewriting of links.
+     */
+    private boolean isRewriting;
+    
     public BaseServer() {
         directory = "";
+        isRewriting = false;
     }
     
     /**
@@ -113,10 +120,23 @@ public class BaseServer implements Server {
         return rule;
     }
     
-    
+    /**
+     * Set if this server wants absolute links mapped
+     * for this server to be rewritten.
+     * 
+     * @param rewrite Should be true if we want to do rewriting
+     */
+    public void setIsRewriting(String rewrite) {
+        if (rewrite != null && rewrite.equals("true")) {
+            isRewriting = true;
+        }
+    }
 
-    
-
-
+    /**
+     * @see net.sf.j2ep.Server#isRewriting()
+     */
+    public boolean isRewriting() {
+        return isRewriting;
+    }
 
 }

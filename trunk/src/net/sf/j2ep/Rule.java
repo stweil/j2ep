@@ -87,14 +87,5 @@ public interface Rule {
      * @return The server id
      */
     String getServerId();
-    
-    /**
-     * Marks if this rule will rewrite URLs and links. 
-     * If the rule doesn't need to rewrite there is no need to do
-     * extra parsing of pages.
-     * 
-     * @return true if the rule will rewrite, false otherwise
-     */
-    boolean isRewriting();
 
 }
