@@ -17,6 +17,7 @@
 package net.sf.j2ep;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -48,9 +49,9 @@ public class ConfigParser {
     private HashMap<String, Server> serverIdMap;
     
     /** 
-     * The servers mapped by their host name and directory.
+     * A collection of the servers.
      */
-    private HashMap<String, Server> serverLocationMap;
+    private Collection<Server> serverCollection;
     
     /** 
      * A logging instance supplied by commons-logging.
@@ -69,7 +70,7 @@ public class ConfigParser {
         try {
             ruleChain = createRuleChain(data);
             serverIdMap = createServerIdMap(data);
-            serverLocationMap = createServerLocationMap(serverIdMap);
+            serverCollection = serverIdMap.values();
             mapServersToRules(ruleChain, serverIdMap);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -90,8 +91,8 @@ public class ConfigParser {
      * 
      * @return The servers
      */
-    public HashMap<String, Server> getServerLocationMap() {
-        return serverLocationMap;
+    public Collection<Server> getServerCollection() {
+        return serverCollection;
     }
 
     /**
@@ -149,25 +150,6 @@ public class ConfigParser {
     }
     
     /**
-     * Creates a map of the server based on their host name and directory.
-     * The creation is done by traversing a already created map 
-     * containing the servers mapped on their id.
-     *
-     * @param idMap The map we are creating this map from
-     * @return A hash map containing all the servers
-     */
-    private HashMap<String, Server> createServerLocationMap(HashMap<String, Server> idMap) {
-        HashMap<String, Server> map = new HashMap<String, Server>();
-        
-        for (Server server : idMap.values()) {
-            String location = server.getHostAndPort() + server.getDirectory();
-            map.put(location, server);
-        }
-        
-        return map;
-    }
-    
-    /**
      * Maps the servers to the rules using the rules specified serverId.
      * The reason that the servers isn't mapped directly on creation
      * of the rules is limitation in the Digester.
@@ -183,6 +165,7 @@ public class ConfigParser {
             Server server = servers.get(rule.getServerId());
             if (server != null) {
                 rule.setServer(server);
+                server.setRule(rule);
                 log.debug("Rule " + rule + " using server " + server);
             }
         }

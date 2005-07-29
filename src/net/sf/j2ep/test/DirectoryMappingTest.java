@@ -78,13 +78,27 @@ public class DirectoryMappingTest extends FilterTestCase {
     
     public void endRewrite(WebResponse theResponse) {
         assertEquals("The response code should be 200", 200, theResponse.getStatusCode());
-        assertTrue("Test absolute path", theResponse.getText().contains("<a href=\"http://localhost:8080/test/testDirectoryMapping/test.jsp\">"));
         assertTrue("Test no \" path", theResponse.getText().contains("<a href=/test-response/GET/test2.jsp >Test2</a>"));
         assertTrue("Test ' path", theResponse.getText().contains("<a href=\'/test/testDirectoryMapping/test3.jsp\'>Test2</a>"));
         assertTrue("Test path not in directory", theResponse.getText().contains("<a href=\"/test4.jsp\">"));
         assertTrue("Test relative path", theResponse.getText().contains("<a href=\"test5.jsp\">"));
-        assertTrue("Test absolute path not mapped", theResponse.getText().contains("<a href=\"http://localhost:8080/test-response/GETT/test6.jsp\">"));
         assertTrue("Test mixed containers", theResponse.getText().contains("src=\"/test/testDirectoryMapping/test11.jsp\""));
+    }
+    
+    public void beginRewriteAbsolute(WebRequest theRequest) {
+        theRequest.setURL("localhost:8080", "/test", "/testDirectoryMapping/absolute.jsp", null, null);
+    }
+    
+    public void testRewriteAbsolute() throws IOException, ServletException {
+        rewriteFilter.doFilter(request, response, mockFilterChain);
+    }
+    
+    public void endRewriteAbsolute(WebResponse theResponse) {
+        assertEquals("The response code should be 200", 200, theResponse.getStatusCode());
+        assertTrue("Test absolute path", theResponse.getText().contains("http://localhost:8080/test/testDirectoryMapping/test.jsp"));
+        assertTrue("Test absolute path not mapped", theResponse.getText().contains("http://localhost:8080/test/GETT/test6.jsp"));
+        assertTrue("Test absolute path on different server", theResponse.getText().contains("http://localhost:8080/test/testRewriteAbsoluteOther/hej.jsp"));
+        assertTrue("Test absolute path on different server not mapped", theResponse.getText().contains("http://www.test.com/anotherfolder/test"));
     }
     
     public void beginCSS(WebRequest theRequest) {
