@@ -179,7 +179,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      */
     public ServletOutputStream getOutputStream() throws IOException {
         String contentType = getContentType();
-        isRewriting = rule.isRewriting() && contentType != null && shouldRewrite(contentType);
+        isRewriting = contentType != null && shouldRewrite(contentType);
         if (isRewriting) {
             return outStream;
         } else {
