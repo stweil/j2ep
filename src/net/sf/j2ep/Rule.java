@@ -67,27 +67,10 @@ public interface Rule {
     String revert(String uri);
     
     /**
-     * Returns the server this rule is mapped to.
-     * The returned value is both the host name and port.
-     * 
+     * Returns the server we are mapping to.
      * @return The server
      */
-    String getServerHostAndPort();
-    
-    /**
-     * Returns the directory on the server this rule is mapped to.
-     * 
-     * @return The server's directory
-     */
-    String getServerDirectory();
-    
-    /**
-     * Returns the full mapping for this server including any
-     * directories we are mapping to from the servers root.
-     * 
-     * @return The server
-     */
-    String getServerFullPath();
+    Server getServer();
     
     /**
      * Used to specify which server this rule is linked to.
