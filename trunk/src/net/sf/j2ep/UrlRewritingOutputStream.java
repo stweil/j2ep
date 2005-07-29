@@ -38,7 +38,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
     /** 
      * The server, needed when we rewrite absolute links.
      */
-    private String server;
+    private String ownHostName;
     
     /** 
      * The contextPath, needed when we rewrite links.
@@ -56,9 +56,9 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
      * 
      * @param originalStream The stream we are wrapping
      */
-    public UrlRewritingOutputStream(ServletOutputStream originalStream, String server, String contextPath) {
+    public UrlRewritingOutputStream(ServletOutputStream originalStream, String ownHostName, String contextPath) {
         this.originalStream = originalStream;
-        this.server = server;
+        this.ownHostName = ownHostName;
         this.contextPath = contextPath;
         
         stream = new ByteArrayOutputStream();
@@ -116,7 +116,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
          * $1 - link type, e.g. href=
          * $2 - ", ' or whitespace
          * $3 - The entire http://www.server.com if present
-         * $4 - The protocol, if present e.g http:// or ftp:// 
+         * $4 - The protocol, e.g http:// or ftp:// 
          * $5 - The host name, e.g. www.server.com
          * $6 - The link
          */
@@ -125,15 +125,15 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
         Matcher matcher = linkPattern.matcher(stream.toString());
         while (matcher.find()) {
             
-           String serverDir = rule.getServerDirectory();
+           String serverDir = rule.getServer().getDirectory();
            String link = matcher.group(6).replace("$", "\\$");
 
            if ( serverDir.equals("") || link.startsWith(serverDir+"/") ) {
                link = rule.revert( link.substring(serverDir.length()) );
                if (matcher.group(4) != null) {
-                   String endServer = rule.getServerHostAndPort();
+                   String endServer = rule.getServer().getHostAndPort();
                     if (matcher.group(5).compareToIgnoreCase(endServer) == 0) {
-                        matcher.appendReplacement(page, "$1$2$4" + server
+                        matcher.appendReplacement(page, "$1$2$4" + ownHostName
                                 + contextPath + link + "$2");
                     }
                 } else {

@@ -80,28 +80,11 @@ public abstract class BaseRule implements Rule {
     }
     
     /**
-     * @see net.sf.j2ep.Rule#getServerHostAndPort()
+     * @see net.sf.j2ep.Rule#getServer()
      */
-    public String getServerHostAndPort() {
-        return server.getHostAndPort();
+    public Server getServer() {
+        return server;
     }
-    
-    /**
-     * @see net.sf.j2ep.Rule#getServerDirectory()
-     */
-    public String getServerDirectory() {
-        return server.getDirectory();
-    }
-
-    /**
-     * @see net.sf.j2ep.Rule#getServerFullPath()
-     */
-    public String getServerFullPath() {
-        return server.getFullPath();
-    }
-    
-
-    
 
     /**
      * @see net.sf.j2ep.Rule#setServer(net.sf.j2ep.Server)

@@ -43,9 +43,14 @@ public class ConfigParser {
     private RuleChain ruleChain;
     
     /** 
-     * The servers.
+     * The servers mapped by id.
      */
-    private HashMap<String, Server> serverMap;
+    private HashMap<String, Server> serverIdMap;
+    
+    /** 
+     * The servers mapped by their host name and directory.
+     */
+    private HashMap<String, Server> serverLocationMap;
     
     /** 
      * A logging instance supplied by commons-logging.
@@ -62,10 +67,10 @@ public class ConfigParser {
     public ConfigParser(File data) {
         log = LogFactory.getLog("org.apache.webapp.reverseproxy");
         try {
-            ruleChain = new RuleChain();
             ruleChain = createRuleChain(data);
-            serverMap = createServerMap(data);
-            mapServersToRules(ruleChain, serverMap);
+            serverIdMap = createServerIdMap(data);
+            serverLocationMap = createServerLocationMap(serverIdMap);
+            mapServersToRules(ruleChain, serverIdMap);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -78,6 +83,15 @@ public class ConfigParser {
      */
     public RuleChain getRuleChain() {
         return ruleChain;
+    }
+    
+    /**
+     * Returns the map of servers based on location.
+     * 
+     * @return The servers
+     */
+    public HashMap<String, Server> getServerLocationMap() {
+        return serverLocationMap;
     }
 
     /**
@@ -111,12 +125,12 @@ public class ConfigParser {
     }
     
     /**
-     * Creates the servers.
+     * Creates the servers mapped by id.
      *
      * @return A hash map containing all the servers
      */
     @SuppressWarnings("unchecked")
-    private HashMap<String, Server> createServerMap(File data) throws Exception{
+    private HashMap<String, Server> createServerIdMap(File data) throws Exception{
         Digester digester = new Digester();
         digester.setUseContextClassLoader(true);
         
@@ -132,6 +146,25 @@ public class ConfigParser {
         
         // Construct server
         return (HashMap<String, Server>) digester.parse(data);
+    }
+    
+    /**
+     * Creates a map of the server based on their host name and directory.
+     * The creation is done by traversing a already created map 
+     * containing the servers mapped on their id.
+     *
+     * @param idMap The map we are creating this map from
+     * @return A hash map containing all the servers
+     */
+    private HashMap<String, Server> createServerLocationMap(HashMap<String, Server> idMap) {
+        HashMap<String, Server> map = new HashMap<String, Server>();
+        
+        for (Server server : idMap.values()) {
+            String location = server.getHostAndPort() + server.getDirectory();
+            map.put(location, server);
+        }
+        
+        return map;
     }
     
     /**

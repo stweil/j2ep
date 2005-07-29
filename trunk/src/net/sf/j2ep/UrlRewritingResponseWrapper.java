@@ -42,7 +42,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     /** 
      * The location for this server, used when we rewrite absolute URIs
      */
-    private String server;
+    private String ownHostName;
     
     /** 
      * The contextPath, needed when we rewrite links.
@@ -74,18 +74,18 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      * 
      * @param response The response we are wrapping
      * @param rule The rule that was matched
-     * @param server String we are rewriting servers to
+     * @param ownHostName String we are rewriting servers to
      * @throws IOException When there is a problem with the streams
      */
-    public UrlRewritingResponseWrapper(HttpServletResponse response, Rule rule, String server, String contextPath) throws IOException {
+    public UrlRewritingResponseWrapper(HttpServletResponse response, Rule rule, String ownHostName, String contextPath) throws IOException {
         super(response);
         this.rule = rule;
-        this.server = server;
+        this.ownHostName = ownHostName;
         this.contextPath = contextPath;
         isRewriting = false;
         
         log = LogFactory.getLog("net.sf.j2ep.rewriter");        
-        outStream = new UrlRewritingOutputStream(response.getOutputStream(), server, contextPath);
+        outStream = new UrlRewritingOutputStream(response.getOutputStream(), ownHostName, contextPath);
     }
     
     /**
@@ -139,7 +139,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
         Matcher matcher = linkPattern.matcher(value);
         while (matcher.find()) {
             String link = rule.revert(matcher.group(3));
-            matcher.appendReplacement(header, "$1" + server + contextPath + link);
+            matcher.appendReplacement(header, "$1" + ownHostName + contextPath + link);
         }
         matcher.appendTail(header);
         log.debug("Location header rewritten "+ value + " >> " + header.toString());
