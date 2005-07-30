@@ -27,6 +27,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * A filter that will locate the appropriate Rule
+ * and use it to rewrite any incoming request to
+ * get the en server targeted. Responses sent out
+ * are also rewritten.
+ *
+ * @author Anders Nyman
+ */
 public class RewriteFilter implements Filter {
     
     /** 
@@ -47,7 +55,8 @@ public class RewriteFilter implements Filter {
 
     /**
      * Rewrites the outgoing stream to make sure URLs and headers
-     * are correct.
+     * are correct. The incoming request is first processed to 
+     * identify what resource we want to proxy.
      * 
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
