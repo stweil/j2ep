@@ -28,6 +28,17 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * A wrapper for the normal HttpServletResponse, based
+ * on the content-type either the normal output stream
+ * of a wrapped stream will be returned. The wrapped stream
+ * can handle rewrite of links found in the source.
+ * 
+ * This class also handles rewriting of the headers Location
+ * and Set-Cookie.
+ *
+ * @author Anders Nyman
+ */
 public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     
     /** 
@@ -173,7 +184,9 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     }
     
     /**
-     * Returns out own output stream that can be rewritten.
+     * Based on the value in the content-type header we either
+     * return the default stream or our own stream that can rewrite
+     * links.
      * 
      * @see javax.servlet.ServletResponse#getOutputStream()
      */

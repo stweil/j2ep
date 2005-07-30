@@ -25,6 +25,13 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
 
+/**
+ * A wrapper for the default output stream. This class will
+ * make sure all data being sent is cached by the stream and
+ * can rewrite all the links.
+ *
+ * @author Anders Nyman
+ */
 public class UrlRewritingOutputStream extends ServletOutputStream {
     
     /** 
