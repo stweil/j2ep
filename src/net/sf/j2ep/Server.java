@@ -31,7 +31,7 @@ public interface Server {
      * Returns the host name and port for this server.
      * @return Host name and port
      */
-    String getHostAndPort();
+    String getDomainName();
     
     /**
      * Returns the directory being mapped for this server.
