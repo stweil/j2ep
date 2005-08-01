@@ -73,7 +73,7 @@ public abstract class MockHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContextPath() {
-        return null;
+        return "";
     }
 
     public String getQueryString() {
