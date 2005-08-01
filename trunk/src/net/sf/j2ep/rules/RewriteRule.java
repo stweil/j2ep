@@ -24,12 +24,44 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * A rule using regular expressions to rewrite the
+ * URI. At first the expression will have to match the 
+ * URI, after that the groups from the expression can
+ * be used to rewrite the URI.
+ *
+ * @author Anders Nyman
+ */
 public class RewriteRule extends BaseRule {
     
+    /** 
+     * Pattern we match the URI on,
+     */
     private Pattern matchPattern;
+    
+    /** 
+     * The string we rewrite to.
+     */
     private String rewriteTo;
+    
+    /** 
+     * Pattern to match when we rewrite links found in HTML.
+     */
     private Pattern revertPattern;
+    
+    /** 
+     * The string we revert links to.
+     */
+    private String revertTo;
+    
+    /** 
+     * Marks if we should rewrite incoming links.
+     */
     private boolean isRewriting;
+    
+    /** 
+     * Marks if we are rewriting outgoing links found in HTML.
+     */
     private boolean isReverting;
     
     /** 
@@ -37,26 +69,61 @@ public class RewriteRule extends BaseRule {
      */
     private static Log log;
     
+    /**
+     * Basic constructor.
+     */
     public RewriteRule() {
         isRewriting = false;
         log = LogFactory.getLog(RewriteRule.class);
     }
 
+    /**
+     * Will check if the URI matches the pattern we have set up.
+     * 
+     * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
+     */
     public boolean matches(HttpServletRequest request) {
-        String uri = getURI(request);       
+        String uri = getURI(request);      
         Matcher matcher = matchPattern.matcher(uri);
         return matcher.matches();
     }
     
+    /**
+     * Will use the pattern and the rewriteTo string to
+     * rewrite the URI before using it to connection to
+     * the end server.
+     * 
+     * @see net.sf.j2ep.Rule#process(java.lang.String)
+     */
     public String process(String uri) {
-        Matcher matcher = matchPattern.matcher(uri);
-        String replaced = matcher.replaceAll(rewriteTo);
-        log.debug("Rewriting URI \n" + uri + " >> " + replaced);
-        
-        return replaced;
+        String rewritten = uri;
+        if (isRewriting) {
+            Matcher matcher = matchPattern.matcher(uri);
+            rewritten = matcher.replaceAll(rewriteTo);
+            log.debug("Rewriting URI: " + uri + " >> " + rewritten); 
+        }
+        return rewritten;
+    }
+    
+    /**
+     * @see net.sf.j2ep.Rule#revert(java.lang.String)
+     */
+    public String revert(String uri) {
+        String rewritten = uri;
+        if (isReverting) {
+            Matcher matcher = revertPattern.matcher(uri);
+            rewritten = matcher.replaceAll(revertTo);
+            log.debug("Reverting URI: " + uri + " >> " + rewritten); 
+        }
+        return rewritten;
     }
     
     
+    /**
+     * Sets the regex we will match incoming URIs on.
+     * 
+     * @param regex The regex
+     */
     public void setFrom(String regex) {
         if (regex == null) {
             throw new IllegalArgumentException("From pattern cannot be null.");
@@ -65,6 +132,11 @@ public class RewriteRule extends BaseRule {
         }
     }
     
+    /**
+     * Sets the string we will rewrite incoming URIs to.
+     * 
+     * @param to The string we rewrite to
+     */
     public void setTo(String to) {
         if (to == null) {
             throw new IllegalArgumentException("To string cannot be null.");
@@ -74,11 +146,29 @@ public class RewriteRule extends BaseRule {
         }
     }
     
-    public void setRevert(String regex) {
+    /**
+     * Sets the regex we use to match outgoing links found.
+     * 
+     * @param regex The regex
+     */
+    public void setRevertFrom(String regex) {
         if (regex == null) {
             throw new IllegalArgumentException("Revert pattern cannot be null.");
         } else {
             revertPattern = Pattern.compile(regex);
+        }
+    }
+    
+    /**
+     * Sets the string we rewrite outgoing links to.
+     * 
+     * @param to The string we rewrite to
+     */
+    public void setRevertTo(String to) {
+        if (to == null) {
+            throw new IllegalArgumentException("To string cannot be null.");
+        } else {
+            revertTo = to;
             isReverting = true;
         }
     }
