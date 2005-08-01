@@ -99,11 +99,9 @@ public class CompositeRule extends BaseRule {
      * @see net.sf.j2ep.Rule#revert(java.lang.String)
      */
     public String revert(String uri) {
-        System.out.println();
         String returnString = uri;
         ListIterator itr = rules.listIterator(rules.indexOf(rules.getLast()));
         while (itr.hasPrevious()) {
-            System.out.println(returnString);
             Rule rule = (Rule) itr.previous();
             returnString = rule.revert(returnString);
         }
