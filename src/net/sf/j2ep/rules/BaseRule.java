@@ -17,8 +17,6 @@
 
 package net.sf.j2ep.rules;
 
-import javax.servlet.http.HttpServletRequest;
-
 import net.sf.j2ep.Rule;
 import net.sf.j2ep.Server;
 
@@ -42,11 +40,6 @@ public abstract class BaseRule implements Rule {
      * The servers id, used for mapping the correct server.
      */
     private String serverId;
-
-    /**
-     * @see Rule#matches(HttpServletRequest)
-     */
-    public abstract boolean matches(HttpServletRequest request);
     
     /**
      * @see net.sf.j2ep.Rule#process(java.lang.String)
