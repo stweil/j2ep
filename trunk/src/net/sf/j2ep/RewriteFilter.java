@@ -121,7 +121,7 @@ public class RewriteFilter implements Filter {
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
     public void init(FilterConfig filterConfig) throws ServletException {
-        log = LogFactory.getLog("net.sf.j2ep");
+        log = LogFactory.getLog(RewriteFilter.class);
         
         String data = filterConfig.getInitParameter("dataUrl");
         if (data == null) {
