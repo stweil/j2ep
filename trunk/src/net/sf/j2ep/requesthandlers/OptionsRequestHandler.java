@@ -49,8 +49,7 @@ public class OptionsRequestHandler extends RequestHandlerBase {
             if (max == 0) {
                 method.abort();
             } else if (max != -1) {
-                method.setRequestHeader("Max-Forwards", ((Integer) (max - 1))
-                        .toString());
+                method.setRequestHeader("Max-Forwards", "" + max--);
             }
 
         } catch (NumberFormatException e) {

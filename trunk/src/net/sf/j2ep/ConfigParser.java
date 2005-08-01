@@ -47,12 +47,12 @@ public class ConfigParser {
     /** 
      * The servers mapped by id.
      */
-    private HashMap<String, Server> serverIdMap;
+    private HashMap serverIdMap;
     
     /** 
      * A collection of the servers.
      */
-    private Collection<Server> serverCollection;
+    private Collection serverCollection;
     
     /** 
      * A logging instance supplied by commons-logging.
@@ -92,7 +92,7 @@ public class ConfigParser {
      * 
      * @return The servers
      */
-    public Collection<Server> getServerCollection() {
+    public Collection getServerCollection() {
         return serverCollection;
     }
 
@@ -131,8 +131,7 @@ public class ConfigParser {
      *
      * @return A hash map containing all the servers
      */
-    @SuppressWarnings("unchecked")
-    private HashMap<String, Server> createServerIdMap(File data) throws Exception{
+    private HashMap createServerIdMap(File data) throws Exception{
         Digester digester = new Digester();
         digester.setUseContextClassLoader(true);
         
@@ -147,7 +146,7 @@ public class ConfigParser {
         digester.addCallParam("config/servers/server", 1, true);
         
         // Construct server
-        return (HashMap<String, Server>) digester.parse(data);
+        return (HashMap) digester.parse(data);
     }
     
     /**
@@ -157,14 +156,16 @@ public class ConfigParser {
      * @param map A map of all the servers
      * @return The collection with the rewriting servers
      */
-    private Collection<Server> createServerCollection(HashMap<String, Server> map) {
-        Collection<Server> col = new LinkedList<Server>();
-        for (Server server : map.values()) {
+    private Collection createServerCollection(HashMap map) {
+        Collection col = new LinkedList();
+        Iterator itr = map.values().iterator();
+        
+        while (itr.hasNext()) {
+            Server server = (Server) itr.next();
             if (server.isRewriting()) {
                 col.add(server);
             }
-        }
-        
+        }        
         return col;
     }
     
@@ -176,12 +177,12 @@ public class ConfigParser {
      * @param rules The rules
      * @param servers The servers
      */
-    private void mapServersToRules(RuleChain rules, HashMap<String, Server> servers) {
-        Iterator<Rule> itr = rules.getRuleIterator();
+    private void mapServersToRules(RuleChain rules, HashMap servers) {
+        Iterator itr = rules.getRuleIterator();
         while(itr.hasNext()) {
             log.debug("These are the rule to server mappings");
-            Rule rule = itr.next();
-            Server server = servers.get(rule.getServerId());
+            Rule rule = (Rule) itr.next();
+            Server server = (Server) servers.get(rule.getServerId());
             if (server != null) {
                 rule.setServer(server);
                 server.setRule(rule);

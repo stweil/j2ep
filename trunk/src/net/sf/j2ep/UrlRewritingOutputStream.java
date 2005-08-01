@@ -57,7 +57,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
     /** 
      * A collection of the servers.
      */
-    private Collection<Server> serverCollection;
+    private Collection serverCollection;
     
     
     /** 
@@ -71,7 +71,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
      * 
      * @param originalStream The stream we are wrapping
      */
-    public UrlRewritingOutputStream(ServletOutputStream originalStream, String ownHostName, String contextPath, Collection<Server> serverCollection) {
+    public UrlRewritingOutputStream(ServletOutputStream originalStream, String ownHostName, String contextPath, Collection serverCollection) {
         this.originalStream = originalStream;
         this.ownHostName = ownHostName;
         this.contextPath = contextPath;
@@ -176,11 +176,11 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
      * @return The matching server, if no server is found null is returned
      */
     private Server getServerMapped(String location) {
-        Iterator<Server> itr = serverCollection.iterator();
+        Iterator itr = serverCollection.iterator();
         Server match = null;
 
         while (itr.hasNext() && match == null) {
-            Server next = itr.next();
+            Server next = (Server) itr.next();
             String fullPath = next.getFullPath() + "/";
             if (location.startsWith(fullPath)) {
                 match = next;

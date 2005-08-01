@@ -36,13 +36,13 @@ public class RuleChain{
     /**
      * The list of rules to evaluate.
      */
-    private List<Rule> rules;
+    private List rules;
 
     /**
      * Constructor.
      */
     public RuleChain() {
-        rules = new ArrayList<Rule>();
+        rules = new ArrayList();
     }
 
     /**
@@ -51,7 +51,7 @@ public class RuleChain{
      *
      * @return The rules
      */
-    protected List<Rule> getRules() {
+    protected List getRules() {
         return rules;
     }
 
@@ -61,7 +61,7 @@ public class RuleChain{
      *
      * @return The iterator
      */
-    protected Iterator<Rule> getRuleIterator() {
+    protected Iterator getRuleIterator() {
         return getRules().iterator();
     }
 
@@ -88,13 +88,13 @@ public class RuleChain{
      * @see Rule#matches(HttpServletRequest)
      */
     public Rule evaluate(HttpServletRequest request) {
-        Iterator<Rule> iter = getRuleIterator();
+        Iterator itr = getRuleIterator();
 
         Rule currentRule = null;
         boolean currentMatches = false;
 
-        while (iter.hasNext() && !currentMatches) {
-            currentRule = iter.next();
+        while (itr.hasNext() && !currentMatches) {
+            currentRule = (Rule) itr.next();
             currentMatches = currentRule.matches(request);
         }
         

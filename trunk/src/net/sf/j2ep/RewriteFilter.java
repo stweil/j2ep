@@ -50,7 +50,7 @@ public class RewriteFilter implements Filter {
     /** 
      * A collection of servers, used when we are rewriting absolute links.
      */
-    private Collection<Server> serverCollection;
+    private Collection serverCollection;
 
 
     /**
