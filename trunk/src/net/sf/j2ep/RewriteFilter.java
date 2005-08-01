@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A filter that will locate the appropriate Rule
  * and use it to rewrite any incoming request to
- * get the en server targeted. Responses sent out
+ * get the server targeted. Responses sent back
  * are also rewritten.
  *
  * @author Anders Nyman
