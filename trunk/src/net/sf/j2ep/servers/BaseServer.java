@@ -48,7 +48,7 @@ public class BaseServer implements Server {
     /**
      * The host and port for this server
      */
-    private String hostAndPort;
+    private String domainName;
     
     /**
      * The host and port for this server
@@ -59,14 +59,14 @@ public class BaseServer implements Server {
      * @see net.sf.j2ep.Server#getFullPath()
      */
     public String getFullPath() {
-        return hostAndPort + directory;
+        return domainName + directory;
     }
     
     /**
-     * @see net.sf.j2ep.Server#getHostAndPort()
+     * @see net.sf.j2ep.Server#getDomainName()
      */
-    public String getHostAndPort() {
-        return hostAndPort;
+    public String getDomainName() {
+        return domainName;
     }
     
     /**
@@ -79,14 +79,14 @@ public class BaseServer implements Server {
     /**
      * Sets the host and port we are mapping to.
      * 
-     * @param hostAndPort Value to set
+     * @param domainName Value to set
      */
-    public void setHostAndPort(String hostAndPort) {
-        if (hostAndPort == null) {
+    public void setDomainName(String domainName) {
+        if (domainName == null) {
             throw new IllegalArgumentException(
                     "The hostAndPort string cannot be null.");
         } else {
-            this.hostAndPort = hostAndPort;
+            this.domainName = domainName;
         }
     }
     
