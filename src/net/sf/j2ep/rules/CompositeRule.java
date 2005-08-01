@@ -36,13 +36,13 @@ public class CompositeRule extends BaseRule {
     /** 
      * The list of rules.
      */
-    private LinkedList<Rule> rules;
+    private LinkedList rules;
     
     /**
      * Empty constructor, will only create the list of rules.
      */
     public CompositeRule() {
-        rules = new LinkedList<Rule>();
+        rules = new LinkedList();
     }
     
     /**
@@ -64,10 +64,10 @@ public class CompositeRule extends BaseRule {
      * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
      */
     public boolean matches(HttpServletRequest request) {
-        Iterator<Rule> itr = rules.iterator();
+        Iterator itr = rules.iterator();
         boolean matches = true;
         while (itr.hasNext() && matches) {
-            Rule rule = itr.next();
+            Rule rule = (Rule) itr.next();
             matches = rule.matches(request);
         }
         
@@ -82,9 +82,12 @@ public class CompositeRule extends BaseRule {
      */
     public String process(String uri) {
         String returnString = uri;
-        for (Rule rule : rules) {
+        Iterator itr = rules.iterator();
+        while (itr.hasNext()) {
+            Rule rule = (Rule) itr.next();
             returnString = rule.process(returnString);
         }
+        
         return returnString;
     }
     
@@ -98,10 +101,10 @@ public class CompositeRule extends BaseRule {
     public String revert(String uri) {
         System.out.println();
         String returnString = uri;
-        ListIterator<Rule> itr = rules.listIterator(rules.indexOf(rules.getLast()));
+        ListIterator itr = rules.listIterator(rules.indexOf(rules.getLast()));
         while (itr.hasPrevious()) {
             System.out.println(returnString);
-            Rule rule = itr.previous();
+            Rule rule = (Rule) itr.previous();
             returnString = rule.revert(returnString);
         }
         return returnString;
@@ -117,15 +120,17 @@ public class CompositeRule extends BaseRule {
 
         buffer.append("[");
         buffer.append("CompositeRule containing ");
-        for(Rule rule: rules) {
+        
+        Iterator itr = rules.iterator();
+        while (itr.hasNext()) {
+            Rule rule = (Rule) itr.next();
             buffer.append("(");
             buffer.append(rule.getClass().getName());
             buffer.append(") ");
         }
+        
         buffer.append(": ");
-
         buffer.append("]");
-
         return buffer.toString();
     }
 

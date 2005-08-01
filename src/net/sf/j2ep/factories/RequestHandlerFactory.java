@@ -37,7 +37,7 @@ public class RequestHandlerFactory {
     /** 
      * The RequestHandlers to return.
      */
-    private static HashMap<String, RequestHandler> requestHandlers;
+    private static HashMap requestHandlers;
     
     /** 
      * These methods are handled by this factory.
@@ -52,7 +52,7 @@ public class RequestHandlerFactory {
     static {
         RequestHandlerBase.addBannedHeaders(bannedHeaders);
         
-        requestHandlers = new HashMap<String, RequestHandler>();
+        requestHandlers = new HashMap();
         OptionsRequestHandler options = new OptionsRequestHandler();
         BasicRequestHandler basic = new BasicRequestHandler();
         EntityEnclosingRequestHandler entityEnclosing = new EntityEnclosingRequestHandler();
@@ -73,7 +73,7 @@ public class RequestHandlerFactory {
      * @throws MethodNotAllowedException If there is no RequestHandler available an exception will be thrown
      */
     public static RequestHandler createRequestMethod(String method) throws MethodNotAllowedException{
-        RequestHandler handler = requestHandlers.get(method.toUpperCase());
+        RequestHandler handler = (RequestHandler) requestHandlers.get(method.toUpperCase());
         if (handler == null) {
             throw new MethodNotAllowedException("The method " + method + " is not handled by this Factory.", allowedMethods);
         } else {

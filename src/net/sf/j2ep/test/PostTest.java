@@ -68,29 +68,4 @@ public class PostTest extends FilterTestCase {
     public void endSendParam(WebResponse theResponse) {
         assertEquals("Checking output", "testValue", theResponse.getText());
     }
-    
-    public void beginExpectContinue(WebRequest theRequest) {
-        theRequest.setURL("localhost:8080", "/test", "/POST/param.jsp", null, null);
-        theRequest.addHeader("Expect", "100-continue");
-        theRequest.addHeader("TestHeader", "tst");
-        theRequest.addParameter("testParam", "testValue", WebRequest.POST_METHOD);
-    }
-    
-    public void testExpectContinue() throws IOException, ServletException {
-        rewriteFilter.doFilter(request, response, mockFilterChain);
-        /*
-         * Will not send any body, but that shouldn't be a problem since the server
-         * will send back a 100 - continue first 
-         */
-        /*
-        MethodWrappingRequest req = new MethodWrappingRequest("POST", "/POST/param.jsp", null);
-        req.addHeader("Expect", "100-continue");
-        req.addHeader("TestHeader", "tst");
-        proxy.doFilter(req, response, filterChain);
-        */
-    }
-    
-    public void endExpectContinue(WebResponse theResponse) {
-        assertEquals("We should get status code 100", 100, theResponse.getStatusCode());
-    }
 }

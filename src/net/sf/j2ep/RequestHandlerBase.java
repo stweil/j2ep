@@ -41,7 +41,7 @@ public abstract class RequestHandlerBase implements RequestHandler {
      * A set of headers that are not to be set in the request,
      * these headers are for example Connection.
      */
-    private static Set<String> bannedHeaders = new HashSet<String>();
+    private static Set bannedHeaders = new HashSet();
 
     /**
      * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)

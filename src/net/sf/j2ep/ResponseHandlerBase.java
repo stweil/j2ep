@@ -101,7 +101,10 @@ public abstract class ResponseHandlerBase implements ResponseHandler{
      * @param response The response that will have headers written to it
      */
     protected void setHeaders(HttpServletResponse response) {
-        for (Header header : method.getResponseHeaders()) {
+        Header[] headers = method.getResponseHeaders();
+        
+        for (int i=0; i < headers.length; i++) {
+            Header header = headers[i];
             String name = header.getName();
             boolean contentLength = name.compareToIgnoreCase("content-length") == 0;
             boolean connection = name.compareToIgnoreCase("connection") == 0;
