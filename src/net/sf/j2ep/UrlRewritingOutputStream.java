@@ -181,7 +181,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
 
         while (itr.hasNext() && match == null) {
             Server next = (Server) itr.next();
-            String fullPath = next.getFullPath() + "/";
+            String fullPath = next.getDomainName() + next.getDirectory() + "/";
             if (location.startsWith(fullPath)) {
                 match = next;
             }
