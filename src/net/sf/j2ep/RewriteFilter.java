@@ -82,9 +82,10 @@ public class RewriteFilter implements Filter {
                 filterChain.doFilter(request, response);
             } else {
                 Server server = rule.getServer();
-                String uri = rule.process(getURI(httpRequest));
+                httpRequest = server.wrapRequest(request);
                 
-                String url = request.getScheme() + "://" + server.getFullPath() + uri;
+                String uri = rule.process(getURI(httpRequest));
+                String url = request.getScheme() + "://" + server.getDomainName() + server.getDirectory() + uri;
                 httpRequest.setAttribute("proxyURL", url);
                 
                 //TODO make better way for this, some permanent check at init maybe?
