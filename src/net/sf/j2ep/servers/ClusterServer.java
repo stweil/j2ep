@@ -44,7 +44,7 @@ public class ClusterServer extends BaseServer {
     /** 
      * The lists of servers in out cluster,
      */
-    private HashMap servers;
+    protected HashMap servers;
     
     /** 
      * The current number of servers, only used at
@@ -80,7 +80,11 @@ public class ClusterServer extends BaseServer {
             }
         }
         
-        return httpRequest;
+        if (cookies.length != 0) {
+            return new SessionRewritingRequestWrapper(httpRequest); 
+        } else {
+            return httpRequest;
+        }
     }
 
     /**
@@ -105,7 +109,7 @@ public class ClusterServer extends BaseServer {
      * 
      * @param serverString The string representing domainName and directory
      */
-    public void setServer(String serverString) {
+    public synchronized void setServer(String serverString) {
         BaseServer server = new BaseServer();
         int firstSlash = serverString.indexOf("/");
         
