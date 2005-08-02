@@ -16,7 +16,7 @@
 
 package net.sf.j2ep.test;
 
-import java.io.IOException;
+import java.io.*;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,6 +29,11 @@ import net.sf.j2ep.RewriteFilter;
 import org.apache.cactus.FilterTestCase;
 import org.apache.cactus.WebRequest;
 import org.apache.cactus.WebResponse;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
 
 public class PostTest extends FilterTestCase {
     
@@ -58,7 +63,7 @@ public class PostTest extends FilterTestCase {
     
     public void beginSendParam(WebRequest theRequest) {
         theRequest.setURL("localhost:8080", "/test", "/POST/param.jsp", null, null);
-        theRequest.addParameter("testParam", "testValue", WebRequest.POST_METHOD);
+        theRequest.addParameter("testParam", "myValue", WebRequest.POST_METHOD);
     }
     
     public void testSendParam() throws IOException, ServletException {
@@ -66,6 +71,42 @@ public class PostTest extends FilterTestCase {
     }
     
     public void endSendParam(WebResponse theResponse) {
-        assertEquals("Checking output", "testValue", theResponse.getText());
+        assertEquals("Checking output", "myValue", theResponse.getText());
     }
+
+    public void beginSendMultipart(WebRequest theRequest) {
+        theRequest.setURL("localhost:8080", "/test", "/POST/multipart.jsp", null, null);
+        theRequest.addParameter("tmp", "", WebRequest.POST_METHOD);
+        
+        try {
+            PostMethod post = new PostMethod();
+            FilePart filePart = new FilePart("theFile", new File("WEB-INF/classes/net/sf/j2ep/test/POSTdata"));
+            StringPart stringPart = new StringPart("testParam", "123456");
+            Part[] parts = new Part[2];
+            parts[0] = stringPart;
+            parts[1] = filePart;
+            MultipartRequestEntity reqEntitiy = new MultipartRequestEntity(parts, post.getParams());
+            
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            reqEntitiy.writeRequest(outStream);
+
+            theRequest.setUserData(new ByteArrayInputStream(outStream.toByteArray()));
+            theRequest.addHeader("content-type", reqEntitiy.getContentType());
+        } catch (FileNotFoundException e) {
+            fail("File was not found " + e.getMessage());
+        } catch (IOException e) {
+            fail("IOException");
+            e.printStackTrace();
+        }
+    }
+    
+    public void testSendMultipart() throws IOException, ServletException {
+        rewriteFilter.doFilter(request, response, mockFilterChain);
+    }
+    
+    public void endSendMultipart(WebResponse theResponse) {
+        assertTrue("Checking for the param", theResponse.getText().contains("123456"));
+        assertTrue("Checking for the file data", theResponse.getText().contains("here is some data that will be sent using multipart POST"));
+    }
+    
 }
