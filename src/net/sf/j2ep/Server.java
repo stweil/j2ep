@@ -16,6 +16,9 @@
 
 package net.sf.j2ep;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
  * A representation of the server. Its main use it to be able to open
@@ -27,6 +30,17 @@ package net.sf.j2ep;
  */
 public interface Server {
 
+    /**
+     * Will wrap the request if needed for this server. 
+     * The wrapped request can alter information that 
+     * this server doesn't want to present to the end 
+     * domain.
+     * 
+     * @param request The request we are receiving
+     * @return The wrapped original request
+     */
+    HttpServletRequest wrapRequest(ServletRequest request);
+    
     /**
      * Returns the host name and port for this server.
      * @return Host name and port
@@ -42,13 +56,6 @@ public interface Server {
      * @return Directory The directory
      */
     String getDirectory();
-    
-    /**
-     * Returns the full URL to this server including
-     * directories on the server
-     * @return The full server path
-     */
-    String getFullPath();
     
     /**
      * Sets the rule that is mapped for this server. Will
