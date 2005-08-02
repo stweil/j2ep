@@ -73,8 +73,8 @@ public class RewriteFilter implements Filter {
             log.info("Request is not HttpResponse, will only handle HttpResponses.");
             return;
         } else {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
             
             Rule rule = ruleChain.evaluate(httpRequest);
             if (rule == null) {
@@ -82,7 +82,7 @@ public class RewriteFilter implements Filter {
                 filterChain.doFilter(request, response);
             } else {
                 Server server = rule.getServer();
-                httpRequest = server.wrapRequest(request);
+                httpRequest = server.wrapRequest(httpRequest);
                 
                 String uri = rule.process(getURI(httpRequest));
                 String url = request.getScheme() + "://" + server.getDomainName() + server.getDirectory() + uri;
