@@ -16,7 +16,6 @@
 
 package net.sf.j2ep.servers;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.j2ep.Rule;
@@ -66,10 +65,10 @@ public class BaseServer implements Server {
      * Will not need any wrapping to the default request is
      * returned.
      * 
-     * @see net.sf.j2ep.Server#wrapRequest(javax.servlet.ServletRequest)
+     * @see net.sf.j2ep.Server#wrapRequest(javax.servlet.http.HttpServletRequest)
      */
-    public HttpServletRequest wrapRequest(ServletRequest request) {
-        return (HttpServletRequest) request;
+    public HttpServletRequest wrapRequest(HttpServletRequest request) {
+        return request;
     }
     
     /**

@@ -16,7 +16,6 @@
 
 package net.sf.j2ep;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -39,7 +38,7 @@ public interface Server {
      * @param request The request we are receiving
      * @return The wrapped original request
      */
-    HttpServletRequest wrapRequest(ServletRequest request);
+    HttpServletRequest wrapRequest(HttpServletRequest request);
     
     /**
      * Returns the host name and port for this server.
