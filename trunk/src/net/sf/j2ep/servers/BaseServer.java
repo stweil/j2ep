@@ -16,6 +16,9 @@
 
 package net.sf.j2ep.servers;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
 import net.sf.j2ep.Rule;
 import net.sf.j2ep.Server;
 
@@ -40,11 +43,6 @@ public class BaseServer implements Server {
      */
     private boolean isRewriting;
     
-    public BaseServer() {
-        directory = "";
-        isRewriting = false;
-    }
-    
     /**
      * The host and port for this server
      */
@@ -54,12 +52,24 @@ public class BaseServer implements Server {
      * The host and port for this server
      */
     private String directory;
+    
+    /**
+     * Basic constructor that will initialize
+     * the directory to "".
+     */
+    public BaseServer() {
+        directory = "";
+        isRewriting = false;
+    }   
 
     /**
-     * @see net.sf.j2ep.Server#getFullPath()
+     * Will not need any wrapping to the default request is
+     * returned.
+     * 
+     * @see net.sf.j2ep.Server#wrapRequest(javax.servlet.ServletRequest)
      */
-    public String getFullPath() {
-        return domainName + directory;
+    public HttpServletRequest wrapRequest(ServletRequest request) {
+        return (HttpServletRequest) request;
     }
     
     /**
@@ -74,6 +84,43 @@ public class BaseServer implements Server {
      */
     public String getDirectory() {
         return directory;
+    }
+
+    /**
+     * @see net.sf.j2ep.Server#getRule()
+     */
+    public Rule getRule() {
+        return rule;
+    }
+
+    /**
+     * @see net.sf.j2ep.Server#isRewriting()
+     */
+    public boolean isRewriting() {
+        return isRewriting;
+    }
+    
+    /**
+     * Set if this server wants absolute links mapped
+     * for this server to be rewritten.
+     * 
+     * @param rewrite Should be true if we want to do rewriting
+     */
+    public void setIsRewriting(String rewrite) {
+        if (rewrite != null && rewrite.equals("true")) {
+            isRewriting = true;
+        }
+    }
+    
+    /**
+     * @see net.sf.j2ep.Server#setRule(net.sf.j2ep.Rule)
+     */
+    public void setRule(Rule rule) {
+        if (rule == null) {
+            throw new IllegalArgumentException("The rule cannot be null.");
+        } else {
+            this.rule = rule;
+        }
     }
     
     /**
@@ -100,43 +147,6 @@ public class BaseServer implements Server {
         } else {
             this.directory = directory;
         }
-    }
-
-    /**
-     * @see net.sf.j2ep.Server#setRule(net.sf.j2ep.Rule)
-     */
-    public void setRule(Rule rule) {
-        if (rule == null) {
-            throw new IllegalArgumentException("The rule cannot be null.");
-        } else {
-            this.rule = rule;
-        }
-    }
-
-    /**
-     * @see net.sf.j2ep.Server#getRule()
-     */
-    public Rule getRule() {
-        return rule;
-    }
-    
-    /**
-     * Set if this server wants absolute links mapped
-     * for this server to be rewritten.
-     * 
-     * @param rewrite Should be true if we want to do rewriting
-     */
-    public void setIsRewriting(String rewrite) {
-        if (rewrite != null && rewrite.equals("true")) {
-            isRewriting = true;
-        }
-    }
-
-    /**
-     * @see net.sf.j2ep.Server#isRewriting()
-     */
-    public boolean isRewriting() {
-        return isRewriting;
     }
 
 }
