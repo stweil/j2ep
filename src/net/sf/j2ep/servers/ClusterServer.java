@@ -18,7 +18,6 @@ package net.sf.j2ep.servers;
 
 import java.util.HashMap;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -65,25 +64,26 @@ public class ClusterServer extends BaseServer {
      * a session make sure that the server handling this
      * request is the same as the one that created the session.
      * 
-     * @see net.sf.j2ep.Server#wrapRequest(javax.servlet.ServletRequest)
+     * @see net.sf.j2ep.Server#wrapRequest(javax.servlet.http.HttpServletRequest)
      */
-    public HttpServletRequest wrapRequest(ServletRequest request) {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
+    public HttpServletRequest wrapRequest(HttpServletRequest request) {
+        boolean needsWrappedRequest = false;
         
-        Cookie[] cookies = httpRequest.getCookies();
+        Cookie[] cookies = request.getCookies();
         for (int i=0; i < cookies.length; i++) {
             Cookie cookie = cookies[i];
             if (cookie.getName().equals("JSESSIONID")) {
+                needsWrappedRequest = true;
                 String value = cookie.getValue();
                 String serverId = value.substring(value.indexOf(".")+1);
                 currentServer.set(servers.get(serverId));
             }
         }
         
-        if (cookies.length != 0) {
-            return new SessionRewritingRequestWrapper(httpRequest); 
+        if (needsWrappedRequest) {
+            return new SessionRewritingRequestWrapper(request);
         } else {
-            return httpRequest;
+            return request;
         }
     }
 
