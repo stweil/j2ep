@@ -114,7 +114,7 @@ public class ConfigParser {
         digester.addSetNext("config/rules/rule", "addRule", "net.sf.j2ep.Rule");
 
         // Construct composite rule
-        digester.addObjectCreate("config/rules/composite-rule", "net.sf.j2ep.rules.CompositeRule");
+        digester.addObjectCreate("config/rules/composite-rule", null, "className");
         digester.addSetProperties("config/rules/composite-rule"); 
         // Construct rule for the composite rule
         digester.addObjectCreate("config/rules/composite-rule/rule", null, "className");
@@ -137,13 +137,27 @@ public class ConfigParser {
         
         // Construct server map
         digester.addObjectCreate("config/servers", HashMap.class);
+        org.apache.commons.digester.Rule addRule = new CallMethodRule(1, "put", 2);
+        
+        // Create servers
         digester.addObjectCreate("config/servers/server", null, "className");
         digester.addSetProperties("config/servers/server"); 
-        
-        org.apache.commons.digester.Rule r = new CallMethodRule(1, "put", 2);
-        digester.addRule("config/servers/server", r);        
+        // Add servers 
+        digester.addRule("config/servers/server", addRule);        
         digester.addCallParam("config/servers/server", 0, "id");
         digester.addCallParam("config/servers/server", 1, true);
+        
+        // Create cluster server
+        digester.addObjectCreate("config/servers/cluster-server", null, "className");
+        digester.addSetProperties("config/servers/cluster-server"); 
+        // Create the servers in this cluster
+        digester.addObjectCreate("config/servers/cluster-server/server", null, "className");
+        digester.addSetProperties("config/servers/cluster-server/server"); 
+        digester.addSetNext("config/servers/cluster-server/server", "addServer", "net.sf.j2ep.Server");
+        // Add cluster server
+        digester.addRule("config/servers/cluster-server", addRule);        
+        digester.addCallParam("config/servers/cluster-server", 0, "id");
+        digester.addCallParam("config/servers/cluster-server", 1, true);
         
         // Construct server
         return (HashMap) digester.parse(data);
