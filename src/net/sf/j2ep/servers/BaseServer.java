@@ -37,6 +37,11 @@ public class BaseServer implements Server {
     private Rule rule;
     
     /** 
+     * The id for the rule we are mapped to.
+     */
+    private String ruleId;
+    
+    /** 
      * Marks if this rule server will do any
      * rewriting of links.
      */
@@ -91,6 +96,13 @@ public class BaseServer implements Server {
     public Rule getRule() {
         return rule;
     }
+    
+    /**
+     * @see net.sf.j2ep.Server#getRuleId()
+     */
+    public String getRuleId() {
+        return ruleId;
+    }
 
     /**
      * @see net.sf.j2ep.Server#isRewriting()
@@ -98,6 +110,7 @@ public class BaseServer implements Server {
     public boolean isRewriting() {
         return isRewriting;
     }
+
     
     /**
      * Set if this server wants absolute links mapped
@@ -119,6 +132,18 @@ public class BaseServer implements Server {
             throw new IllegalArgumentException("The rule cannot be null.");
         } else {
             this.rule = rule;
+        }
+    }
+    
+    /**
+     * Sets the rule we are mapped to.
+     * @param ruleId The id for the rule
+     */
+    public void setRuleId(String ruleId) {
+        if (ruleId == null) {
+            throw new IllegalArgumentException("The rule id cannot be null.");
+        } else {
+            this.ruleId = ruleId;
         }
     }
     
@@ -147,5 +172,4 @@ public class BaseServer implements Server {
             this.directory = directory;
         }
     }
-
 }

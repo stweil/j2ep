@@ -30,11 +30,6 @@ import net.sf.j2ep.Rule;
  */
 public abstract class BaseRule implements Rule {
     
-    /** 
-     * The servers id, used for mapping the correct server.
-     */
-    private String serverId;
-    
     /**
      * @see net.sf.j2ep.Rule#process(java.lang.String)
      */
@@ -64,19 +59,5 @@ public abstract class BaseRule implements Rule {
         buffer.append("]");
 
         return buffer.toString();
-    }
-
-    /**
-     * @see net.sf.j2ep.Rule#getServerId()
-     */
-    public String getServerId() {
-        return serverId;
-    }
-
-    /**
-     * @param serverId
-     */
-    public void setServerId(String serverId) {
-        this.serverId = serverId;
     }
 }

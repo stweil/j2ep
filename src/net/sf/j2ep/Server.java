@@ -79,4 +79,13 @@ public interface Server {
      * @return true if the rule should be rewritten, false otherwise
      */
     boolean isRewriting();
+    
+    /**
+     * Returns the rule id for the server connected with this server.
+     * This should only be used when creating server from a XML mapping.
+     * Otherwise use the getRule instead.
+     * 
+     * @return The id for the rule mapped to this server
+     */
+    String getRuleId();
 }

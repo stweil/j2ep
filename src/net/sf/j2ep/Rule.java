@@ -65,19 +65,4 @@ public interface Rule {
      * @return The reverted URI
      */
     String revert(String uri);
-    
-    /**
-     * Returns the server id for the server connected with this rule.
-     * This should only be used when creating rules from a XML mapping.
-     * 
-     * I think it is more logical to be mapping rules to server, but from
-     * a program point of view it's more ideal to have the servers map
-     * rules. This can create some confusion but you can only get the 
-     * rule from a server. Getting a server from a rule wont work.
-     * 
-     * @return The server id
-     * @see Server#getRule()
-     */
-    String getServerId();
-
 }

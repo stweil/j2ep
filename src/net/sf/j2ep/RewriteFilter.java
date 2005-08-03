@@ -18,7 +18,6 @@ package net.sf.j2ep;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -43,14 +42,9 @@ public class RewriteFilter implements Filter {
     private static Log log;
     
     /** 
-     * The rule chain, will be traversed to find a matching rule.
+     * The server chain, will be traversed to find a matching server.
      */
-    private RuleChain ruleChain;
-    
-    /** 
-     * A collection of servers, used when we are rewriting absolute links.
-     */
-    private Collection serverCollection;
+    private ServerChain serverChain;
 
 
     /**
@@ -76,7 +70,7 @@ public class RewriteFilter implements Filter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             
-            Server server = ruleChain.evaluate(httpRequest);
+            Server server = serverChain.evaluate(httpRequest);
             if (server == null) {
                 log.info("Could not find a rule for this request, will not do anything.");
                 filterChain.doFilter(request, response);
@@ -87,7 +81,7 @@ public class RewriteFilter implements Filter {
                 //TODO make better way for this, some permanent check at init maybe?
                 String ownHostName = request.getServerName() + ":" + request.getServerPort();
                 UrlRewritingResponseWrapper wrappedResponse;
-                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, server, ownHostName, httpRequest.getContextPath(), serverCollection);
+                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, server, ownHostName, httpRequest.getContextPath(), serverChain);
                 
                 filterChain.doFilter(httpRequest, wrappedResponse);
 
@@ -113,9 +107,7 @@ public class RewriteFilter implements Filter {
             try {
                 File dataFile = new File(filterConfig.getServletContext().getRealPath(data));
                 ConfigParser parser = new ConfigParser(dataFile);
-                ruleChain = parser.getRuleChain();
-                serverCollection = parser.getServerCollection();
-                
+                serverChain = parser.getServerChain();               
             } catch (Exception e) {
                 throw new ServletException(e);
             }  
@@ -130,8 +122,7 @@ public class RewriteFilter implements Filter {
      */
     public void destroy() {
         log = null;
-        ruleChain = null;
-        serverCollection = null;
+        serverChain = null;
     }
     
     
