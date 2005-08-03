@@ -38,7 +38,12 @@ public class ClusterServer extends BaseServer {
     /** 
      * This threads server.
      */
-    protected ThreadLocal currentServer = new ThreadLocal();
+    protected ThreadLocal currentServer = new ThreadLocal() {
+        protected synchronized Object initialValue() {
+            currentServerNumber = (currentServerNumber + 1)%numberOfServers;
+            return servers.get("server" + currentServerNumber);
+        }
+    };
     
     /** 
      * The lists of servers in out cluster,
@@ -48,8 +53,17 @@ public class ClusterServer extends BaseServer {
     /** 
      * The current number of servers, only used at
      * when the servers are added to the hash map.
+     * It is assumed that this variable is only modified
+     * in a single threaded environment.
      */
     private int numberOfServers;
+    
+    /** 
+     * The currentServer we are using. Since many threads
+     * might access this field at the same time it has to
+     * be volatile.
+     */
+    private volatile int currentServerNumber;
     
     /**
      * Basic constructor
@@ -57,6 +71,7 @@ public class ClusterServer extends BaseServer {
     public ClusterServer() {
         servers = new HashMap();
         numberOfServers = 0;
+        currentServerNumber = 0;
     }
     
     /**
@@ -124,7 +139,8 @@ public class ClusterServer extends BaseServer {
             }
         }
         server.setDomainName(domainName);
-        servers.put("server"+numberOfServers++, server);
+        servers.put("server" + numberOfServers, server);
+        numberOfServers++;
     }
 
 }
