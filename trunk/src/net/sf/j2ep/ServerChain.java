@@ -16,8 +16,6 @@
 
 package net.sf.j2ep;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,10 +23,10 @@ import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * A RuleChain is a list of rules
+ * A ServerChain is a list of server
  * considered in order.  The first
- * rule to succeed stops the evaluation
- * of rules. 
+ * server with a rule that successfully matches 
+ * tops the evaluation of servers
  * 
  * This is only a slightly modified version of the 
  * RuleChain used with the balancer webapp shipped 
@@ -36,55 +34,50 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Anders Nyman, Yoav Shapira
  */
-public class RuleChain{
+public class ServerChain{
     
     /**
-     * The list of rules to evaluate.
+     * The list of servers to evaluate.
      */
-    private List rules;
-    
-    /** 
-     * The map of servers.
-     */
-    private HashMap servers;
+    private List servers;
 
     /**
      * Constructor.
      */
-    public RuleChain() {
-        rules = new ArrayList();
+    public ServerChain(List servers) {
+        this.servers = servers;
     }
 
     /**
-     * Returns the list of rules
+     * Returns the list of servers
      * to evaluate.
      *
-     * @return The rules
+     * @return The servers
      */
-    protected List getRules() {
-        return rules;
+    protected List getServers() {
+        return servers;
     }
 
     /**
      * Returns an iterator over
-     * the list of rules to evaluate.
+     * the list of servers to evaluate.
      *
      * @return The iterator
      */
-    protected Iterator getRuleIterator() {
-        return getRules().iterator();
+    public Iterator getServerIterator() {
+        return getServers().iterator();
     }
 
     /**
-     * Adds a rule to evaluate.
+     * Adds a server to evaluate.
      *
-     * @param theRule The rule to add
+     * @param theServer The server to add
      */
-    public void addRule(Rule theRule) {
-        if (theRule == null) {
+    public void addServer(Server theServer) {
+        if (theServer == null) {
             throw new IllegalArgumentException("The rule cannot be null.");
         } else {
-            getRules().add(theRule);
+            getServers().add(theServer);
         }
     }
 
@@ -98,26 +91,22 @@ public class RuleChain{
      * @see Rule#matches(HttpServletRequest)
      */
     public Server evaluate(HttpServletRequest request) {
-        Iterator itr = getRuleIterator();
+        Iterator itr = getServerIterator();
 
-        Rule currentRule = null;
+        Server currentServer = null;
         boolean currentMatches = false;
 
         while (itr.hasNext() && !currentMatches) {
-            currentRule = (Rule) itr.next();
-            currentMatches = currentRule.matches(request);
+            currentServer = (Server) itr.next();
+            currentMatches = currentServer.getRule().matches(request);
         }
         
         if (currentMatches) {
-            return (Server) servers.get(currentRule.getServerId());
+            return currentServer;
         } else {
             return null;
         }
         
-    }
-    
-    public void setServers(HashMap servers) {
-        this.servers = servers;
     }
 
     /**
@@ -132,12 +121,12 @@ public class RuleChain{
         buffer.append(getClass().getName());
         buffer.append(": ");
 
-        Iterator iter = getRuleIterator();
-        Rule currentRule = null;
+        Iterator iter = getServerIterator();
+        Server currentServer = null;
 
         while (iter.hasNext()) {
-            currentRule = (Rule) iter.next();
-            buffer.append(currentRule);
+            currentServer = (Server) iter.next();
+            buffer.append(currentServer);
 
             if (iter.hasNext()) {
                 buffer.append(", ");

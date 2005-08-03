@@ -18,7 +18,6 @@ package net.sf.j2ep;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,9 +54,9 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
     private String contextPath;
     
     /** 
-     * A collection of the servers.
+     * The servers.
      */
-    private Collection serverCollection;
+    private ServerChain serverChain;
     
     
     /** 
@@ -71,11 +70,11 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
      * 
      * @param originalStream The stream we are wrapping
      */
-    public UrlRewritingOutputStream(ServletOutputStream originalStream, String ownHostName, String contextPath, Collection serverCollection) {
+    public UrlRewritingOutputStream(ServletOutputStream originalStream, String ownHostName, String contextPath, ServerChain serverChain) {
         this.originalStream = originalStream;
         this.ownHostName = ownHostName;
         this.contextPath = contextPath;
-        this.serverCollection = serverCollection;
+        this.serverChain = serverChain;
         
         stream = new ByteArrayOutputStream();
     }
@@ -176,7 +175,9 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
      * @return The matching server, if no server is found null is returned
      */
     private Server getServerMapped(String location) {
-        Iterator itr = serverCollection.iterator();
+        //TODO use some method in serverChain instead. 
+        //Probably create some new serverChain.match(location)
+        Iterator itr = serverChain.getServerIterator();
         Server match = null;
 
         while (itr.hasNext() && match == null) {

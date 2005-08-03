@@ -17,7 +17,6 @@
 package net.sf.j2ep;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -40,19 +39,9 @@ import org.apache.commons.logging.LogFactory;
 public class ConfigParser {
     
     /**
-     * The resulting rule chain.
+     * The resulting server chain.
      */
-    private RuleChain ruleChain;
-    
-    /** 
-     * The servers mapped by id.
-     */
-    private HashMap serverIdMap;
-    
-    /** 
-     * A collection of the servers.
-     */
-    private Collection serverCollection;
+    private ServerChain serverChain;
     
     /** 
      * A logging instance supplied by commons-logging.
@@ -69,32 +58,22 @@ public class ConfigParser {
     public ConfigParser(File data) {
         log = LogFactory.getLog("org.apache.webapp.reverseproxy");
         try {
-            ruleChain = createRuleChain(data);
-            serverIdMap = createServerIdMap(data);
-            ruleChain.setServers(serverIdMap);
-            serverCollection = createServerCollection(serverIdMap);
-            mapServersToRules(ruleChain, serverIdMap);
+            LinkedList servers = createServerList(data);
+            HashMap ruleIdMap = createRuleIdMap(data);
+            mapServersToRules(servers, ruleIdMap);
+            serverChain = new ServerChain(servers);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Returns the parsed rule chain.
+     * Returns the parsed server chain.
      *
-     * @return The resulting RuleChain
+     * @return The resulting ServerChain
      */
-    public RuleChain getRuleChain() {
-        return ruleChain;
-    }
-    
-    /**
-     * Returns the map of servers based on location.
-     * 
-     * @return The servers
-     */
-    public Collection getServerCollection() {
-        return serverCollection;
+    public ServerChain getServerChain() {
+        return serverChain;
     }
 
     /**
@@ -102,51 +81,18 @@ public class ConfigParser {
      *
      * @return The rules all put into a rule chain
      */
-    private RuleChain createRuleChain(File data) throws Exception{
+    private LinkedList createServerList(File data) throws Exception{
         Digester digester = new Digester();
         digester.setUseContextClassLoader(true);
         
-        // Construct rule chain
-        digester.addObjectCreate("config/rules", RuleChain.class);
-
-        // Construct rule
-        digester.addObjectCreate("config/rules/rule", null, "className");
-        digester.addSetProperties("config/rules/rule");   
-        digester.addSetNext("config/rules/rule", "addRule", "net.sf.j2ep.Rule");
-
-        // Construct composite rule
-        digester.addObjectCreate("config/rules/composite-rule", null, "className");
-        digester.addSetProperties("config/rules/composite-rule"); 
-        // Construct rule for the composite rule
-        digester.addObjectCreate("config/rules/composite-rule/rule", null, "className");
-        digester.addSetProperties("config/rules/composite-rule/rule"); 
-        digester.addSetNext("config/rules/composite-rule/rule", "addRule", "net.sf.j2ep.Rule");
-        // Add rule to chain
-        digester.addSetNext("config/rules/composite-rule", "addRule", "net.sf.j2ep.Rule");
-        
-        return (RuleChain) digester.parse(data);
-    }
-    
-    /**
-     * Creates the servers mapped by id.
-     *
-     * @return A hash map containing all the servers
-     */
-    private HashMap createServerIdMap(File data) throws Exception{
-        Digester digester = new Digester();
-        digester.setUseContextClassLoader(true);
-        
-        // Construct server map
-        digester.addObjectCreate("config/servers", HashMap.class);
-        org.apache.commons.digester.Rule addRule = new CallMethodRule(1, "put", 2);
+        // Construct server list
+        digester.addObjectCreate("config/servers", LinkedList.class);
         
         // Create servers
         digester.addObjectCreate("config/servers/server", null, "className");
         digester.addSetProperties("config/servers/server"); 
-        // Add servers 
-        digester.addRule("config/servers/server", addRule);        
-        digester.addCallParam("config/servers/server", 0, "id");
-        digester.addCallParam("config/servers/server", 1, true);
+        // Add server to list
+        digester.addSetNext("config/servers/server", "add");
         
         // Create cluster server
         digester.addObjectCreate("config/servers/cluster-server", null, "className");
@@ -155,49 +101,63 @@ public class ConfigParser {
         digester.addObjectCreate("config/servers/cluster-server/server", null, "className");
         digester.addSetProperties("config/servers/cluster-server/server"); 
         digester.addSetNext("config/servers/cluster-server/server", "addServer", "net.sf.j2ep.Server");
+        // Add cluster to list
+        digester.addSetNext("config/servers/server", "add");
+        
+        return (LinkedList) digester.parse(data);
+    }
+    
+    /**
+     * Creates the rules mapped by id.
+     *
+     * @return A hash map containing all the rules
+     */
+    private HashMap createRuleIdMap(File data) throws Exception{
+        Digester digester = new Digester();
+        digester.setUseContextClassLoader(true);
+        
+        // Construct rule map
+        digester.addObjectCreate("config/rules", HashMap.class);
+        org.apache.commons.digester.Rule addRule = new CallMethodRule(1, "put", 2);
+        
+        // Create rule
+        digester.addObjectCreate("config/rules/rule", null, "className");
+        digester.addSetProperties("config/rules/rule"); 
+        // Add rule 
+        digester.addRule("config/rules/rule", addRule);        
+        digester.addCallParam("config/rules/rule", 0, "id");
+        digester.addCallParam("config/rules/rule", 1, true);
+        
+        // Create composite rule
+        digester.addObjectCreate("config/rules/composite-rule", null, "className");
+        digester.addSetProperties("config/rules/composite-rule"); 
+        // Create the rules in this composite rule
+        digester.addObjectCreate("config/rules/composite-rule/rule", null, "className");
+        digester.addSetProperties("config/rules/composite-rule/rule"); 
+        digester.addSetNext("config/rules/composite-rule/rule", "addRule", "net.sf.j2ep.Rule");
         // Add cluster server
-        digester.addRule("config/servers/cluster-server", addRule);        
-        digester.addCallParam("config/servers/cluster-server", 0, "id");
-        digester.addCallParam("config/servers/cluster-server", 1, true);
+        digester.addRule("config/rules/composite-rule", addRule);        
+        digester.addCallParam("config/rules/composite-rule", 0, "id");
+        digester.addCallParam("config/rules/composite-rule", 1, true);
         
         // Construct server
         return (HashMap) digester.parse(data);
     }
     
     /**
-     * Creates a collection with all the servers that want to 
-     * do rewriting of absolute links.
-     * 
-     * @param map A map of all the servers
-     * @return The collection with the rewriting servers
-     */
-    private Collection createServerCollection(HashMap map) {
-        Collection col = new LinkedList();
-        Iterator itr = map.values().iterator();
-        
-        while (itr.hasNext()) {
-            Server server = (Server) itr.next();
-            if (server.isRewriting()) {
-                col.add(server);
-            }
-        }        
-        return col;
-    }
-    
-    /**
-     * Maps the servers to the rules using the rules specified serverId.
-     * The reason that the servers isn't mapped directly on creation
-     * of the rules is limitation in the Digester.
+     * Maps the rules to the servers using the servers specified ruleId.
+     * The reason that the rules aren't mapped directly on creation
+     * of the server is limitation in the Digester.
      * 
      * @param rules The rules
      * @param servers The servers
      */
-    private void mapServersToRules(RuleChain rules, HashMap servers) {
-        Iterator itr = rules.getRuleIterator();
+    private void mapServersToRules(LinkedList servers, HashMap rules) {
+        log.debug("These are the server to rule mappings");
+        Iterator itr = servers.iterator();
         while(itr.hasNext()) {
-            log.debug("These are the rule to server mappings");
-            Rule rule = (Rule) itr.next();
-            Server server = (Server) servers.get(rule.getServerId());
+            Server server = (Server) itr.next();
+            Rule rule = (Rule) rules.get(server.getRuleId());
             if (server != null) {
                 server.setRule(rule);
                 log.debug("Rule " + rule + " using server " + server);

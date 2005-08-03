@@ -51,9 +51,9 @@ import org.apache.commons.logging.LogFactory;
 public class ProxyFilter implements Filter {
 
     /** 
-     * The rule chain, will be traversed to find a matching rule.
+     * The server chain, will be traversed to find a matching server.
      */
-    private RuleChain ruleChain;
+    private ServerChain serverChain;
     
     /** 
      * Logging element supplied by commons-logging.
@@ -80,7 +80,7 @@ public class ProxyFilter implements Filter {
 
         Server server = (Server) httpRequest.getAttribute("proxyServer");  
         if (server == null) {
-            server = ruleChain.evaluate(httpRequest);
+            server = serverChain.evaluate(httpRequest);
         }
         
         if (server == null) {
@@ -186,12 +186,12 @@ public class ProxyFilter implements Filter {
         
         String data = filterConfig.getInitParameter("dataUrl");
         if (data == null) {
-            ruleChain = null;
+            serverChain = null;
         } else {
             try {
                 File dataFile = new File(filterConfig.getServletContext().getRealPath(data));
                 ConfigParser parser = new ConfigParser(dataFile);
-                ruleChain = parser.getRuleChain();               
+                serverChain = parser.getServerChain();               
             } catch (Exception e) {
                 throw new ServletException(e);
             } 
