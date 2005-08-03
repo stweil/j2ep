@@ -78,27 +78,10 @@ public class ClusterServer extends BaseServer {
      * @see net.sf.j2ep.Server#wrapRequest(javax.servlet.http.HttpServletRequest)
      */
     public HttpServletRequest wrapRequest(HttpServletRequest request) {
-        boolean needsWrappedRequest = false;
-        
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (int i=0; i < cookies.length; i++) {
-                Cookie cookie = cookies[i];
-                if (cookie.getName().equals("JSESSIONID")) {
-                    String value = cookie.getValue();
-                    String serverId = value.substring(value.indexOf(".")+1);
-                    if (serverId.startsWith("server")) {
-                        Server server = (Server) servers.get(serverId);
-                        if (server != null) {
-                            needsWrappedRequest = true;
-                            currentServer.set(server);
-                        }
-                    }
-                }
-            } 
-        }
-        
-        if (needsWrappedRequest) {
+        String serverId = getServerIdFromCookie(request.getCookies());
+        Server server = (Server) servers.get(serverId);
+        if (server != null) {
+            currentServer.set(server);
             return new SessionRewritingRequestWrapper(request);
         } else {
             return request;
@@ -106,10 +89,34 @@ public class ClusterServer extends BaseServer {
     }
 
     /**
+     * Locates any specification of which server that issued a
+     * session. If there is no session or the session isn't mapped
+     * to a specific server null is returned.
+     * 
+     * @param cookies The cookies so look for a session in
+     * @return the server's ID or null if no server is found
+     */
+    private String getServerIdFromCookie(Cookie[] cookies) {
+        String serverId = null;
+        if (cookies != null) {
+            for (int i=0; i < cookies.length; i++) {
+                Cookie cookie = cookies[i];
+                if (cookie.getName().equals("JSESSIONID")) {
+                    String value = cookie.getValue();
+                    String id = value.substring(value.indexOf(".")+1);
+                    if (id.startsWith("server")) {
+                        serverId = id;
+                    }
+                }
+            } 
+        }
+        return serverId;
+    }
+
+    /**
      * @see net.sf.j2ep.Server#getDomainName()
      */
     public String getDomainName() {
-        System.out.println(((Server) currentServer.get()).getDomainName());
         return ((Server) currentServer.get()).getDomainName();
     }
 
@@ -117,7 +124,6 @@ public class ClusterServer extends BaseServer {
      * @see net.sf.j2ep.Server#getDirectory()
      */
     public String getDirectory() {
-        System.out.println(((Server) currentServer.get()).getDirectory());
         return ((Server) currentServer.get()).getDirectory();
     }
     
