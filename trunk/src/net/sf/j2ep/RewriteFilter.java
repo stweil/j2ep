@@ -76,22 +76,18 @@ public class RewriteFilter implements Filter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             
-            Rule rule = ruleChain.evaluate(httpRequest);
-            if (rule == null) {
+            Server server = ruleChain.evaluate(httpRequest);
+            if (server == null) {
                 log.info("Could not find a rule for this request, will not do anything.");
                 filterChain.doFilter(request, response);
             } else {
-                Server server = rule.getServer();
+                httpRequest.setAttribute("proxyServer", server);
                 httpRequest = server.wrapRequest(httpRequest);
-                
-                String uri = rule.process(getURI(httpRequest));
-                String url = request.getScheme() + "://" + server.getDomainName() + server.getDirectory() + uri;
-                httpRequest.setAttribute("proxyURL", url);
                 
                 //TODO make better way for this, some permanent check at init maybe?
                 String ownHostName = request.getServerName() + ":" + request.getServerPort();
                 UrlRewritingResponseWrapper wrappedResponse;
-                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, rule, ownHostName, httpRequest.getContextPath(), serverCollection);
+                wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, server, ownHostName, httpRequest.getContextPath(), serverCollection);
                 
                 filterChain.doFilter(httpRequest, wrappedResponse);
 
@@ -100,21 +96,7 @@ public class RewriteFilter implements Filter {
         }
     }
     
-    /**
-     * Will build a URI but including the Query String. That means that it really
-     * isn't a URI, but quite near.
-     * 
-     * @param httpRequest Request to get the URI and query string from
-     * @return The URI for this request including the query string
-     */
-    private String getURI(HttpServletRequest httpRequest) {
-        String contextPath = httpRequest.getContextPath();
-        String uri = httpRequest.getRequestURI().substring(contextPath.length());
-        if (httpRequest.getQueryString() != null) {
-            uri += "?" + httpRequest.getQueryString();
-        }
-        return uri;
-    }
+    
     
     /**
      * Initialize.
@@ -127,17 +109,18 @@ public class RewriteFilter implements Filter {
         String data = filterConfig.getInitParameter("dataUrl");
         if (data == null) {
             throw new ServletException("dataUrl is required.");
+        } else {
+            try {
+                File dataFile = new File(filterConfig.getServletContext().getRealPath(data));
+                ConfigParser parser = new ConfigParser(dataFile);
+                ruleChain = parser.getRuleChain();
+                serverCollection = parser.getServerCollection();
+                
+            } catch (Exception e) {
+                throw new ServletException(e);
+            }  
         }
-        try {
-            File dataFile = new File(filterConfig.getServletContext()
-                    .getRealPath(data));
-            ConfigParser parser = new ConfigParser(dataFile);
-            ruleChain = parser.getRuleChain();
-            serverCollection = parser.getServerCollection();
-            
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
+        
     }
 
     /**

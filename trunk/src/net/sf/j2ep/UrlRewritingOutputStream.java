@@ -106,10 +106,10 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
      * found are rewritten. After this the stream is written
      * to the response.
      * 
-     * @param rule The rule knowing how to rewrite
+     * @param server The server that we are using for this request.
      * @throws IOException Is thrown when there is a problem with the streams
      */
-    public void rewrite(Rule rule) throws IOException {
+    public void rewrite(Server server) throws IOException {
         /*
          * Using regex can be quite harsh sometimes so here is how
          * the regex trying to find links works
@@ -154,9 +154,9 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
                            + contextPath + link + "$2");
                }
            } else {
-               String serverDir = rule.getServer().getDirectory();
+               String serverDir = server.getDirectory();
                if ( serverDir.equals("") || link.startsWith(serverDir+"/") ) {
-                   link = rule.revert( link.substring(serverDir.length()) );
+                   link = server.getRule().revert( link.substring(serverDir.length()) );
                    matcher.appendReplacement(page, "$1$2" + contextPath + link
                        + "$2");
                }
