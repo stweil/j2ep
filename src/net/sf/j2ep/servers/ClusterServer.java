@@ -36,15 +36,18 @@ public class ClusterServer extends BaseServer {
     /**
      * This threads server.
      */
-    protected ThreadLocal currentServer = new ThreadLocal() {
+    private ThreadLocal currentServer = new ThreadLocal() {
         protected synchronized Object initialValue() {
-            System.out.println();
-            System.out.println(currentServerNumber);
             currentServerNumber = (currentServerNumber + 1) % numberOfServers;
-            System.out.println("server" + currentServerNumber);
             return servers.get("server" + currentServerNumber);
         }
     };
+    
+    /**
+     * The currentServer we are using. Since many threads might access this
+     * field at the same time it has to be volatile.
+     */
+    private volatile int currentServerNumber;
     
     /** 
      * The lists of servers in out cluster,
@@ -57,12 +60,7 @@ public class ClusterServer extends BaseServer {
      * single threaded environment.
      */
     private int numberOfServers;
-    
-    /**
-     * The currentServer we are using. Since many threads might access this
-     * field at the same time it has to be volatile.
-     */
-    private volatile int currentServerNumber;
+
 
     /**
      * Basic constructor
@@ -90,16 +88,17 @@ public class ClusterServer extends BaseServer {
                     String value = cookie.getValue();
                     String serverId = value.substring(value.indexOf(".")+1);
                     if (serverId.startsWith("server")) {
-                        currentServer.set(servers.get(serverId));
-                        needsWrappedRequest = true;
+                        Server server = (Server) servers.get(serverId);
+                        if (server != null) {
+                            needsWrappedRequest = true;
+                            currentServer.set(server);
+                        }
                     }
                 }
             } 
         }
         
-        
         if (needsWrappedRequest) {
-            System.out.println("wrapping");
             return new SessionRewritingRequestWrapper(request);
         } else {
             return request;
@@ -110,6 +109,7 @@ public class ClusterServer extends BaseServer {
      * @see net.sf.j2ep.Server#getDomainName()
      */
     public String getDomainName() {
+        System.out.println(((Server) currentServer.get()).getDomainName());
         return ((Server) currentServer.get()).getDomainName();
     }
 
@@ -117,6 +117,7 @@ public class ClusterServer extends BaseServer {
      * @see net.sf.j2ep.Server#getDirectory()
      */
     public String getDirectory() {
+        System.out.println(((Server) currentServer.get()).getDirectory());
         return ((Server) currentServer.get()).getDirectory();
     }
     
