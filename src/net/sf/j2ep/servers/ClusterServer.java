@@ -37,18 +37,18 @@ public class ClusterServer extends BaseServer {
      * This threads server.
      */
     private ThreadLocal currentServer = new ThreadLocal() {
+        /**
+         * The currentServer we are using. Since many threads might access this
+         * field at the same time it has to be volatile.
+         */
+        private volatile int currentServerNumber;
+        
         protected synchronized Object initialValue() {
             currentServerNumber = (currentServerNumber + 1) % numberOfServers;
             return servers.get("server" + currentServerNumber);
         }
     };
-    
-    /**
-     * The currentServer we are using. Since many threads might access this
-     * field at the same time it has to be volatile.
-     */
-    private volatile int currentServerNumber;
-    
+
     /** 
      * The lists of servers in out cluster,
      */
