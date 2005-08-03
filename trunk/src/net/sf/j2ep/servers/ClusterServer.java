@@ -24,23 +24,24 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.j2ep.Server;
 
 /**
- * A server implementation that have multiple domains
- * to choose from. When a request is received one domain
- * is chosen to handle the request. If the request is
- * linked to a session this server will make sure that it's
- * the domain that created the session that will process this 
- * request.
- *
+ * A server implementation that have multiple domains to choose from. When a
+ * request is received one domain is chosen to handle the request. If the
+ * request is linked to a session this server will make sure that it's the
+ * domain that created the session that will process this request.
+ * 
  * @author Anders Nyman
  */
 public class ClusterServer extends BaseServer {
-    
-    /** 
+
+    /**
      * This threads server.
      */
     protected ThreadLocal currentServer = new ThreadLocal() {
         protected synchronized Object initialValue() {
-            currentServerNumber = (currentServerNumber + 1)%numberOfServers;
+            System.out.println();
+            System.out.println(currentServerNumber);
+            currentServerNumber = (currentServerNumber + 1) % numberOfServers;
+            System.out.println("server" + currentServerNumber);
             return servers.get("server" + currentServerNumber);
         }
     };
@@ -50,34 +51,31 @@ public class ClusterServer extends BaseServer {
      */
     protected HashMap servers;
     
-    /** 
-     * The current number of servers, only used at
-     * when the servers are added to the hash map.
-     * It is assumed that this variable is only modified
-     * in a single threaded environment.
+    /**
+     * The current number of servers, only used at when the servers are added to
+     * the hash map. It is assumed that this variable is only modified in a
+     * single threaded environment.
      */
     private int numberOfServers;
     
-    /** 
-     * The currentServer we are using. Since many threads
-     * might access this field at the same time it has to
-     * be volatile.
+    /**
+     * The currentServer we are using. Since many threads might access this
+     * field at the same time it has to be volatile.
      */
     private volatile int currentServerNumber;
-    
+
     /**
      * Basic constructor
      */
     public ClusterServer() {
         servers = new HashMap();
         numberOfServers = 0;
-        currentServerNumber = 0;
     }
     
     /**
-     * Will identify a session in the request and if there is
-     * a session make sure that the server handling this
-     * request is the same as the one that created the session.
+     * Will identify a session in the request and if there is a session make
+     * sure that the server handling this request is the same as the one that
+     * created the session.
      * 
      * @see net.sf.j2ep.Server#wrapRequest(javax.servlet.http.HttpServletRequest)
      */
@@ -85,17 +83,23 @@ public class ClusterServer extends BaseServer {
         boolean needsWrappedRequest = false;
         
         Cookie[] cookies = request.getCookies();
-        for (int i=0; i < cookies.length; i++) {
-            Cookie cookie = cookies[i];
-            if (cookie.getName().equals("JSESSIONID")) {
-                needsWrappedRequest = true;
-                String value = cookie.getValue();
-                String serverId = value.substring(value.indexOf(".")+1);
-                currentServer.set(servers.get(serverId));
-            }
+        if (cookies != null) {
+            for (int i=0; i < cookies.length; i++) {
+                Cookie cookie = cookies[i];
+                if (cookie.getName().equals("JSESSIONID")) {
+                    String value = cookie.getValue();
+                    String serverId = value.substring(value.indexOf(".")+1);
+                    if (serverId.startsWith("server")) {
+                        currentServer.set(servers.get(serverId));
+                        needsWrappedRequest = true;
+                    }
+                }
+            } 
         }
         
+        
         if (needsWrappedRequest) {
+            System.out.println("wrapping");
             return new SessionRewritingRequestWrapper(request);
         } else {
             return request;
@@ -118,29 +122,17 @@ public class ClusterServer extends BaseServer {
     
     /**
      * This will add a server to the hashMap. 
-     * For each string we have with a server defined
-     * a new BaseServer class will be created and added
-     * to the hash map of servers.
      * 
-     * @param serverString The string representing domainName and directory
+     * @param server The server to add
      */
-    public synchronized void setServer(String serverString) {
-        BaseServer server = new BaseServer();
-        int firstSlash = serverString.indexOf("/");
-        
-        String domainName = serverString;
-        String directory;
-        
-        if (firstSlash != -1) {
-            domainName = serverString.substring(0, firstSlash);
-            if (firstSlash != serverString.length()) {
-                directory = serverString.substring(firstSlash+1); 
-                server.setDirectory(directory);
-            }
+    public synchronized void addServer(Server server) {
+        if (server == null) {
+            throw new IllegalArgumentException("Server to add cannot be null.");
+        } else {
+            servers.put("server" + numberOfServers, server);
+            System.out.println("server" + numberOfServers);
+            numberOfServers++;
         }
-        server.setDomainName(domainName);
-        servers.put("server" + numberOfServers, server);
-        numberOfServers++;
     }
 
 }
