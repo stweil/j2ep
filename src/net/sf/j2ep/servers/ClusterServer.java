@@ -23,6 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.j2ep.Server;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A server implementation that have multiple domains to choose from. When a
  * request is received one domain is chosen to handle the request. If the
@@ -33,6 +36,23 @@ import net.sf.j2ep.Server;
  */
 public class ClusterServer extends BaseServer {
 
+    /** 
+     * Logging element supplied by commons-logging.
+     */
+    private static Log log;
+    
+    /** 
+     * The lists of servers in out cluster,
+     */
+    protected HashMap servers;
+    
+    /**
+     * The current number of servers, only used at when the servers are added to
+     * the hash map. It is assumed that this variable is only modified in a
+     * single threaded environment.
+     */
+    private int numberOfServers;
+    
     /**
      * This threads server.
      */
@@ -45,21 +65,10 @@ public class ClusterServer extends BaseServer {
         
         protected synchronized Object initialValue() {
             currentServerNumber = (currentServerNumber + 1) % numberOfServers;
+            log.debug("Server: " + currentServerNumber + " mapped for this thread");
             return servers.get("server" + currentServerNumber);
         }
     };
-
-    /** 
-     * The lists of servers in out cluster,
-     */
-    protected HashMap servers;
-    
-    /**
-     * The current number of servers, only used at when the servers are added to
-     * the hash map. It is assumed that this variable is only modified in a
-     * single threaded environment.
-     */
-    private int numberOfServers;
 
 
     /**
@@ -68,6 +77,7 @@ public class ClusterServer extends BaseServer {
     public ClusterServer() {
         servers = new HashMap();
         numberOfServers = 0;
+        log = LogFactory.getLog(ClusterServer.class);
     }
     
     /**
@@ -82,6 +92,7 @@ public class ClusterServer extends BaseServer {
         Server server = (Server) servers.get(serverId);
         if (server != null) {
             currentServer.set(server);
+            log.debug("Found a server indication in the session, will use server: " + serverId);
             return new SessionRewritingRequestWrapper(request);
         } else {
             return request;
@@ -137,7 +148,6 @@ public class ClusterServer extends BaseServer {
             throw new IllegalArgumentException("Server to add cannot be null.");
         } else {
             servers.put("server" + numberOfServers, server);
-            System.out.println("server" + numberOfServers);
             numberOfServers++;
         }
     }
