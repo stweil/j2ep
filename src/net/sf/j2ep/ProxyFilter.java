@@ -16,6 +16,7 @@
 
 package net.sf.j2ep;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
@@ -50,6 +51,11 @@ import org.apache.commons.logging.LogFactory;
 public class ProxyFilter implements Filter {
 
     /** 
+     * The rule chain, will be traversed to find a matching rule.
+     */
+    private RuleChain ruleChain;
+    
+    /** 
      * Logging element supplied by commons-logging.
      */
     private static Log log;
@@ -72,13 +78,17 @@ public class ProxyFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        ResponseHandler responseHandler = null;  
+        Server server = (Server) httpRequest.getAttribute("proxyServer");  
+        if (server == null) {
+            server = ruleChain.evaluate(httpRequest);
+        }
         
-        String url = (String) httpRequest.getAttribute("proxyURL");
-        if (url == null) {
-            log.info("Didn't receive incoming URL specifying proxy location");
+        if (server == null) {
             filterChain.doFilter(request, response);
         } else {
+            String uri = server.getRule().process(getURI(httpRequest));
+            String url = request.getScheme() + "://" + server.getDomainName() + server.getDirectory() + uri;
+            ResponseHandler responseHandler = null;  
             
             try {
                 responseHandler = executeRequest(httpRequest, url);
@@ -91,7 +101,7 @@ public class ProxyFilter implements Filter {
                 httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
                 return;
             } catch (IOException e) {
-                log.error( "Problem probably with the input being send, either with a Header or the Stream", e);
+                log.error("Problem probably with the input being send, either with a Header or the Stream", e);
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
             } catch (MethodNotAllowedException e) {
@@ -102,9 +112,24 @@ public class ProxyFilter implements Filter {
             }
 
             responseHandler.process(httpResponse);
-            responseHandler.close();
+            responseHandler.close(); 
         }
-
+    }
+    
+    /**
+     * Will build a URI but including the Query String. That means that it really
+     * isn't a URI, but quite near.
+     * 
+     * @param httpRequest Request to get the URI and query string from
+     * @return The URI for this request including the query string
+     */
+    private String getURI(HttpServletRequest httpRequest) {
+        String contextPath = httpRequest.getContextPath();
+        String uri = httpRequest.getRequestURI().substring(contextPath.length());
+        if (httpRequest.getQueryString() != null) {
+            uri += "?" + httpRequest.getQueryString();
+        }
+        return uri;
     }
 
     /**
@@ -158,6 +183,19 @@ public class ProxyFilter implements Filter {
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
         httpClient.getParams().setBooleanParameter(HttpClientParams.USE_EXPECT_CONTINUE, false);
         httpClient.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+        
+        String data = filterConfig.getInitParameter("dataUrl");
+        if (data == null) {
+            ruleChain = null;
+        } else {
+            try {
+                File dataFile = new File(filterConfig.getServletContext().getRealPath(data));
+                ConfigParser parser = new ConfigParser(dataFile);
+                ruleChain = parser.getRuleChain();               
+            } catch (Exception e) {
+                throw new ServletException(e);
+            } 
+        }
     }
 
     /**

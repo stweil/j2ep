@@ -1,5 +1,5 @@
 /*
- * Copyright 2000,2004 The Apache Software Foundation.
+ * Copyright 2000,2004 Anders Nyman.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package net.sf.j2ep;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,9 +28,13 @@ import javax.servlet.http.HttpServletRequest;
  * A RuleChain is a list of rules
  * considered in order.  The first
  * rule to succeed stops the evaluation
- * of rules.
+ * of rules. 
+ * 
+ * This is only a slightly modified version of the 
+ * RuleChain used with the balancer webapp shipped 
+ * with tomcat.
  *
- * @author Yoav Shapira
+ * @author Anders Nyman, Yoav Shapira
  */
 public class RuleChain{
     
@@ -37,6 +42,11 @@ public class RuleChain{
      * The list of rules to evaluate.
      */
     private List rules;
+    
+    /** 
+     * The map of servers.
+     */
+    private HashMap servers;
 
     /**
      * Constructor.
@@ -81,13 +91,13 @@ public class RuleChain{
     /**
      * Evaluates the given request to see if
      * any of the rules matches.  Returns the
-     * the first matching rule.
+     * the server linked to the first matching rule.
      *
      * @param request The request
-     * @return The first matching rule URL, null if no rule matched the request
+     * @return The first matching server, null if no rule matched the request
      * @see Rule#matches(HttpServletRequest)
      */
-    public Rule evaluate(HttpServletRequest request) {
+    public Server evaluate(HttpServletRequest request) {
         Iterator itr = getRuleIterator();
 
         Rule currentRule = null;
@@ -99,11 +109,15 @@ public class RuleChain{
         }
         
         if (currentMatches) {
-            return currentRule;
+            return (Server) servers.get(currentRule.getServerId());
         } else {
             return null;
         }
         
+    }
+    
+    public void setServers(HashMap servers) {
+        this.servers = servers;
     }
 
     /**

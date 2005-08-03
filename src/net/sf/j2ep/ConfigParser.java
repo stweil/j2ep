@@ -71,6 +71,7 @@ public class ConfigParser {
         try {
             ruleChain = createRuleChain(data);
             serverIdMap = createServerIdMap(data);
+            ruleChain.setServers(serverIdMap);
             serverCollection = createServerCollection(serverIdMap);
             mapServersToRules(ruleChain, serverIdMap);
         } catch (Exception e) {
@@ -198,7 +199,6 @@ public class ConfigParser {
             Rule rule = (Rule) itr.next();
             Server server = (Server) servers.get(rule.getServerId());
             if (server != null) {
-                rule.setServer(server);
                 server.setRule(rule);
                 log.debug("Rule " + rule + " using server " + server);
             }

@@ -18,7 +18,6 @@
 package net.sf.j2ep.rules;
 
 import net.sf.j2ep.Rule;
-import net.sf.j2ep.Server;
 
 /**
  * The BaseRule is an empty rule
@@ -30,11 +29,6 @@ import net.sf.j2ep.Server;
  * @author Anders Nyman
  */
 public abstract class BaseRule implements Rule {
-
-    /** 
-     * The server this rule is bound to.
-     */
-    private Server server;
     
     /** 
      * The servers id, used for mapping the correct server.
@@ -70,20 +64,6 @@ public abstract class BaseRule implements Rule {
         buffer.append("]");
 
         return buffer.toString();
-    }
-    
-    /**
-     * @see net.sf.j2ep.Rule#getServer()
-     */
-    public Server getServer() {
-        return server;
-    }
-
-    /**
-     * @see net.sf.j2ep.Rule#setServer(net.sf.j2ep.Server)
-     */
-    public void setServer(Server server) {
-        this.server = server;
     }
 
     /**

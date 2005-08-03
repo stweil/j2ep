@@ -47,9 +47,9 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     private UrlRewritingOutputStream outStream;
     
     /** 
-     * Rule used for this page
+     * Server used for this page
      */
-    private Rule rule;
+    private Server server;
     
     /** 
      * The location for this server, used when we rewrite absolute URIs
@@ -85,13 +85,13 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      * Basic constructor.
      * 
      * @param response The response we are wrapping
-     * @param rule The rule that was matched
+     * @param server The server that was matched
      * @param ownHostName String we are rewriting servers to
      * @throws IOException When there is a problem with the streams
      */
-    public UrlRewritingResponseWrapper(HttpServletResponse response, Rule rule, String ownHostName, String contextPath, Collection serverCollection) throws IOException {
+    public UrlRewritingResponseWrapper(HttpServletResponse response, Server server, String ownHostName, String contextPath, Collection serverCollection) throws IOException {
         super(response);
-        this.rule = rule;
+        this.server = server;
         this.ownHostName = ownHostName;
         this.contextPath = contextPath;
         isRewriting = false;
@@ -150,7 +150,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
 
         Matcher matcher = linkPattern.matcher(value);
         while (matcher.find()) {
-            String link = rule.revert(matcher.group(3));
+            String link = server.getRule().revert(matcher.group(3));
             matcher.appendReplacement(header, "$1" + ownHostName + contextPath + link);
         }
         matcher.appendTail(header);
@@ -171,7 +171,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
         Matcher matcher = pathAndDomainPattern.matcher(value);
         while (matcher.find()) {
             if (matcher.group(1).equals("path=")) {
-                String path = rule.revert(matcher.group(2));
+                String path = server.getRule().revert(matcher.group(2));
                 matcher.appendReplacement(header, "$1" + path); 
             } else {
                 matcher.appendReplacement(header, "");
@@ -207,7 +207,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
      */
     public void processStream() throws IOException {
         if (isRewriting) {
-            outStream.rewrite(rule);
+            outStream.rewrite(server);
         }
         super.getOutputStream().flush();
         super.getOutputStream().close();
