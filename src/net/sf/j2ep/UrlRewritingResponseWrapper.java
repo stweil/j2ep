@@ -68,7 +68,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     /** 
      * Regex to find the path in Set-Cookie headers.
      */
-    private static Pattern pathAndDomainPattern = Pattern.compile("\\b(path=|domain=)([^;\\s]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    private static Pattern pathAndDomainPattern = Pattern.compile("\\b(path=|domain=)([^;\\s]+);?", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
 
     /** 
      * Logging element supplied by commons-logging.
@@ -171,7 +171,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
         while (matcher.find()) {
             if (matcher.group(1).toLowerCase().equals("path=")) {
                 String path = server.getRule().revert(matcher.group(2));
-                matcher.appendReplacement(header, "$1" + path); 
+                matcher.appendReplacement(header, "$1" + path + ";"); 
             } else {
                 matcher.appendReplacement(header, "");
             }
