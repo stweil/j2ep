@@ -88,6 +88,7 @@ public class ProxyFilter implements Filter {
         } else {
             String uri = server.getRule().process(getURI(httpRequest));
             String url = request.getScheme() + "://" + server.getDomainName() + server.getDirectory() + uri;
+            log.debug("Connectiong to " + url);
             ResponseHandler responseHandler = null;  
             
             try {
