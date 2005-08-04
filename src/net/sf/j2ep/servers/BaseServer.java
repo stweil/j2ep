@@ -87,10 +87,15 @@ public class BaseServer extends ServerContainerBase implements Server {
     }
 
     /**
-     * @see net.sf.j2ep.Server#isRewriting()
+     * @see net.sf.j2ep.ServerContainer#getServerMapped(java.lang.String)
      */
-    public boolean isRewriting() {
-        return isRewriting;
+    public Server getServerMapped(String location) {
+        String fullPath = getDomainName() + getDirectory() + "/";
+        if (location.startsWith(fullPath) && isRewriting) {
+            return this;
+        } else {
+            return null;
+        }
     }
     
     /**

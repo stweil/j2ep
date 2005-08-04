@@ -17,6 +17,7 @@
 package net.sf.j2ep.servers;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -85,6 +86,24 @@ public class ClusterContainer extends ServerContainerBase {
             server = (Server) servers.get("server" + currentServerNumber);
         }
         return server;
+    }
+    
+    /**
+     * @see net.sf.j2ep.ServerContainer#getServerMapped(java.lang.String)
+     */
+    public Server getServerMapped(String location) {
+        Iterator itr = servers.values().iterator();
+        Server match = null;
+
+        while (itr.hasNext() && match == null) {
+            Server server = (Server) itr.next();
+            String fullPath = server.getDomainName() + server.getDirectory() + "/";
+            if (location.startsWith(fullPath)) {
+                match = server;
+            }
+        }
+        
+        return match;
     }
 
     /**
@@ -178,15 +197,7 @@ public class ClusterContainer extends ServerContainerBase {
         public Rule getRule() {
             return ClusterContainer.this.getRule();
         }
-
-        public boolean isRewriting() {
-            // TODO fixa detta, något med att låta klustret fungera
-            // som hanterare funkar nog?
-            // TODO egentligen borde isRewriting försvinna helt och ha
-            // en canRewrite(domainName, directory) istället
-            return true;
-        }
-
     }
+
 }
 

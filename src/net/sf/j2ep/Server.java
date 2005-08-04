@@ -64,13 +64,4 @@ public interface Server {
      * @return The rule we are mapped to
      */
     Rule getRule();
-    
-    /**
-     * Marks if this server should rewrite absolute 
-     * links found in html pages.
-     * 
-     * @return true if the rule should be rewritten, false otherwise
-     */
-    boolean isRewriting();
-
 }
