@@ -56,12 +56,12 @@ public class ConfigParser {
      * @param data The config file containing the XML data structure.
      */
     public ConfigParser(File data) {
-        log = LogFactory.getLog("org.apache.webapp.reverseproxy");
+        log = LogFactory.getLog(ConfigParser.class);
         try {
-            LinkedList servers = createServerList(data);
+            LinkedList serverContainers = createServerList(data);
             HashMap ruleIdMap = createRuleIdMap(data);
-            mapServersToRules(servers, ruleIdMap);
-            serverChain = new ServerChain(servers);
+            mapServersToRules(serverContainers, ruleIdMap);
+            serverChain = new ServerChain(serverContainers);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -98,9 +98,9 @@ public class ConfigParser {
         digester.addObjectCreate("config/servers/cluster-server", null, "className");
         digester.addSetProperties("config/servers/cluster-server"); 
         // Create the servers in this cluster
-        digester.addObjectCreate("config/servers/cluster-server/server", null, "className");
-        digester.addSetProperties("config/servers/cluster-server/server"); 
-        digester.addSetNext("config/servers/cluster-server/server", "addServer", "net.sf.j2ep.Server");
+        digester.addCallMethod("config/servers/cluster-server/server", "addServer", 2);
+        digester.addCallParam("config/servers/cluster-server/server", 0, "domainName");
+        digester.addCallParam("config/servers/cluster-server/server", 1, "directory");
         // Add cluster to list
         digester.addSetNext("config/servers/server", "add");
         
@@ -156,12 +156,10 @@ public class ConfigParser {
         log.debug("These are the server to rule mappings");
         Iterator itr = servers.iterator();
         while(itr.hasNext()) {
-            Server server = (Server) itr.next();
-            Rule rule = (Rule) rules.get(server.getRuleId());
-            if (server != null) {
-                server.setRule(rule);
-                log.debug("Rule " + rule + " using server " + server);
-            }
+            ServerContainer container = (ServerContainer) itr.next();
+            Rule rule = (Rule) rules.get(container.getRuleId());
+            container.setRule(rule);
+            log.debug("Rule (" + container.getRuleId() + ") " + rule + " using server " + container);
         }
     }
 }
