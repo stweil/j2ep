@@ -95,7 +95,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
         this.contextPath = contextPath;
         isRewriting = false;
         
-        log = LogFactory.getLog("net.sf.j2ep.rewriter");        
+        log = LogFactory.getLog(UrlRewritingResponseWrapper.class);        
         outStream = new UrlRewritingOutputStream(response.getOutputStream(), ownHostName, contextPath, serverChain);
     }
     
@@ -169,7 +169,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
 
         Matcher matcher = pathAndDomainPattern.matcher(value);
         while (matcher.find()) {
-            if (matcher.group(1).equals("path=")) {
+            if (matcher.group(1).toLowerCase().equals("path=")) {
                 String path = server.getRule().revert(matcher.group(2));
                 matcher.appendReplacement(header, "$1" + path); 
             } else {
