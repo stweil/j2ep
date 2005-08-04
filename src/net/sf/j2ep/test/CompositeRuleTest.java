@@ -33,7 +33,7 @@ public class CompositeRuleTest extends TestCase {
 
     /*
      * Test method for
-     * 'org.apache.webapp.reverseproxy.rules.CompositeRule.matches(HttpServletRequest)'
+     * 'net.sf.j2ep.rules.CompositeRule.matches(HttpServletRequest)'
      */
     public void testMatches() {
         IPRule ipRule = new IPRule();

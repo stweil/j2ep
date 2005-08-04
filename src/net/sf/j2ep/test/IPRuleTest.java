@@ -31,7 +31,7 @@ public class IPRuleTest extends TestCase {
 
     /*
      * Test method for
-     * 'org.apache.webapp.reverseproxy.rules.IPRule.setStartRange(String)'
+     * 'net.sf.j2ep.rules.IPRule.setStartRange(String)'
      */
     public void testSetStartRange() {
         try {

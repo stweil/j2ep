@@ -178,7 +178,7 @@ public class ProxyFilter implements Filter {
      * RuleChain back. Will also configure the httpclient.
      */
     public void init(FilterConfig filterConfig) throws ServletException {
-        log = LogFactory.getLog("org.apache.webapp.reverseproxy");
+        log = LogFactory.getLog(ProxyFilter.class);
         
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
         httpClient.getParams().setBooleanParameter(HttpClientParams.USE_EXPECT_CONTINUE, false);
