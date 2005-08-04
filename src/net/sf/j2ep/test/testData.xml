@@ -25,6 +25,12 @@
 			ruleId="5"
 		/>
 		
+		<server className="net.sf.j2ep.servers.BaseServer"
+			domainName="www.short.com"
+			isRewriting="true"
+			ruleId="6"
+		/>
+		
 		<!-- 
 			Here is a server that has to support some special methods
 			like PROPFIND. It is used to test that a Allow will be
@@ -70,6 +76,11 @@
   		<rule className="net.sf.j2ep.rules.DirectoryRule"
   			directory="/testRewriteAbsoluteOther"
   			id="5"
+  		/>
+  		
+  		<rule className="net.sf.j2ep.rules.DirectoryRule"
+  			directory="/testRewriteAbsoluteShort"
+  			id="6"
   		/>
 
 	</rules>

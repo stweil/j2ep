@@ -99,6 +99,7 @@ public class DirectoryMappingTest extends FilterTestCase {
         assertTrue("Test absolute path not mapped", theResponse.getText().contains("http://localhost:8080/test/GETT/test6.jsp"));
         assertTrue("Test absolute path on different server", theResponse.getText().contains("http://localhost:8080/test/testRewriteAbsoluteOther/hej.jsp"));
         assertTrue("Test absolute path on different server not mapped", theResponse.getText().contains("http://www.test.com/anotherfolder/test"));
+        assertTrue("Test short absolute path", theResponse.getText().contains("http://localhost:8080/test/testRewriteAbsoluteShort/"));
     }
     
     public void beginCSS(WebRequest theRequest) {
