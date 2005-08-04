@@ -38,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Anders Nyman
  */
-public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
+public final class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     
     /** 
      * Stream we are using for the response.
