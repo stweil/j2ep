@@ -106,8 +106,8 @@ public abstract class ResponseHandlerBase implements ResponseHandler{
         for (int i=0; i < headers.length; i++) {
             Header header = headers[i];
             String name = header.getName();
-            boolean contentLength = name.compareToIgnoreCase("content-length") == 0;
-            boolean connection = name.compareToIgnoreCase("connection") == 0;
+            boolean contentLength = name.equalsIgnoreCase("content-length");
+            boolean connection = name.equalsIgnoreCase("connection");
             
             if (!contentLength && !connection) {
                 response.addHeader(name, header.getValue());

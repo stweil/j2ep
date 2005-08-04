@@ -64,7 +64,7 @@ public abstract class RequestHandlerBase implements RequestHandler {
         
         while (headers.hasMoreElements()) {
             String name = (String) headers.nextElement();
-            boolean isToken = (connectionToken != null && name.compareToIgnoreCase(connectionToken) == 0);
+            boolean isToken = (connectionToken != null && name.equalsIgnoreCase(connectionToken));
             
             if (!isToken && !bannedHeaders.contains(name.toLowerCase())) {
                 Enumeration value = request.getHeaders(name);

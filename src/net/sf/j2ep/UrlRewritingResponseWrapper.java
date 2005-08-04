@@ -107,9 +107,9 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
      */
     public void addHeader(String name, String originalValue) {
         String value;
-        if (name.toLowerCase().equals("location")) {
+        if (name.equalsIgnoreCase("location")) {
             value = rewriteLocation(originalValue);
-        } else if (name.toLowerCase().equals("set-cookie")) {
+        } else if (name.equalsIgnoreCase("set-cookie")) {
             value = rewriteSetCookie(originalValue);
         } else {
             value = originalValue;
@@ -125,9 +125,9 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
      */
     public void setHeader(String name, String originalValue) {
         String value;
-        if (name.toLowerCase().equals("location")) {
+        if (name.equalsIgnoreCase("location")) {
             value = rewriteLocation(originalValue);
-        } else if (name.toLowerCase().equals("set-cookie")) {
+        } else if (name.equalsIgnoreCase("set-cookie")) {
             value = rewriteSetCookie(originalValue);
         }
         else {
@@ -173,7 +173,7 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
 
         Matcher matcher = pathAndDomainPattern.matcher(value);
         while (matcher.find()) {
-            if (matcher.group(1).toLowerCase().equals("path=")) {
+            if (matcher.group(1).equalsIgnoreCase("path=")) {
                 String path = server.getRule().revert(matcher.group(2));
                 matcher.appendReplacement(header, "$1" + path + ";"); 
             } else {
