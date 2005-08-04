@@ -89,7 +89,7 @@ public abstract class RequestHandlerBase implements RequestHandler {
         } catch (UnknownHostException e) {
             LogFactory.getLog(RequestHandlerBase.class).error("Couldn't write the x-forwarded-server header", e);
         }
-        method.setRequestHeader("accept-encoding", "gzip, deflate");
+        method.setRequestHeader("accept-encoding", "gzip");
 
     }
     
