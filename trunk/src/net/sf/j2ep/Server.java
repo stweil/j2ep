@@ -39,6 +39,7 @@ public interface Server {
      * @return The wrapped original request
      */
     HttpServletRequest wrapRequest(HttpServletRequest request);
+
     
     /**
      * Returns the host name and port for this server.
@@ -55,15 +56,7 @@ public interface Server {
      * @return Directory The directory
      */
     String getDirectory();
-    
-    /**
-     * Sets the rule that is mapped for this server. Will
-     * be used when we rewrite links to know how a absolute 
-     * path should be rewritten.
-     * 
-     * @param rule The rule
-     */
-    void setRule(Rule rule);
+
     
     /**
      * Returns the mapped rule so we can rewrite links.
@@ -79,13 +72,5 @@ public interface Server {
      * @return true if the rule should be rewritten, false otherwise
      */
     boolean isRewriting();
-    
-    /**
-     * Returns the rule id for the server connected with this server.
-     * This should only be used when creating server from a XML mapping.
-     * Otherwise use the getRule instead.
-     * 
-     * @return The id for the rule mapped to this server
-     */
-    String getRuleId();
+
 }

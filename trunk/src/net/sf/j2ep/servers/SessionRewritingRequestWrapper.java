@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
  * ClusterServer
  * 
  * @author Anders Nyman
- * @see ClusterServer
+ * @see ClusterContainer
  */
 public class SessionRewritingRequestWrapper extends HttpServletRequestWrapper {
     

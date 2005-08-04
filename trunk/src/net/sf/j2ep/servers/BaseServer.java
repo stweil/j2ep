@@ -18,7 +18,6 @@ package net.sf.j2ep.servers;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.j2ep.Rule;
 import net.sf.j2ep.Server;
 
 /**
@@ -29,18 +28,8 @@ import net.sf.j2ep.Server;
  * 
  * @author Anders Nyman
  */
-public class BaseServer implements Server {
-    
-    /** 
-     * The rule we are mapped to.
-     */
-    private Rule rule;
-    
-    /** 
-     * The id for the rule we are mapped to.
-     */
-    private String ruleId;
-    
+public class BaseServer extends ServerContainerBase implements Server {
+ 
     /** 
      * Marks if this rule server will do any
      * rewriting of links.
@@ -65,6 +54,13 @@ public class BaseServer implements Server {
         directory = "";
         isRewriting = false;
     }   
+    
+    /**
+     * @see net.sf.j2ep.ServerContainer#getServer(javax.servlet.http.HttpServletRequest)
+     */
+    public Server getServer(HttpServletRequest request) {
+        return this;
+    }
 
     /**
      * Will not need any wrapping to the default request is
@@ -91,26 +87,11 @@ public class BaseServer implements Server {
     }
 
     /**
-     * @see net.sf.j2ep.Server#getRule()
-     */
-    public Rule getRule() {
-        return rule;
-    }
-    
-    /**
-     * @see net.sf.j2ep.Server#getRuleId()
-     */
-    public String getRuleId() {
-        return ruleId;
-    }
-
-    /**
      * @see net.sf.j2ep.Server#isRewriting()
      */
     public boolean isRewriting() {
         return isRewriting;
     }
-
     
     /**
      * Set if this server wants absolute links mapped
@@ -122,30 +103,7 @@ public class BaseServer implements Server {
         if (rewrite != null && rewrite.equals("true")) {
             isRewriting = true;
         }
-    }
-    
-    /**
-     * @see net.sf.j2ep.Server#setRule(net.sf.j2ep.Rule)
-     */
-    public void setRule(Rule rule) {
-        if (rule == null) {
-            throw new IllegalArgumentException("The rule cannot be null.");
-        } else {
-            this.rule = rule;
-        }
-    }
-    
-    /**
-     * Sets the rule we are mapped to.
-     * @param ruleId The id for the rule
-     */
-    public void setRuleId(String ruleId) {
-        if (ruleId == null) {
-            throw new IllegalArgumentException("The rule id cannot be null.");
-        } else {
-            this.ruleId = ruleId;
-        }
-    }
+    }   
     
     /**
      * Sets the host and port we are mapping to.

@@ -39,13 +39,13 @@ public class ServerChain{
     /**
      * The list of servers to evaluate.
      */
-    private List servers;
+    private List serverContainers;
 
     /**
      * Constructor.
      */
-    public ServerChain(List servers) {
-        this.servers = servers;
+    public ServerChain(List serverContainers) {
+        this.serverContainers = serverContainers;
     }
 
     /**
@@ -55,7 +55,7 @@ public class ServerChain{
      * @return The servers
      */
     protected List getServers() {
-        return servers;
+        return serverContainers;
     }
 
     /**
@@ -93,16 +93,16 @@ public class ServerChain{
     public Server evaluate(HttpServletRequest request) {
         Iterator itr = getServerIterator();
 
-        Server currentServer = null;
+        ServerContainer currentContainer = null;
         boolean currentMatches = false;
 
         while (itr.hasNext() && !currentMatches) {
-            currentServer = (Server) itr.next();
-            currentMatches = currentServer.getRule().matches(request);
+            currentContainer = (ServerContainer) itr.next();
+            currentMatches = currentContainer.getRule().matches(request);
         }
         
         if (currentMatches) {
-            return currentServer;
+            return currentContainer.getServer(request);
         } else {
             return null;
         }
