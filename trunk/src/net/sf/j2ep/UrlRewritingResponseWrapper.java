@@ -63,7 +63,7 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
     /** 
      * Regex to find absolute links.
      */
-    private static Pattern linkPattern = Pattern.compile("\\b([^/]+://)([^/]+)([\\w/]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    private static Pattern linkPattern = Pattern.compile("\\b([^/]+://)([^/]+)(/[\\w/]+)?", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
     
     /** 
      * Regex to find the path in Set-Cookie headers.
@@ -149,8 +149,12 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
 
         Matcher matcher = linkPattern.matcher(value);
         while (matcher.find()) {
-            String link = server.getRule().revert(matcher.group(3));
-            matcher.appendReplacement(header, "$1" + ownHostName + contextPath + link);
+            if (matcher.group(3) != null) {
+                String link = server.getRule().revert(matcher.group(3));
+                matcher.appendReplacement(header, "$1" + ownHostName + contextPath + link);
+            } else {
+                matcher.appendReplacement(header, "$1" + ownHostName + contextPath);
+            }
         }
         matcher.appendTail(header);
         log.debug("Location header rewritten "+ value + " >> " + header.toString());
@@ -177,8 +181,8 @@ public class UrlRewritingResponseWrapper extends HttpServletResponseWrapper{
             }
             
         }
-        log.debug("Set-Cookie header rewritten "+ value + " >> " + header.toString());
         matcher.appendTail(header);
+        log.debug("Set-Cookie header rewritten \"" + value + "\" >> " + header.toString());
         return header.toString();
     }
     
