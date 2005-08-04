@@ -64,7 +64,7 @@ public class ServerChain{
      *
      * @return The iterator
      */
-    public Iterator getServerIterator() {
+    protected Iterator getServerIterator() {
         return getServers().iterator();
     }
 
@@ -92,7 +92,6 @@ public class ServerChain{
      */
     public Server evaluate(HttpServletRequest request) {
         Iterator itr = getServerIterator();
-
         ServerContainer currentContainer = null;
         boolean currentMatches = false;
 
@@ -106,7 +105,30 @@ public class ServerChain{
         } else {
             return null;
         }
-        
+    }
+    
+    /**
+     * Finds a server with the full path specified by the 
+     * location sent in. This is used when we want to find a 
+     * server that can handle a request.
+     * 
+     * @param location The location we want a server for.
+     * @return The matching server, if no server is found null is returned
+     */
+    public Server getServerMapped(String location) {
+        //TODO use some method in serverChain instead. 
+        //Probably create some new serverChain.match(location)
+        Iterator itr = getServerIterator();
+        Server match = null;
+
+        while (itr.hasNext() && match == null) {
+            ServerContainer container = (ServerContainer) itr.next();
+            Server next = container.getServerMapped(location);
+            if (next != null) {
+                match = next;
+            }
+        }
+        return match;
     }
 
     /**

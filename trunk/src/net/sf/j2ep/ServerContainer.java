@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Anders Nyman
  */
 public interface ServerContainer {
-    
+
     /**
      * Do any processing needed before this server can be used.
      * Specifically important for cluster servers that needs 
@@ -40,7 +40,7 @@ public interface ServerContainer {
      * @return The server that is finished to be used.
      */
     Server getServer(HttpServletRequest request);
-    
+
     /**
      * Returns the rule id for the server connected with this server.
      * This should only be used when creating server from a XML mapping.
@@ -49,7 +49,7 @@ public interface ServerContainer {
      * @return The id for the rule mapped to this server
      */
     String getRuleId();
-    
+
     /**
      * Returns the mapped rule. This method must return the same
      * rule as a call to the underlying servers getRule().
@@ -58,7 +58,7 @@ public interface ServerContainer {
      * @see Server#getRule()
      */
     Rule getRule();
-    
+
     /**
      * Sets the rule that is mapped for this server. Will
      * be used when we rewrite links to know how a absolute 
@@ -67,4 +67,14 @@ public interface ServerContainer {
      * @param rule The rule
      */
     void setRule(Rule rule);
+
+    /**
+     * Finds a server with the full path specified by the 
+     * location sent in.
+     * 
+     * @param link The start of a link that a server is mapped to
+     * @return The server that can handle the link, null if no server is found
+     * @see ServerChain#getServerMapped(String)
+     */
+    Server getServerMapped(String link);
 }
