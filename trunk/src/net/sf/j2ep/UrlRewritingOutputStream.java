@@ -18,7 +18,6 @@ package net.sf.j2ep;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +30,7 @@ import javax.servlet.ServletOutputStream;
  *
  * @author Anders Nyman
  */
-public class UrlRewritingOutputStream extends ServletOutputStream {
+public final class UrlRewritingOutputStream extends ServletOutputStream {
     
     /** 
      * The stream we are wrapping, is the original response stream.
@@ -57,8 +56,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
      * The servers.
      */
     private ServerChain serverChain;
-    
-    
+
     /** 
      * Regex matching links in the HTML.
      */
@@ -112,7 +110,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
          * Using regex can be quite harsh sometimes so here is how
          * the regex trying to find links works
          * 
-         * \\b(href=|src=|action=|url\\()([\"?\'?])
+         * \\b(href=|src=|action=|url\\()([\"\'])
          * This part is the identification of links, matching
          * something like href=", href=' and href=
          * 
@@ -123,8 +121,8 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
          * ([^\"\'>]*)
          * This is the link
          * 
-         * [\"?\'?\\s]
-         * Ending ", ' or whitespace
+         * [\"\']
+         * Ending " or '
          * 
          * $1 - link type, e.g. href=
          * $2 - ", ' or whitespace
@@ -136,31 +134,22 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
         StringBuffer page = new StringBuffer();
         
         Matcher matcher = linkPattern.matcher(stream.toString());
-        while (matcher.find()) {
+        while (matcher.find()) {          
             
            String link = matcher.group(6).replace("$", "\\$");
            if (link.length() == 0) {
                link = "/";
            }
             
+           String rewritten = null;
            if (matcher.group(4) != null) { 
-               String location = matcher.group(5) + link;
-               Server matchingServer = getServerMapped(location);
-               
-               if (matchingServer != null) {
-                   link = link.substring(matchingServer.getDirectory().length()); 
-                   link = matchingServer.getRule().revert(link);
-                   matcher.appendReplacement(page, "$1$2$4" + ownHostName
-                           + contextPath + link + "$2");
-               }
+               rewritten = handleExternalLink(matcher, link);
            } else {
-               String serverDir = server.getDirectory();
-               
-               if ( serverDir.equals("") || link.startsWith(serverDir+"/") ) {
-                   link = server.getRule().revert( link.substring(serverDir.length()) );
-                   matcher.appendReplacement(page, "$1$2" + contextPath + link
-                       + "$2");
-               }
+               rewritten = handleLocalLink(server, matcher, link);
+           }
+           
+           if (rewritten != null) {
+               matcher.appendReplacement(page, rewritten); 
            }
         }
         
@@ -168,38 +157,59 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
         originalStream.print(page.toString());
         
     }
+    
+    
+    /**
+     * Rewrites a absolute path starting with a protocol e.g.
+     * http://www.server.com/index.html
+     * 
+     * @param matcher The matcher used for this link
+     * @param link The part of the link after the domain name 
+     * @return The link now rewritten
+     */
+    private String handleExternalLink(Matcher matcher, String link) {
+        String location = matcher.group(5) + link;
+           Server matchingServer = serverChain.getServerMapped(location);
+           
+           if (matchingServer != null) {
+               link = link.substring(matchingServer.getDirectory().length()); 
+               link = matchingServer.getRule().revert(link);
+               String type = matcher.group(1);
+               String separator = matcher.group(2);
+               String protocol = matcher.group(4);
+               
+               return type+separator+protocol+ ownHostName + contextPath + link + separator;
+           } else {
+               return null;
+           }
+    }
 
     /**
-     * Finds a server with the fullPath specified by the 
-     * location sent in.
      * 
-     * @param location The location we want a server for.
-     * @return The matching server, if no server is found null is returned
+     * @param server The current server we are using for this page
+     * @param matcher The matcher used for this link
+     * @param link The original link
+     * @return The rewritten link
      */
-    private Server getServerMapped(String location) {
-        //TODO use some method in serverChain instead. 
-        //Probably create some new serverChain.match(location)
-        Iterator itr = serverChain.getServerIterator();
-        Server match = null;
+    private String handleLocalLink(Server server, Matcher matcher, String link) {
+        String serverDir = server.getDirectory();
 
-        while (itr.hasNext() && match == null) {
-            Server next = (Server) itr.next();
-            String fullPath = next.getDomainName() + next.getDirectory() + "/";
-            if (location.startsWith(fullPath)) {
-                match = next;
-            }
+        if (serverDir.equals("") || link.startsWith(serverDir + "/")) {
+            link = server.getRule().revert(link.substring(serverDir.length()));
+            String type = matcher.group(1);
+            String separator = matcher.group(2);
+            return type + separator + contextPath + link + separator;
+        } else {
+            return null;
         }
-
-        return match;
     }
-    
+
+
     /**
      * @see java.io.Closeable#close()
      */
     public void close() throws IOException {
         stream.close();
     }
-    
-    
 
 }
