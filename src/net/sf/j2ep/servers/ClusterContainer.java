@@ -140,6 +140,7 @@ public class ClusterContainer extends ServerContainerBase {
     public synchronized void addServer(String domainName, String directory) {
         ClusteredServer server = new ClusteredServer(domainName, directory);
         servers.put("server" + numberOfServers, server);
+        log.debug("Added server " + domainName + directory + " to the cluster on id server" + numberOfServers);
         numberOfServers++;
     }
     
