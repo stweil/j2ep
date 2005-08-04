@@ -62,8 +62,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
     /** 
      * Regex matching links in the HTML.
      */
-    private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=|url\\()([\"\'])(([^/]+://)([^/<>]+))?(/[^\"\'>]*)[\"\']", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
-    //private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=)([\"?\'?])(/[^\"\'\\s>]+)[\"?\'?\\s]", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=|url\\()([\"\'])(([^/]+://)([^/<>]+))?([^\"\'>]*)[\"\']", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
 
     /**
      * Basic constructor.
@@ -121,9 +120,8 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
          * This is to identify absolute paths. A link doesn't have
          * to be absolute therefor there is a ?.
          * 
-         * (/[^\"\'>]*)
-         * This is the link, has to start with a / since relative
-         * links shouldn't be rewritten
+         * ([^\"\'>]*)
+         * This is the link
          * 
          * [\"?\'?\\s]
          * Ending ", ' or whitespace
@@ -141,9 +139,12 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
         while (matcher.find()) {
             
            String link = matcher.group(6).replace("$", "\\$");
+           if (link.length() == 0) {
+               link = "/";
+           }
             
-           if (matcher.group(4) != null) {
-               String location = matcher.group(5) + matcher.group(6);
+           if (matcher.group(4) != null) { 
+               String location = matcher.group(5) + link;
                Server matchingServer = getServerMapped(location);
                
                if (matchingServer != null) {
@@ -154,6 +155,7 @@ public class UrlRewritingOutputStream extends ServletOutputStream {
                }
            } else {
                String serverDir = server.getDirectory();
+               
                if ( serverDir.equals("") || link.startsWith(serverDir+"/") ) {
                    link = server.getRule().revert( link.substring(serverDir.length()) );
                    matcher.appendReplacement(page, "$1$2" + contextPath + link
