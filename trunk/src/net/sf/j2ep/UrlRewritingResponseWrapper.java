@@ -75,11 +75,6 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
      */
     private static Log log;
     
-    /** 
-     * Marks if we are rewriting the stream or not.
-     */
-    private boolean isRewriting;
-    
     /**
      * Basic constructor.
      * 
@@ -93,7 +88,6 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
         this.server = server;
         this.ownHostName = ownHostName;
         this.contextPath = contextPath;
-        isRewriting = false;
         
         log = LogFactory.getLog(UrlRewritingResponseWrapper.class);        
         outStream = new UrlRewritingOutputStream(response.getOutputStream(), ownHostName, contextPath, serverChain);
@@ -194,9 +188,7 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
      * @see javax.servlet.ServletResponse#getOutputStream()
      */
     public ServletOutputStream getOutputStream() throws IOException {
-        String contentType = getContentType();
-        isRewriting = contentType != null && shouldRewrite(contentType);
-        if (isRewriting) {
+        if (getContentType() != null && shouldRewrite(getContentType())) {
             return outStream;
         } else {
             return super.getOutputStream();
@@ -209,7 +201,7 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
      * @throws IOException Is thrown when there is a problem with the streams
      */
     public void processStream() throws IOException {
-        if (isRewriting) {
+        if (getContentType() != null && shouldRewrite(getContentType())) {
             outStream.rewrite(server);
         }
         super.getOutputStream().flush();
