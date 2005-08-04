@@ -102,7 +102,7 @@ public class ConfigParser {
         digester.addCallParam("config/servers/cluster-server/server", 0, "domainName");
         digester.addCallParam("config/servers/cluster-server/server", 1, "directory");
         // Add cluster to list
-        digester.addSetNext("config/servers/server", "add");
+        digester.addSetNext("config/servers/cluster-server", "add");
         
         return (LinkedList) digester.parse(data);
     }
@@ -159,7 +159,7 @@ public class ConfigParser {
             ServerContainer container = (ServerContainer) itr.next();
             Rule rule = (Rule) rules.get(container.getRuleId());
             container.setRule(rule);
-            log.debug("Rule (" + container.getRuleId() + ") " + rule + " using server " + container);
+            log.debug("Server " + container + " using rule (" + container.getRuleId() + ") --> " + rule );
         }
     }
 }
