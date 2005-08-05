@@ -181,7 +181,7 @@ public class ClusterContainer extends ServerContainerBase {
          * @see net.sf.j2ep.Server#prepareForExecution(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
          */
         public void prepareForExecution(HttpServletRequest request, HttpServletResponse response) {
-            request = new SessionRewritingRequestWrapper(request);
+            request = new ClusterRequestWrapper(request);
         }
 
         /**

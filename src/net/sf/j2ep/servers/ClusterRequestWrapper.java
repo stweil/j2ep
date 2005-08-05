@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
  * @author Anders Nyman
  * @see ClusterContainer
  */
-public class SessionRewritingRequestWrapper extends HttpServletRequestWrapper {
+public class ClusterRequestWrapper extends HttpServletRequestWrapper {
     
     /** 
      * The cookies for this request.
@@ -53,7 +53,7 @@ public class SessionRewritingRequestWrapper extends HttpServletRequestWrapper {
      * 
      * @param request The request we wrap.
      */
-    public SessionRewritingRequestWrapper(HttpServletRequest request) {
+    public ClusterRequestWrapper(HttpServletRequest request) {
         super(request);
         cookies = new Vector();
         
