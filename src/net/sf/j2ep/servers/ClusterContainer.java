@@ -83,7 +83,7 @@ public class ClusterContainer extends ServerContainerBase {
         Server server = (Server) servers.get(serverId);
         if (server == null) {
             currentServerNumber = (currentServerNumber + 1) % numberOfServers;
-            log.debug("Server: " + currentServerNumber + " mapped for this thread");
+            log.debug("Using server" + currentServerNumber + " for this request");
             server = (Server) servers.get("server" + currentServerNumber);
         }
         return server;
@@ -139,8 +139,9 @@ public class ClusterContainer extends ServerContainerBase {
      * @param directory The director for the new server.
      */
     public synchronized void addServer(String domainName, String directory) {
-        ClusteredServer server = new ClusteredServer(domainName, directory);
-        servers.put("server" + numberOfServers, server);
+        String id = "server" + numberOfServers;
+        ClusteredServer server = new ClusteredServer(domainName, directory, id);
+        servers.put(id, server);
         log.debug("Added server " + domainName + directory + " to the cluster on id server" + numberOfServers);
         numberOfServers++;
     }
@@ -163,15 +164,21 @@ public class ClusterContainer extends ServerContainerBase {
          */
         private String directory;
         
+        /** 
+         * This servers id
+         */
+        private String serverId;
+        
         /**
          * Basic constructor that sets the domain name and directory.
          * 
          * @param domainName The domain name
          * @param directory The directory
          */
-        public ClusteredServer(String domainName, String directory) {
+        public ClusteredServer(String domainName, String directory, String serverId) {
             this.domainName = domainName;
             this.directory = directory;
+            this.serverId = serverId;
         }
 
         /**
@@ -182,6 +189,7 @@ public class ClusterContainer extends ServerContainerBase {
          */
         public void prepareForExecution(HttpServletRequest request, HttpServletResponse response) {
             request = new ClusterRequestWrapper(request);
+            response = new ClusterResponseWrapper(response, serverId);
         }
 
         /**
