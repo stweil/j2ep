@@ -73,7 +73,7 @@ public class SessionRewritingRequestWrapper extends HttpServletRequestWrapper {
      * @see javax.servlet.http.HttpServletRequest#getHeader(java.lang.String)
      */
     public String getHeader(String name) {
-        if (name.toLowerCase().equals("cookie")) {
+        if (name.equalsIgnoreCase("cookie")) {
             return (String) cookies.firstElement();
         } else {
             return super.getHeader(name);
@@ -87,7 +87,7 @@ public class SessionRewritingRequestWrapper extends HttpServletRequestWrapper {
      * @see javax.servlet.http.HttpServletRequest#getHeaders(java.lang.String)
      */
     public Enumeration getHeaders(String name) {
-        if (name.toLowerCase().equals("cookie")) {
+        if (name.equalsIgnoreCase("cookie")) {
             return cookies.elements();
         } else {
             return super.getHeaders(name);
