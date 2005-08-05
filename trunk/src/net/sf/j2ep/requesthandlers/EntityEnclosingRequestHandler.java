@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.j2ep.RequestHandlerBase;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.EntityEnclosingMethod;

@@ -19,10 +19,10 @@ package net.sf.j2ep.factories;
 import java.util.HashMap;
 
 import net.sf.j2ep.RequestHandler;
-import net.sf.j2ep.RequestHandlerBase;
 import net.sf.j2ep.requesthandlers.BasicRequestHandler;
 import net.sf.j2ep.requesthandlers.EntityEnclosingRequestHandler;
 import net.sf.j2ep.requesthandlers.OptionsRequestHandler;
+import net.sf.j2ep.requesthandlers.RequestHandlerBase;
 
 /**
  * A factory creating RequestHandlers.

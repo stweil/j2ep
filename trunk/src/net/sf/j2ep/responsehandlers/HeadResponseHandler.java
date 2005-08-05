@@ -18,7 +18,6 @@ package net.sf.j2ep.responsehandlers;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.j2ep.ResponseHandlerBase;
 
 import org.apache.commons.httpclient.methods.HeadMethod;
 
