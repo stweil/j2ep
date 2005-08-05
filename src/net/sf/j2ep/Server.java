@@ -17,6 +17,7 @@
 package net.sf.j2ep;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -30,16 +31,14 @@ import javax.servlet.http.HttpServletRequest;
 public interface Server {
 
     /**
-     * Will wrap the request if needed for this server. 
-     * The wrapped request can alter information that 
-     * this server doesn't want to present to the end 
-     * domain.
+     * Can do any handling needed of a request before
+     * the HttpMethod is executed. Example of handling 
+     * is to wrap the request. 
      * 
      * @param request The request we are receiving
-     * @return The wrapped original request
+     * @param response The response we are receiving
      */
-    HttpServletRequest wrapRequest(HttpServletRequest request);
-
+    void prepareForExecution(HttpServletRequest request, HttpServletResponse response);
     
     /**
      * Returns the host name and port for this server.

@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.sf.j2ep.Rule;
 import net.sf.j2ep.Server;
@@ -173,9 +174,14 @@ public class ClusterContainer extends ServerContainerBase {
             this.directory = directory;
         }
 
-        public HttpServletRequest wrapRequest(HttpServletRequest request) {
-            //TODO fixa hantering här
-            return request;
+        /**
+         * Will wrap the request so that sessions are rewritten to
+         * remove the tailing .something that indicated which server
+         * the session is linked to.
+         * @see net.sf.j2ep.Server#prepareForExecution(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+         */
+        public void prepareForExecution(HttpServletRequest request, HttpServletResponse response) {
+            request = new SessionRewritingRequestWrapper(request);
         }
 
         /**

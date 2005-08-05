@@ -92,6 +92,7 @@ public class ProxyFilter implements Filter {
             ResponseHandler responseHandler = null;  
             
             try {
+                server.prepareForExecution(httpRequest, httpResponse);
                 responseHandler = executeRequest(httpRequest, url);
             } catch (HttpException e) {
                 log.error("Problem while connection to server", e);
