@@ -89,13 +89,7 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
         String serverId = getServerIdFromCookie(request.getCookies());
         ClusteredServer server = (ClusteredServer) servers.get(serverId);
         if (server == null || !server.online()) {
-            int start = currentServerNumber;
-            int current = -1; 
-            while (!server.online() && start != current) {
-                current = (start + 1) % numberOfServers;
-                server = (ClusteredServer) servers.get("server" + current); 
-            }
-            currentServerNumber = (currentServerNumber + 1) % numberOfServers;
+            server = getNextServer();
         }
         
         if (server.online()) {
@@ -103,6 +97,26 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
         } else {
             log.error("All the servers in this cluster are offline. Using server \"server + server.serverId + \", will probably not work");
         }
+        return server;
+    }
+
+    /**
+     * Returns the next in the cluster. The server if found
+     * using round-robin and checking that the server is marked
+     * as online.
+     *  
+     * @return The next server
+     */
+    private ClusteredServer getNextServer() {
+        ClusteredServer server;
+        int start = currentServerNumber;
+        int current = start;
+        do {
+            current = (current + 1) % numberOfServers;
+            server = (ClusteredServer) servers.get("server" + current); 
+        } while (!server.online() && start != current);
+        
+        currentServerNumber = (currentServerNumber + 1) % numberOfServers;
         return server;
     }
     
@@ -180,7 +194,7 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
      */
     public void serverOnline(Server server) {
         if (server instanceof ClusteredServer) {
-            ((ClusteredServer) server).setOnline(false);
+            ((ClusteredServer) server).setOnline(true);
         }
     }
     
