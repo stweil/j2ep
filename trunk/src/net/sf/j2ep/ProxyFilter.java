@@ -92,8 +92,9 @@ public class ProxyFilter implements Filter {
             ResponseHandler responseHandler = null;  
             
             try {
-                server.prepareForExecution(httpRequest, httpResponse);
+                httpRequest = server.preExecution(httpRequest);
                 responseHandler = executeRequest(httpRequest, url);
+                httpResponse = server.postExecution(httpResponse);
             } catch (HttpException e) {
                 log.error("Problem while connection to server", e);
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

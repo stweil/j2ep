@@ -70,9 +70,19 @@ public class BaseServer extends ServerContainerBase implements Server {
 
     /**
      * Will no do any handling
-     * @see net.sf.j2ep.Server#prepareForExecution(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see net.sf.j2ep.Server#preExecution(javax.servlet.http.HttpServletRequest)
      */
-    public void prepareForExecution(HttpServletRequest request, HttpServletResponse response) {}
+    public HttpServletRequest preExecution(HttpServletRequest request) {
+        return request;
+    }
+    
+    /**
+     * Will no do any handling
+     * @see net.sf.j2ep.Server#postExecution(javax.servlet.http.HttpServletResponse)
+     */
+    public HttpServletResponse postExecution(HttpServletResponse response) {
+        return response;
+    }
     
     /**
      * @see net.sf.j2ep.Server#getDomainName()

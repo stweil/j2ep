@@ -36,9 +36,19 @@ public interface Server {
      * is to wrap the request. 
      * 
      * @param request The request we are receiving
-     * @param response The response we are receiving
+     * @return Eventual modified HttpServletRequest
      */
-    void prepareForExecution(HttpServletRequest request, HttpServletResponse response);
+    HttpServletRequest preExecution(HttpServletRequest request);
+    
+    /**
+     * Can do handling of the response, if needed the
+     * server can also return a new HttpServletResponse
+     * if a wrapper of the response is needed.
+     * 
+     * @param response The response we are receiving
+     * @return Eventual modified HttpServletResponse
+     */
+    HttpServletResponse postExecution(HttpServletResponse response);
     
     /**
      * Returns the host name and port for this server.
