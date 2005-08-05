@@ -17,6 +17,7 @@
 package net.sf.j2ep.servers;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.sf.j2ep.Server;
 
@@ -26,6 +27,11 @@ import net.sf.j2ep.Server;
  * name in some other way. For instance a server fetching the host name from the
  * request could be made to change the proxy into a forwarding proxy.
  * 
+ * @author Anders Nyman
+ */
+/**
+ * 
+ *
  * @author Anders Nyman
  */
 public class BaseServer extends ServerContainerBase implements Server {
@@ -63,14 +69,10 @@ public class BaseServer extends ServerContainerBase implements Server {
     }
 
     /**
-     * Will not need any wrapping to the default request is
-     * returned.
-     * 
-     * @see net.sf.j2ep.Server#wrapRequest(javax.servlet.http.HttpServletRequest)
+     * Will no do any handling
+     * @see net.sf.j2ep.Server#prepareForExecution(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    public HttpServletRequest wrapRequest(HttpServletRequest request) {
-        return request;
-    }
+    public void prepareForExecution(HttpServletRequest request, HttpServletResponse response) {}
     
     /**
      * @see net.sf.j2ep.Server#getDomainName()
