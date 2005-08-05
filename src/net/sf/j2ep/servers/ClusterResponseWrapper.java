@@ -58,7 +58,7 @@ public class ClusterResponseWrapper extends HttpServletResponseWrapper {
      */
     public ClusterResponseWrapper(HttpServletResponse response, String serverId) {
         super(response);
-        this.serverId = serverId;
+        this.serverId = "." + serverId;
     }
     
     /**
