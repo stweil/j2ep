@@ -24,6 +24,9 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A wrapper for requests that will create it's own set
  * of headers. The headers are the same except for 
@@ -46,6 +49,11 @@ public class ClusterRequestWrapper extends HttpServletRequestWrapper {
      */
     private static Pattern sessionPattern = Pattern.compile("((JSESSIONID=|PHPSESSID=|ASPSESSIONID=|ASP.NET_SessionId=)[a-z0-9]+)(\\.[^;\\s]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
     
+    /** 
+     * Logging element supplied by commons-logging.
+     */
+    private static Log log = LogFactory.getLog(ClusterResponseWrapper.class);
+    
     /**
      * Constructor, will check all cookies if they include
      * JSESSIONID. If they do any extra information about
@@ -61,8 +69,11 @@ public class ClusterRequestWrapper extends HttpServletRequestWrapper {
         while (reqCookies.hasMoreElements()) {
             String value = (String) reqCookies.nextElement();
             Matcher matcher = sessionPattern.matcher(value);
-            matcher.replaceAll("$1");
-            cookies.add(value);
+            String replaced = matcher.replaceAll("$1");
+            if (log.isDebugEnabled() && !replaced.equals(value)) {
+                log.debug("Session processed, serverId removed \"" + value + "\" >> " + replaced);
+            }
+            cookies.add(replaced);
         }
     }
 
