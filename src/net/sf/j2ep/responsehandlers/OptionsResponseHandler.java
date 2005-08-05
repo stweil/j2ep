@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.j2ep.ResponseHandlerBase;
 import net.sf.j2ep.factories.ResponseHandlerFactory;
 
 import org.apache.commons.httpclient.Header;
@@ -48,11 +47,6 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
      * proxy directly by using Max-Forwards: 0.
      */
     private boolean useOwnAllow;
-    
-    /** 
-     * The method used for this request.
-     */
-    private OptionsMethod method;
 
     /**
      * Constructor checking if we should handle the Allow header
@@ -62,7 +56,6 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
      */
     public OptionsResponseHandler(OptionsMethod method) {
         super(method);
-        this.method = method;
         useOwnAllow = !method.hasBeenUsed();
     }
 
