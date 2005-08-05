@@ -61,9 +61,14 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
     private String contextPath;
     
     /** 
+     * The servers.
+     */
+    private ServerChain serverChain;
+    
+    /** 
      * Regex to find absolute links.
      */
-    private static Pattern linkPattern = Pattern.compile("\\b([^/]+://)([^/]+)(/[\\w/]+)?", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    private static Pattern linkPattern = Pattern.compile("\\b([^/]+://)([^/]+)([\\w/]*)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
     
     /** 
      * Regex to find the path in Set-Cookie headers.
@@ -88,6 +93,7 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
         this.server = server;
         this.ownHostName = ownHostName;
         this.contextPath = contextPath;
+        this.serverChain = serverChain;
         
         log = LogFactory.getLog(UrlRewritingResponseWrapper.class);        
         outStream = new UrlRewritingOutputStream(response.getOutputStream(), ownHostName, contextPath, serverChain);
@@ -143,15 +149,22 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
 
         Matcher matcher = linkPattern.matcher(value);
         while (matcher.find()) {
-            if (matcher.group(3) != null) {
-                String link = server.getRule().revert(matcher.group(3));
+            
+            String link = matcher.group(3).replace("$", "\\$");
+            if (link.length() == 0) {
+                link = "/";
+            }
+            String location = matcher.group(2) + link;
+
+            Server matchingServer = serverChain.getServerMapped(location);
+            if (matchingServer != null) {
+                link = link.substring(matchingServer.getDirectory().length());
+                link = matchingServer.getRule().revert(link);
                 matcher.appendReplacement(header, "$1" + ownHostName + contextPath + link);
-            } else {
-                matcher.appendReplacement(header, "$1" + ownHostName + contextPath);
             }
         }
         matcher.appendTail(header);
-        log.debug("Location header rewritten "+ value + " >> " + header.toString());
+        log.debug("Location header rewritten " + value + " >> " + header.toString());
         return header.toString();
     }
     
