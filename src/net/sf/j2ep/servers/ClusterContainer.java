@@ -139,6 +139,12 @@ public class ClusterContainer extends ServerContainerBase {
      * @param directory The director for the new server.
      */
     public synchronized void addServer(String domainName, String directory) {
+        if (domainName == null) {
+            throw new IllegalArgumentException("The domainName cannot be null");
+        }
+        if (directory == null) {
+            directory = "";
+        }
         String id = "server" + numberOfServers;
         ClusteredServer server = new ClusteredServer(domainName, directory, id);
         servers.put(id, server);
@@ -182,14 +188,23 @@ public class ClusterContainer extends ServerContainerBase {
         }
 
         /**
-         * Will wrap the request so that sessions are rewritten to
+         * Will wrap the request so the tailing .something,
+         * identifying the server, is removed from the request.
+         * 
+         * @see net.sf.j2ep.Server#preExecution(javax.servlet.http.HttpServletRequest)
+         */
+        public HttpServletRequest preExecution(HttpServletRequest request) {
+            return new ClusterRequestWrapper(request);
+        }
+        
+        /**
+         * Will wrap the response so that sessions are rewritten to
          * remove the tailing .something that indicated which server
          * the session is linked to.
-         * @see net.sf.j2ep.Server#prepareForExecution(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+         * @see net.sf.j2ep.Server#postExecution(javax.servlet.http.HttpServletResponse)
          */
-        public void prepareForExecution(HttpServletRequest request, HttpServletResponse response) {
-            request = new ClusterRequestWrapper(request);
-            response = new ClusterResponseWrapper(response, serverId);
+        public HttpServletResponse postExecution(HttpServletResponse response) {
+            return new ClusterResponseWrapper(response, serverId);
         }
 
         /**
