@@ -44,7 +44,7 @@ public class ClusterRequestWrapper extends HttpServletRequestWrapper {
     /** 
      * Regex to find session in cookies.
      */
-    private static Pattern sessionPattern = Pattern.compile("(JSESSIONID=[^\\.\\s;]+)(\\.[^;\\s]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+    private static Pattern sessionPattern = Pattern.compile("(JSPSESSIONID=|PHPSESSID=|ASPSESSIONID=|ASP.NET_SessionId=[^\\.\\s;]+)(\\.[^;\\s]+)", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
     
     /**
      * Constructor, will check all cookies if they include
