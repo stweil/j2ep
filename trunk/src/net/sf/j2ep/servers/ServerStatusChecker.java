@@ -94,7 +94,7 @@ public class ServerStatusChecker extends Thread {
         itr = online.listIterator();
         while (itr.hasNext()) {
             Server server = (Server) itr.next();
-            String url = "http://" + server.getDomainName();
+            String url = getServerURL(server);
             GetMethod get = new GetMethod(url);
             get.setFollowRedirects(false);
             
@@ -103,7 +103,7 @@ public class ServerStatusChecker extends Thread {
             } catch (Exception e) { 
                 offline.add(server);
                 itr.remove();
-                log.debug("Server going OFFLINE! domainName: " + server.getDomainName());
+                log.debug("Server going OFFLINE! " + getServerURL(server));
                 listener.serverOffline(server);
             }
         }
@@ -117,7 +117,7 @@ public class ServerStatusChecker extends Thread {
         Iterator itr = offline.listIterator();
         while (itr.hasNext()) {
             Server server = (Server) itr.next();
-            String url = "http://" + server.getDomainName();
+            String url = getServerURL(server);
             GetMethod get = new GetMethod(url);
             get.setFollowRedirects(false);
             
@@ -125,12 +125,22 @@ public class ServerStatusChecker extends Thread {
                 httpClient.executeMethod(get);
                 online.add(server);
                 itr.remove();
-                log.debug("Server back online, domainName: " + server.getDomainName());
+                log.debug("Server back online" + getServerURL(server));
                 listener.serverOnline(server);
             } catch (Exception e) {
                 listener.serverOffline(server);
             }
         }
+    }
+
+    /**
+     * Returns the URL to the server
+     * @param server The server we are connection to
+     * @return The URL
+     */
+    private String getServerURL(Server server) {
+        String url = "http://" + server.getDomainName() + server.getDirectory();
+        return url;
     }
  
     /**
@@ -142,6 +152,6 @@ public class ServerStatusChecker extends Thread {
      * @param server The server to add
      */
     public void addServer(Server server) {
-        offline.add(server);
+        online.add(server);
     }
 }
