@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Anders Nyman
  */
-public class ClusterContainer extends ServerContainerBase {
+public class ClusterContainer extends ServerContainerBase implements ServerStatusListener {
 
     /** 
      * Logging element supplied by commons-logging.
@@ -61,18 +61,25 @@ public class ClusterContainer extends ServerContainerBase {
      */
     private int currentServerNumber;
     
+    /** 
+     * Class that will check if our servers are online or offline.
+     */
+    private ServerStatusChecker statusChecker;
+    
     /**
      * Basic constructor
      */
     public ClusterContainer() {
         servers = new HashMap();
         numberOfServers = 0;
+        statusChecker = new ServerStatusChecker(this, 10*1000);
         log = LogFactory.getLog(ClusterContainer.class);
+        statusChecker.start();
     }
     
     /**
      * Checks the request for any session. If there is a session created we
-     * make sure that the server returned is the one the issued the sesssion.
+     * make sure that the server returned is the one the issued the session.
      * If no session is included in the request we will choose the next server
      * in a round-robin fashion.
      * 
@@ -80,11 +87,21 @@ public class ClusterContainer extends ServerContainerBase {
      */
     public Server getServer(HttpServletRequest request) {
         String serverId = getServerIdFromCookie(request.getCookies());
-        Server server = (Server) servers.get(serverId);
-        if (server == null) {
+        ClusteredServer server = (ClusteredServer) servers.get(serverId);
+        if (server == null || !server.online()) {
+            int start = currentServerNumber;
+            int current = -1; 
+            while (!server.online() && start != current) {
+                current = (start + 1) % numberOfServers;
+                server = (ClusteredServer) servers.get("server" + current); 
+            }
             currentServerNumber = (currentServerNumber + 1) % numberOfServers;
-            log.debug("Using server" + currentServerNumber + " for this request");
-            server = (Server) servers.get("server" + currentServerNumber);
+        }
+        
+        if (server.online()) {
+            log.debug("Using server" + server.serverId + " for this request"); 
+        } else {
+            log.error("All the servers in this cluster are offline. Using server \"server + server.serverId + \", will probably not work");
         }
         return server;
     }
@@ -103,7 +120,6 @@ public class ClusterContainer extends ServerContainerBase {
                 match = server;
             }
         }
-        
         return match;
     }
 
@@ -147,6 +163,28 @@ public class ClusterContainer extends ServerContainerBase {
     }
     
     /**
+     * Sets the server to offline status.
+     * Will only handle servers that are ClusteredServers
+     * @see net.sf.j2ep.servers.ServerStatusListener#serverOffline(net.sf.j2ep.Server)
+     */
+    public void serverOffline(Server server) {
+        if (server instanceof ClusteredServer) {
+            ((ClusteredServer) server).setOnline(false);
+        }
+    }
+    
+    /**
+     * Sets the server to online status.
+     * Will only handle servers that are ClusteredServers
+     * @see net.sf.j2ep.servers.ServerStatusListener#serverOnline(net.sf.j2ep.Server)
+     */
+    public void serverOnline(Server server) {
+        if (server instanceof ClusteredServer) {
+            ((ClusteredServer) server).setOnline(false);
+        }
+    }
+    
+    /**
      * Will create a new ClusteredServer and add it to the hash map.
      * 
      * @param domainName The domain name for the new server
@@ -162,6 +200,7 @@ public class ClusterContainer extends ServerContainerBase {
         String id = "server" + numberOfServers;
         ClusteredServer server = new ClusteredServer(domainName, directory, id);
         servers.put(id, server);
+        statusChecker.addServer(server);
         log.debug("Added server " + domainName + directory + " to the cluster on id server" + numberOfServers);
         numberOfServers++;
     }
@@ -189,6 +228,11 @@ public class ClusterContainer extends ServerContainerBase {
          */
         private String serverId;
         
+        /** 
+         * The status of this server
+         */
+        private boolean online;
+        
         /**
          * Basic constructor that sets the domain name and directory.
          * 
@@ -199,6 +243,7 @@ public class ClusterContainer extends ServerContainerBase {
             this.domainName = domainName;
             this.directory = directory;
             this.serverId = serverId;
+            this.online = true;
         }
 
         /**
@@ -234,6 +279,23 @@ public class ClusterContainer extends ServerContainerBase {
         public String getDirectory() {
             return directory;
         }
+        
+        /**
+         * Returns the online status of this server
+         * @return true if the server is online, otherwise false
+         */
+        public boolean online() {
+            return online;
+        }
+        
+        /**
+         * Marks if this server should be considered online or
+         * offline.
+         * @param online The status of the server
+         */
+        public void setOnline(boolean online) {
+            this.online = online;
+        }
 
         /**
          * @see net.sf.j2ep.Server#getRule()
@@ -242,6 +304,4 @@ public class ClusterContainer extends ServerContainerBase {
             return ClusterContainer.this.getRule();
         }
     }
-
 }
-

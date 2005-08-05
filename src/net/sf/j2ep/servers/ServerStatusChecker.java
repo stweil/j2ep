@@ -6,7 +6,11 @@ import java.util.LinkedList;
 import net.sf.j2ep.Server;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A class that will check if servers are online and
@@ -42,6 +46,11 @@ public class ServerStatusChecker extends Thread {
      */
     private long pollingTime;
     
+    /** 
+     * Logging element supplied by commons-logging.
+     */
+    private static Log log = LogFactory.getLog(ServerStatusChecker.class);
+    
     /**
      * Basic constructor sets the listener to notify when
      * servers goes down/up. Also sets the polling time
@@ -56,6 +65,8 @@ public class ServerStatusChecker extends Thread {
         online = new LinkedList();
         offline = new LinkedList();
         httpClient = new HttpClient(); 
+        httpClient.getParams().setBooleanParameter(HttpClientParams.USE_EXPECT_CONTINUE, false);
+        httpClient.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
     }
     
     /**
@@ -85,12 +96,14 @@ public class ServerStatusChecker extends Thread {
             Server server = (Server) itr.next();
             String url = "http://" + server.getDomainName();
             GetMethod get = new GetMethod(url);
+            get.setFollowRedirects(false);
             
             try {
                 httpClient.executeMethod(get);
             } catch (Exception e) { 
                 offline.add(server);
                 itr.remove();
+                log.debug("Server going OFFLINE! domainName: " + server.getDomainName());
                 listener.serverOffline(server);
             }
         }
@@ -106,13 +119,16 @@ public class ServerStatusChecker extends Thread {
             Server server = (Server) itr.next();
             String url = "http://" + server.getDomainName();
             GetMethod get = new GetMethod(url);
+            get.setFollowRedirects(false);
             
             try {
                 httpClient.executeMethod(get);
                 online.add(server);
                 itr.remove();
+                log.debug("Server back online, domainName: " + server.getDomainName());
                 listener.serverOnline(server);
             } catch (Exception e) {
+                listener.serverOffline(server);
             }
         }
     }
