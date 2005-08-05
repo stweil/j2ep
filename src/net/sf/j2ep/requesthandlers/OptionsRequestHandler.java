@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.OptionsMethod;
 
-import net.sf.j2ep.RequestHandlerBase;
 
 /**
  * Handler for the OPTIONS method.
