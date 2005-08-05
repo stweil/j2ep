@@ -60,7 +60,7 @@ public class ClusterContainer extends ServerContainerBase {
      * The currentServer we are using.
      */
     private int currentServerNumber;
-
+    
     /**
      * Basic constructor
      */
@@ -120,7 +120,7 @@ public class ClusterContainer extends ServerContainerBase {
         if (cookies != null) {
             for (int i=0; i < cookies.length; i++) {
                 Cookie cookie = cookies[i];
-                if (cookie.getName().equals("JSESSIONID")) {
+                if ( isSessionCookie(cookie.getName()) ) {
                     String value = cookie.getValue();
                     String id = value.substring(value.indexOf(".")+1);
                     if (id.startsWith("server")) {
@@ -130,6 +130,20 @@ public class ClusterContainer extends ServerContainerBase {
             } 
         }
         return serverId;
+    }
+    
+    /**
+     * Checks if the supplied name of a cookie is known to be a 
+     * session.
+     * 
+     * @param name The cookies name
+     * @return true if this cookie is specifying a session
+     */
+    private boolean isSessionCookie(String name) {
+        return name.equalsIgnoreCase("JSESSIONID")
+                || name.equalsIgnoreCase("PHPSESSID")
+                || name.equalsIgnoreCase("ASPSESSIONID")
+                || name.equalsIgnoreCase("ASP.NET_SessionId");
     }
     
     /**
