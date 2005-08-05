@@ -95,7 +95,7 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
         if (server.online()) {
             log.debug("Using server" + server.serverId + " for this request"); 
         } else {
-            log.error("All the servers in this cluster are offline. Using server \"server + server.serverId + \", will probably not work");
+            log.error("All the servers in this cluster are offline. Using server \"server" + server.serverId + "\", will probably not work");
         }
         return server;
     }
