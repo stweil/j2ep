@@ -41,7 +41,7 @@ public class ClusterResponseWrapper extends HttpServletResponseWrapper {
     /** 
      * Logging element supplied by commons-logging.
      */
-    private static Log log = LogFactory.getLog(ClusterResponseWrapper.class);;
+    private static Log log = LogFactory.getLog(ClusterResponseWrapper.class);
     
     /** 
      * Regex to find sessions in cookies.
@@ -103,7 +103,9 @@ public class ClusterResponseWrapper extends HttpServletResponseWrapper {
     private String rewriteSetCookie(String value) {
         Matcher matcher = sessionPattern.matcher(value);
         String rewritten = matcher.replaceAll("$1$2" + serverId);
-        log.debug("Session found and rewritten \"" + value + "\" >> " + rewritten);
+        if (log.isDebugEnabled() && !rewritten.equals(value)) {
+            log.debug("Session found and rewritten \"" + value + "\" >> " + rewritten);
+        }
         return rewritten;
     }
 }
