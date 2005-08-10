@@ -38,7 +38,7 @@ public interface Server {
      * @param request The request we are receiving
      * @return Eventual modified HttpServletRequest
      */
-    HttpServletRequest preExecution(HttpServletRequest request);
+    HttpServletRequest preExecute(HttpServletRequest request);
     
     /**
      * Can do handling of the response, if needed the
@@ -48,7 +48,7 @@ public interface Server {
      * @param response The response we are receiving
      * @return Eventual modified HttpServletResponse
      */
-    HttpServletResponse postExecution(HttpServletResponse response);
+    HttpServletResponse postExecute(HttpServletResponse response);
     
     /**
      * Used to notify the server that there is a problem using the data this
