@@ -172,7 +172,7 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
            Server matchingServer = serverChain.getServerMapped(location);
            
            if (matchingServer != null) {
-               link = link.substring(matchingServer.getDirectory().length()); 
+               link = link.substring(matchingServer.getPath().length()); 
                link = matchingServer.getRule().revert(link);
                String type = matcher.group(1);
                String separator = matcher.group(2);
@@ -192,7 +192,7 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
      * @return The rewritten link
      */
     private String handleLocalLink(Server server, Matcher matcher, String link) {
-        String serverDir = server.getDirectory();
+        String serverDir = server.getPath();
 
         if (serverDir.equals("") || link.startsWith(serverDir + "/")) {
             link = server.getRule().revert(link.substring(serverDir.length()));

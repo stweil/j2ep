@@ -171,7 +171,7 @@ public class ServerStatusChecker extends Thread {
      * @return The URL
      */
     private String getServerURL(Server server) {
-        String url = "http://" + server.getDomainName() + server.getDirectory() + "/";
+        String url = "http://" + server.getDomainName() + server.getPath() + "/";
         return url;
     }
     

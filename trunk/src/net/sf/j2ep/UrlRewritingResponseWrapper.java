@@ -158,7 +158,7 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
 
             Server matchingServer = serverChain.getServerMapped(location);
             if (matchingServer != null) {
-                link = link.substring(matchingServer.getDirectory().length());
+                link = link.substring(matchingServer.getPath().length());
                 link = matchingServer.getRule().revert(link);
                 matcher.appendReplacement(header, "$1" + ownHostName + contextPath + link);
             }
