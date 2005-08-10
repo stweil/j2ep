@@ -51,6 +51,19 @@ public interface Server {
     HttpServletResponse postExecution(HttpServletResponse response);
     
     /**
+     * Used to notify the server that there is a problem using the data this
+     * server supplied to the user. Maybe the domainName isn't working or the
+     * directory doesn't exist on the underlying server, in any case this method
+     * can be used to let the server know about the problems.
+     * 
+     * The server should try to analyze the problem and if possible fix it so
+     * that the next request to this server will succeed.
+     * 
+     * @param e The exception received when trying to use this servers data
+     */
+    void setConnectionExceptionRecieved(Exception e);
+    
+    /**
      * Returns the host name and port for this server.
      * @return Host name and port
      */
