@@ -72,7 +72,7 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
     public ClusterContainer() {
         servers = new HashMap();
         numberOfServers = 0;
-        statusChecker = new ServerStatusChecker(this, 10*1000);
+        statusChecker = new ServerStatusChecker(this, 5*60*1000);
         log = LogFactory.getLog(ClusterContainer.class);
         statusChecker.start();
     }
