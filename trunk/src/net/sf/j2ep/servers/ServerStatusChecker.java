@@ -120,7 +120,7 @@ public class ServerStatusChecker extends Thread {
             
             try {
                 httpClient.executeMethod(get);
-                if (get.getStatusCode()/100 == 5) {
+                if (!okServerResponse(get.getStatusCode())) {
                     offline.add(server);
                     itr.remove();
                     log.debug("Server going OFFLINE! " + getServerURL(server));
@@ -151,10 +151,12 @@ public class ServerStatusChecker extends Thread {
             
             try {
                 httpClient.executeMethod(get);
-                online.add(server);
-                itr.remove();
-                log.debug("Server back online " + getServerURL(server));
-                listener.serverOnline(server);
+                if (okServerResponse(get.getStatusCode())) {
+                    online.add(server);
+                    itr.remove();
+                    log.debug("Server back online " + getServerURL(server));
+                    listener.serverOnline(server); 
+                }
             } catch (Exception e) {
                 listener.serverOffline(server);
             } finally {
@@ -171,6 +173,18 @@ public class ServerStatusChecker extends Thread {
     private String getServerURL(Server server) {
         String url = "http://" + server.getDomainName() + server.getDirectory() + "/";
         return url;
+    }
+    
+    /**
+     * Checks the status code received from the server and 
+     * validates if this server should be considered online
+     * or offline.
+     * 
+     * @param statusCode The status code received
+     * @return true if the server if online, otherwise false
+     */
+    private boolean okServerResponse(int statusCode) {
+        return !(statusCode/100 == 5);
     }
  
     /**
