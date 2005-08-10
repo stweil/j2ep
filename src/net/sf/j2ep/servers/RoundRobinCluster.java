@@ -62,7 +62,7 @@ public class RoundRobinCluster extends ClusterContainer {
             server = (ClusteredServer) servers.get("server" + current); 
         } while (!server.online() && start != current);
         
-        currentServerNumber = (currentServerNumber + 1) % numberOfServers;
+        currentServerNumber = current;
         return server;
     }
     
