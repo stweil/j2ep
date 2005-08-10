@@ -42,15 +42,6 @@ public interface ServerContainer {
     Server getServer(HttpServletRequest request);
 
     /**
-     * Returns the rule id for the server connected with this server.
-     * This should only be used when creating server from a XML mapping.
-     * Otherwise use the getRule instead.
-     * 
-     * @return The id for the rule mapped to this server
-     */
-    String getRuleId();
-
-    /**
      * Returns the mapped rule. This method must return the same
      * rule as a call to the underlying servers getRule().
      * 
