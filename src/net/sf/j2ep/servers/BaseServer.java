@@ -48,16 +48,16 @@ public class BaseServer extends ServerContainerBase implements Server {
     private String domainName;
     
     /**
-     * The host and port for this server
+     * The path for this server
      */
-    private String directory;
+    private String path;
     
     /**
      * Basic constructor that will initialize
      * the directory to "".
      */
     public BaseServer() {
-        directory = "";
+        path = "";
         isRewriting = false;
     }   
     
@@ -92,17 +92,17 @@ public class BaseServer extends ServerContainerBase implements Server {
     }
     
     /**
-     * @see net.sf.j2ep.Server#getDirectory()
+     * @see net.sf.j2ep.Server#getPath()
      */
-    public String getDirectory() {
-        return directory;
+    public String getPath() {
+        return path;
     }
 
     /**
      * @see net.sf.j2ep.ServerContainer#getServerMapped(java.lang.String)
      */
     public Server getServerMapped(String location) {
-        String fullPath = getDomainName() + getDirectory() + "/";
+        String fullPath = getDomainName() + getPath() + "/";
         if (location.startsWith(fullPath) && isRewriting) {
             return this;
         } else {
@@ -137,14 +137,14 @@ public class BaseServer extends ServerContainerBase implements Server {
     }
     
     /**
-     * Sets the directory we are mapping to.
-     * @param directory The directory
+     * Sets the path we are mapping to.
+     * @param path The path
      */
-    public void setDirectory(String directory) {
-        if (directory == null) {
-            directory = "";
+    public void setPath(String path) {
+        if (path == null) {
+            path = "";
         } else {
-            this.directory = directory;
+            this.path = path;
         }
     }
 

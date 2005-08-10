@@ -70,14 +70,14 @@ public interface Server {
     String getDomainName();
     
     /**
-     * Returns the directory being mapped for this server.
-     * The directory starts with a / but doesn't end with 
+     * Returns the path that we are mapping to. Starting from the 
+     * servers root the path starts with a / but doesn't end with 
      * a /. A mapping to the root results in
-     * directory being an empty string "".
+     * path being an empty string "".
      * 
-     * @return Directory The directory
+     * @return The path
      */
-    String getDirectory();
+    String getPath();
 
     
     /**
