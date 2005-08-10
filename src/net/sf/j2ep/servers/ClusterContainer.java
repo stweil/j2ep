@@ -23,11 +23,11 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.j2ep.Rule;
-import net.sf.j2ep.Server;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import net.sf.j2ep.Rule;
+import net.sf.j2ep.Server;
 
 /**
  * A ServerContainer implementation that have multiple domains to choose from.
@@ -37,29 +37,17 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Anders Nyman
  */
-public class ClusterContainer extends ServerContainerBase implements ServerStatusListener {
-
+public abstract class ClusterContainer extends ServerContainerBase implements ServerStatusListener {
+    
     /** 
      * Logging element supplied by commons-logging.
      */
     private static Log log;
     
     /** 
-     * The lists of servers in our cluster,
+     * The servers in our cluster,
      */
     protected HashMap servers;
-    
-    /**
-     * The current number of servers, only used at when the servers are added to
-     * the hash map. It is assumed that this variable is only modified in a
-     * single threaded environment.
-     */
-    private int numberOfServers;
-    
-    /**
-     * The currentServer we are using.
-     */
-    private int currentServerNumber;
     
     /** 
      * Class that will check if our servers are online or offline.
@@ -71,11 +59,25 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
      */
     public ClusterContainer() {
         servers = new HashMap();
-        numberOfServers = 0;
         statusChecker = new ServerStatusChecker(this, 5*60*1000);
-        log = LogFactory.getLog(ClusterContainer.class);
         statusChecker.start();
+        log = LogFactory.getLog(ClusterContainer.class);
     }
+    
+    /**
+     * Will create a new server based on the domainName and the directory.
+     * @param domainName The domain
+     * @param directory The directory
+     * @return The created server
+     */
+    protected abstract ClusteredServer createNewServer(String domainName, String directory);
+    
+    /**
+     * Returns the next server in out cluster.
+     * Is used when we can't get a server from the requests session.
+     * @return The next server
+     */
+    protected abstract ClusteredServer getNextServer();
     
     /**
      * Checks the request for any session. If there is a session created we
@@ -93,48 +95,11 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
         }
         
         if (server.online()) {
-            log.debug("Using " + server.serverId + " for this request"); 
+            log.debug("Using server" + serverId + " for this request"); 
         } else {
-            log.error("All the servers in this cluster are offline. Using \"server" + server.serverId + "\", will probably not work");
+            log.error("All the servers in this cluster are offline. Using id " + serverId + ", will probably not work");
         }
         return server;
-    }
-
-    /**
-     * Returns the next in the cluster. The server if found
-     * using round-robin and checking that the server is marked
-     * as online.
-     *  
-     * @return The next server
-     */
-    private ClusteredServer getNextServer() {
-        ClusteredServer server;
-        int start = currentServerNumber;
-        int current = start;
-        do {
-            current = (current + 1) % numberOfServers;
-            server = (ClusteredServer) servers.get("server" + current); 
-        } while (!server.online() && start != current);
-        
-        currentServerNumber = (currentServerNumber + 1) % numberOfServers;
-        return server;
-    }
-    
-    /**
-     * @see net.sf.j2ep.ServerContainer#getServerMapped(java.lang.String)
-     */
-    public Server getServerMapped(String location) {
-        Iterator itr = servers.values().iterator();
-        Server match = null;
-
-        while (itr.hasNext() && match == null) {
-            Server server = (Server) itr.next();
-            String fullPath = server.getDomainName() + server.getDirectory() + "/";
-            if (location.startsWith(fullPath)) {
-                match = server;
-            }
-        }
-        return match;
     }
 
     /**
@@ -177,6 +142,23 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
     }
     
     /**
+     * @see net.sf.j2ep.ServerContainer#getServerMapped(java.lang.String)
+     */
+    public Server getServerMapped(String location) {
+        Iterator itr = servers.values().iterator();
+        Server match = null;
+
+        while (itr.hasNext() && match == null) {
+            Server server = (Server) itr.next();
+            String fullPath = server.getDomainName() + server.getPath() + "/";
+            if (location.startsWith(fullPath)) {
+                match = server;
+            }
+        }
+        return match;
+    }
+    
+    /**
      * Sets the server to offline status.
      * Will only handle servers that are ClusteredServers
      * @see net.sf.j2ep.servers.ServerStatusListener#serverOffline(net.sf.j2ep.Server)
@@ -211,12 +193,11 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
         if (directory == null) {
             directory = "";
         }
-        String id = "server" + numberOfServers;
-        ClusteredServer server = new ClusteredServer(domainName, directory, id);
-        servers.put(id, server);
+        
+        ClusteredServer server = createNewServer(domainName, directory);
+        servers.put(server.getServerId(), server);
         statusChecker.addServer(server);
-        log.debug("Added server " + domainName + directory + " to the cluster on id server" + numberOfServers);
-        numberOfServers++;
+        log.debug("Added server " + domainName + directory + " to the cluster on id " + server.getServerId());
     }
     
     /**
@@ -225,7 +206,7 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
      *
      * @author Anders Nyman
      */
-    private class ClusteredServer implements Server {
+    protected class ClusteredServer implements Server {
         
         /** 
          * The domain name mapping
@@ -233,9 +214,9 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
         private String domainName;
         
         /** 
-         * The directory mapping
+         * The path mapping
          */
-        private String directory;
+        private String path;
         
         /** 
          * This servers id
@@ -251,11 +232,11 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
          * Basic constructor that sets the domain name and directory.
          * 
          * @param domainName The domain name
-         * @param directory The directory
+         * @param path The directory
          */
-        public ClusteredServer(String domainName, String directory, String serverId) {
+        public ClusteredServer(String domainName, String path, String serverId) {
             this.domainName = domainName;
-            this.directory = directory;
+            this.path = path;
             this.serverId = serverId;
             this.online = true;
         }
@@ -280,6 +261,11 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
             return new ClusterResponseWrapper(response, serverId);
         }
         
+        /**
+         * Notifies the server status checker that a server
+         * might have gone offline.
+         * @see net.sf.j2ep.Server#setConnectionExceptionRecieved(java.lang.Exception)
+         */
         public void setConnectionExceptionRecieved(Exception e) {
             ClusterContainer.this.statusChecker.interrupt();
         }
@@ -292,10 +278,10 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
         }
 
         /**
-         * @see net.sf.j2ep.Server#getDirectory()
+         * @see net.sf.j2ep.Server#getPath()
          */
-        public String getDirectory() {
-            return directory;
+        public String getPath() {
+            return path;
         }
         
         /**
@@ -320,6 +306,14 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
          */
         public Rule getRule() {
             return ClusterContainer.this.getRule();
+        }
+        
+        /**
+         * Returns this servers ID.
+         * @return The server ID
+         */
+        public String getServerId() {
+            return serverId;
         }
     }
 }
