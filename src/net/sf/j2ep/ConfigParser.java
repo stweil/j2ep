@@ -17,51 +17,50 @@
 package net.sf.j2ep;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.apache.commons.digester.CallMethodRule;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * The config parser uses Digester
- * to parse the config file. A rule chain
- * with links to the servers will be constructed.
+ * The config parser uses Digester to parse the config file. A rule chain with
+ * links to the servers will be constructed.
  * 
- * Based on the work by Yoav Shapira for the
- * balancer webapp distributed with Tomcat.
- *
+ * Based on the work by Yoav Shapira for the balancer webapp distributed with
+ * Tomcat.
+ * 
  * @author Anders Nyman, Yoav Shapira
  */
 public class ConfigParser {
-    
+
     /**
      * The resulting server chain.
      */
     private ServerChain serverChain;
-    
-    /** 
+
+    /**
      * A logging instance supplied by commons-logging.
      */
     private static Log log;
 
     /**
-     * Standard constructor only specifying the input file.
-     * The constructor will parse the config and build a 
-     * corresponding rule chain with the server mappings included.
+     * Standard constructor only specifying the input file. The constructor will
+     * parse the config and build a corresponding rule chain with the server
+     * mappings included.
      * 
-     * @param data The config file containing the XML data structure.
+     * @param data
+     *            The config file containing the XML data structure.
      */
     public ConfigParser(File data) {
         log = LogFactory.getLog(ConfigParser.class);
         try {
-            LinkedList serverContainers = createServerList(data);
-            HashMap ruleIdMap = createRuleIdMap(data);
-            mapServersToRules(serverContainers, ruleIdMap);
-            serverChain = new ServerChain(serverContainers);
+            LinkedList serverContainer = createServerList(data);
+            if (log.isDebugEnabled()) {
+                debugServers(serverContainer); 
+            }
+            serverChain = new ServerChain(serverContainer);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -69,7 +68,7 @@ public class ConfigParser {
 
     /**
      * Returns the parsed server chain.
-     *
+     * 
      * @return The resulting ServerChain
      */
     public ServerChain getServerChain() {
@@ -78,88 +77,76 @@ public class ConfigParser {
 
     /**
      * Creates the rules.
-     *
+     * 
      * @return The rules all put into a rule chain
      */
-    private LinkedList createServerList(File data) throws Exception{
+    private LinkedList createServerList(File data) throws Exception {
         Digester digester = new Digester();
         digester.setUseContextClassLoader(true);
-        
+
         // Construct server list
-        digester.addObjectCreate("config/servers", LinkedList.class);
-        
+        digester.addObjectCreate("config", LinkedList.class);
+
         // Create servers
-        digester.addObjectCreate("config/servers/server", null, "className");
-        digester.addSetProperties("config/servers/server"); 
+        digester.addObjectCreate("config/server", null, "className");
+        digester.addSetProperties("config/server");
+        // Create rule
+        digester.addObjectCreate("config/server/rule", null, "className");
+        digester.addSetProperties("config/server/rule");
+        digester.addSetNext("config/server/rule", "setRule");
+        // Create composite rule
+        digester.addObjectCreate("config/server/composite-rule", null,
+                "className");
+        digester.addSetProperties("config/server/composite-rule");
+        digester.addObjectCreate("config/server/composite-rule/rule", null,
+                "className");
+        digester.addSetProperties("config/server/composite-rule/rule");
+        digester.addSetNext("config/server/composite-rule/rule", "addRule");
+        digester.addSetNext("config/server/composite-rule", "setRule");
         // Add server to list
-        digester.addSetNext("config/servers/server", "add");
-        
-        // Create cluster server
-        digester.addObjectCreate("config/servers/cluster-server", null, "className");
-        digester.addSetProperties("config/servers/cluster-server"); 
+        digester.addSetNext("config/server", "add");
+
+        // Create cluster servers
+        digester.addObjectCreate("config/cluster-server", null, "className");
+        digester.addSetProperties("config/cluster-server");
         // Create the servers in this cluster
-        digester.addCallMethod("config/servers/cluster-server/server", "addServer", 2);
-        digester.addCallParam("config/servers/cluster-server/server", 0, "domainName");
-        digester.addCallParam("config/servers/cluster-server/server", 1, "path");
-        // Add cluster to list
-        digester.addSetNext("config/servers/cluster-server", "add");
-        
+        digester.addCallMethod("config/cluster-server/server", "addServer", 2);
+        digester.addCallParam("config/cluster-server/server", 0, "domainName");
+        digester.addCallParam("config/cluster-server/server", 1, "path");
+        // Create rule
+        digester.addObjectCreate("config/cluster-server/rule", null,
+                "className");
+        digester.addSetProperties("config/cluster-server/rule");
+        digester.addSetNext("config/cluster-server/rule", "setRule");
+        // Create composite rule
+        digester.addObjectCreate("config/cluster-server/composite-rule", null,
+                "className");
+        digester.addSetProperties("config/cluster-server/composite-rule");
+        digester.addObjectCreate("config/cluster-server/composite-rule/rule",
+                null, "className");
+        digester.addSetProperties("config/cluster-server/composite-rule/rule");
+        digester.addSetNext("config/cluster-server/composite-rule/rule",
+                "addRule");
+        digester.addSetNext("config/cluster-server/composite-rule", "setRule");
+
+        // Add server to list
+        digester.addSetNext("config/cluster-server", "add");
+
         return (LinkedList) digester.parse(data);
     }
-    
+
     /**
-     * Creates the rules mapped by id.
-     *
-     * @return A hash map containing all the rules
-     */
-    private HashMap createRuleIdMap(File data) throws Exception{
-        Digester digester = new Digester();
-        digester.setUseContextClassLoader(true);
-        
-        // Construct rule map
-        digester.addObjectCreate("config/rules", HashMap.class);
-        org.apache.commons.digester.Rule addRule = new CallMethodRule(1, "put", 2);
-        
-        // Create rule
-        digester.addObjectCreate("config/rules/rule", null, "className");
-        digester.addSetProperties("config/rules/rule"); 
-        // Add rule 
-        digester.addRule("config/rules/rule", addRule);        
-        digester.addCallParam("config/rules/rule", 0, "id");
-        digester.addCallParam("config/rules/rule", 1, true);
-        
-        // Create composite rule
-        digester.addObjectCreate("config/rules/composite-rule", null, "className");
-        digester.addSetProperties("config/rules/composite-rule"); 
-        // Create the rules in this composite rule
-        digester.addObjectCreate("config/rules/composite-rule/rule", null, "className");
-        digester.addSetProperties("config/rules/composite-rule/rule"); 
-        digester.addSetNext("config/rules/composite-rule/rule", "addRule", "net.sf.j2ep.Rule");
-        // Add cluster server
-        digester.addRule("config/rules/composite-rule", addRule);        
-        digester.addCallParam("config/rules/composite-rule", 0, "id");
-        digester.addCallParam("config/rules/composite-rule", 1, true);
-        
-        // Construct server
-        return (HashMap) digester.parse(data);
-    }
-    
-    /**
-     * Maps the rules to the servers using the servers specified ruleId.
-     * The reason that the rules aren't mapped directly on creation
-     * of the server is limitation in the Digester.
+     * Will iterate over the server and print out the mappings between servers
+     * and rules.
      * 
-     * @param rules The rules
-     * @param servers The servers
+     * @param servers The server to debug
      */
-    private void mapServersToRules(LinkedList servers, HashMap rules) {
-        log.debug("These are the server to rule mappings");
+    private void debugServers(LinkedList servers) {
         Iterator itr = servers.iterator();
-        while(itr.hasNext()) {
+        
+        while (itr.hasNext()) {
             ServerContainer container = (ServerContainer) itr.next();
-            Rule rule = (Rule) rules.get(container.getRuleId());
-            container.setRule(rule);
-            log.debug("Server " + container + " using rule (" + container.getRuleId() + ") --> " + rule );
+            log.debug(container + " mapped to --> " + container.getRule());
         }
     }
 }
