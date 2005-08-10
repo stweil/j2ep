@@ -1,3 +1,19 @@
+/*
+ * Copyright 2005 Anders Nyman.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.sf.j2ep.servers;
 
 import java.util.Iterator;
@@ -62,6 +78,9 @@ public class ServerStatusChecker extends Thread {
     public ServerStatusChecker(ServerStatusListener listener, long pollingTime) {
         this.listener = listener;
         this.pollingTime = Math.max(30*1000, pollingTime);
+        setPriority(Thread.NORM_PRIORITY-1);
+        setDaemon(true);
+        
         online = new LinkedList();
         offline = new LinkedList();
         httpClient = new HttpClient(); 
@@ -75,6 +94,7 @@ public class ServerStatusChecker extends Thread {
      */
     public void run() {
         for(;;) {
+            log.debug("Checking status of servers.");
             checkOnlineServers();
             checkOfflineServers();
             try {
@@ -105,6 +125,8 @@ public class ServerStatusChecker extends Thread {
                 itr.remove();
                 log.debug("Server going OFFLINE! " + getServerURL(server));
                 listener.serverOffline(server);
+            } finally {
+                get.releaseConnection();
             }
         }
     }
@@ -125,10 +147,12 @@ public class ServerStatusChecker extends Thread {
                 httpClient.executeMethod(get);
                 online.add(server);
                 itr.remove();
-                log.debug("Server back online" + getServerURL(server));
+                log.debug("Server back online " + getServerURL(server));
                 listener.serverOnline(server);
             } catch (Exception e) {
                 listener.serverOffline(server);
+            } finally {
+                get.releaseConnection();
             }
         }
     }
@@ -139,7 +163,7 @@ public class ServerStatusChecker extends Thread {
      * @return The URL
      */
     private String getServerURL(Server server) {
-        String url = "http://" + server.getDomainName() + server.getDirectory();
+        String url = "http://" + server.getDomainName() + server.getDirectory() + "/";
         return url;
     }
  
