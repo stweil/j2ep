@@ -95,9 +95,9 @@ public abstract class ClusterContainer extends ServerContainerBase implements Se
         }
         
         if (server.online()) {
-            log.debug("Using server" + serverId + " for this request"); 
+            log.debug("Using id " + server.getServerId() + " for this request"); 
         } else {
-            log.error("All the servers in this cluster are offline. Using id " + serverId + ", will probably not work");
+            log.error("All the servers in this cluster are offline. Using id " + server.getServerId() + ", will probably not work");
         }
         return server;
     }
