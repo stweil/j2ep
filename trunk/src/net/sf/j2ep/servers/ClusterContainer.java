@@ -93,7 +93,7 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
         }
         
         if (server.online()) {
-            log.debug("Using server" + server.serverId + " for this request"); 
+            log.debug("Using " + server.serverId + " for this request"); 
         } else {
             log.error("All the servers in this cluster are offline. Using \"server" + server.serverId + "\", will probably not work");
         }
@@ -264,9 +264,9 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
          * Will wrap the request so the tailing .something,
          * identifying the server, is removed from the request.
          * 
-         * @see net.sf.j2ep.Server#preExecution(javax.servlet.http.HttpServletRequest)
+         * @see net.sf.j2ep.Server#preExecute(javax.servlet.http.HttpServletRequest)
          */
-        public HttpServletRequest preExecution(HttpServletRequest request) {
+        public HttpServletRequest preExecute(HttpServletRequest request) {
             return new ClusterRequestWrapper(request);
         }
         
@@ -274,10 +274,14 @@ public class ClusterContainer extends ServerContainerBase implements ServerStatu
          * Will wrap the response so that sessions are rewritten to
          * remove the tailing .something that indicated which server
          * the session is linked to.
-         * @see net.sf.j2ep.Server#postExecution(javax.servlet.http.HttpServletResponse)
+         * @see net.sf.j2ep.Server#postExecute(javax.servlet.http.HttpServletResponse)
          */
-        public HttpServletResponse postExecution(HttpServletResponse response) {
+        public HttpServletResponse postExecute(HttpServletResponse response) {
             return new ClusterResponseWrapper(response, serverId);
+        }
+        
+        public void setConnectionExceptionRecieved(Exception e) {
+            ClusterContainer.this.statusChecker.interrupt();
         }
 
         /**

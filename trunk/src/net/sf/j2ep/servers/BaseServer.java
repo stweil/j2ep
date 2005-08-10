@@ -70,17 +70,17 @@ public class BaseServer extends ServerContainerBase implements Server {
 
     /**
      * Will no do any handling
-     * @see net.sf.j2ep.Server#preExecution(javax.servlet.http.HttpServletRequest)
+     * @see net.sf.j2ep.Server#preExecute(javax.servlet.http.HttpServletRequest)
      */
-    public HttpServletRequest preExecution(HttpServletRequest request) {
+    public HttpServletRequest preExecute(HttpServletRequest request) {
         return request;
     }
     
     /**
      * Will no do any handling
-     * @see net.sf.j2ep.Server#postExecution(javax.servlet.http.HttpServletResponse)
+     * @see net.sf.j2ep.Server#postExecute(javax.servlet.http.HttpServletResponse)
      */
-    public HttpServletResponse postExecution(HttpServletResponse response) {
+    public HttpServletResponse postExecute(HttpServletResponse response) {
         return response;
     }
     
@@ -146,5 +146,11 @@ public class BaseServer extends ServerContainerBase implements Server {
         } else {
             this.directory = directory;
         }
+    }
+
+    /**
+     * @see net.sf.j2ep.Server#setConnectionExceptionRecieved(java.lang.Exception)
+     */
+    public void setConnectionExceptionRecieved(Exception e) {
     }
 }
