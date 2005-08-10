@@ -152,6 +152,6 @@ public class ServerStatusChecker extends Thread {
      * @param server The server to add
      */
     public void addServer(Server server) {
-        online.add(server);
+        offline.add(server);
     }
 }
