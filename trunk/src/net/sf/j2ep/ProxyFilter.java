@@ -89,33 +89,33 @@ public class ProxyFilter implements Filter {
             String uri = server.getRule().process(getURI(httpRequest));
             String url = request.getScheme() + "://" + server.getDomainName() + server.getDirectory() + uri;
             log.debug("Connecting to " + url);
-            ResponseHandler responseHandler = null;  
+            
+            ResponseHandler responseHandler = null;
             
             try {
                 httpRequest = server.preExecution(httpRequest);
                 responseHandler = executeRequest(httpRequest, url);
                 httpResponse = server.postExecution(httpResponse);
+                
+                responseHandler.process(httpResponse);
             } catch (HttpException e) {
                 log.error("Problem while connection to server", e);
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
             } catch (UnknownHostException e) {
                 log.error("Could not connection to the host specified", e);
                 httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
-                return;
             } catch (IOException e) {
                 log.error("Problem probably with the input being send, either with a Header or the Stream", e);
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
             } catch (MethodNotAllowedException e) {
                 log.error("Incoming method could not be handled", e);
                 httpResponse.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 httpResponse.setHeader("Allow", e.getAllowedMethods());
-                return;
+            } finally {
+                if (responseHandler != null) {
+                    responseHandler.close();
+                }
             }
-
-            responseHandler.process(httpResponse);
-            responseHandler.close(); 
         }
     }
     
@@ -146,18 +146,20 @@ public class ProxyFilter implements Filter {
      * @throws IOException When there is a problem with the streams
      * @throws HttpException The httpclient can throw HttpExcetion when executing the method
      */
-    private ResponseHandler executeRequest(HttpServletRequest httpRequest, String url) throws MethodNotAllowedException, IOException, HttpException {
-        ResponseHandler responseHandler;
-        RequestHandler requestHandler = RequestHandlerFactory.createRequestMethod(httpRequest.getMethod());
+    private ResponseHandler executeRequest(HttpServletRequest httpRequest,
+            String url) throws MethodNotAllowedException, IOException,
+            HttpException {
+        RequestHandler requestHandler = RequestHandlerFactory
+                .createRequestMethod(httpRequest.getMethod());
 
         HttpMethod method = requestHandler.process(httpRequest, url);
         method.setFollowRedirects(false);
 
         /*
-         * Why does method.validate() return true when the method has been aborted?
-         * I mean, if validate returns true the API says that means that the method
-         * is ready to be executed. TODO I don't like doing type casting here, see
-         * above.
+         * Why does method.validate() return true when the method has been
+         * aborted? I mean, if validate returns true the API says that means
+         * that the method is ready to be executed. TODO I don't like doing type
+         * casting here, see above.
          */
         if (!((HttpMethodBase) method).isAborted()) {
             httpClient.executeMethod(method);
@@ -165,13 +167,13 @@ public class ProxyFilter implements Filter {
             if (method.getStatusCode() == 405) {
                 Header allow = method.getResponseHeader("allow");
                 String value = allow.getValue();
-                throw new MethodNotAllowedException("Status code 405 from server",
-                        ResponseHandlerFactory.processAllowHeader(value));
+                throw new MethodNotAllowedException(
+                        "Status code 405 from server", ResponseHandlerFactory
+                                .processAllowHeader(value));
             }
         }
 
-        responseHandler = ResponseHandlerFactory.createResponseHandler(method);
-        return responseHandler;
+        return ResponseHandlerFactory.createResponseHandler(method);
     }
 
     /**
@@ -210,5 +212,6 @@ public class ProxyFilter implements Filter {
     public void destroy() {
         log = null;
         httpClient = null;
+        serverChain = null;
     }
 }
