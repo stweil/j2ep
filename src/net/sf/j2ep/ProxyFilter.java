@@ -93,20 +93,22 @@ public class ProxyFilter implements Filter {
             ResponseHandler responseHandler = null;
             
             try {
-                httpRequest = server.preExecution(httpRequest);
+                httpRequest = server.preExecute(httpRequest);
                 responseHandler = executeRequest(httpRequest, url);
-                httpResponse = server.postExecution(httpResponse);
-                
+                httpResponse = server.postExecute(httpResponse);
+
                 responseHandler.process(httpResponse);
             } catch (HttpException e) {
                 log.error("Problem while connection to server", e);
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                server.setConnectionExceptionRecieved(e);
             } catch (UnknownHostException e) {
                 log.error("Could not connection to the host specified", e);
                 httpResponse.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
+                server.setConnectionExceptionRecieved(e);
             } catch (IOException e) {
-                log.error("Problem probably with the input being send, either with a Header or the Stream", e);
-                httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                log.error( "Problem probably with the input being send, either with a Header or the Stream", e);
+                httpResponse .setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } catch (MethodNotAllowedException e) {
                 log.error("Incoming method could not be handled", e);
                 httpResponse.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -158,8 +160,8 @@ public class ProxyFilter implements Filter {
         /*
          * Why does method.validate() return true when the method has been
          * aborted? I mean, if validate returns true the API says that means
-         * that the method is ready to be executed. TODO I don't like doing type
-         * casting here, see above.
+         * that the method is ready to be executed. 
+         * TODO I don't like doing type casting here, see above.
          */
         if (!((HttpMethodBase) method).isAborted()) {
             httpClient.executeMethod(method);
