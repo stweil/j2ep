@@ -61,7 +61,7 @@ public class ServerStatusChecker extends Thread {
      */
     public ServerStatusChecker(ServerStatusListener listener, long pollingTime) {
         this.listener = listener;
-        this.pollingTime = Math.max(10000, pollingTime);
+        this.pollingTime = Math.max(30*1000, pollingTime);
         online = new LinkedList();
         offline = new LinkedList();
         httpClient = new HttpClient(); 
