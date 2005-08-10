@@ -13,14 +13,14 @@
 		
 		<server className="net.sf.j2ep.servers.BaseServer"
 			domainName="localhost:8080"
-			directory="/test-response/GET"
+			path="/test-response/GET"
 			isRewriting="true"
 			ruleId="4"
 		/>
 		
 		<server className="net.sf.j2ep.servers.BaseServer"
 			domainName="www.test.com"
-			directory="/folder"
+			path="/folder"
 			isRewriting="true"
 			ruleId="5"
 		/>
@@ -38,14 +38,14 @@
 		-->
 		<server className="net.sf.j2ep.servers.BaseServer"
 			domainName="localhost:8080"
-			directory="/webdav"
+			path="/webdav"
 			isRewriting="true"
 			ruleId="2"
 		/>
 		
 		<server className="net.sf.j2ep.servers.BaseServer"
 			domainName="localhost:8080"
-			directory="/test-response"
+			path="/test-response"
 			isRewriting="true"
 			ruleId="1"
 		/>
