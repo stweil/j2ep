@@ -1,88 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
 
-	<servers>
-		<!--
-			Here is a host that doesn't exist
-		-->
-		<server className="net.sf.j2ep.servers.BaseServer"
-			domainName="www.dfsdf.dkdks"
-			isRewriting="true"
-			ruleId="3"
-		/>
+	<!--
+		Here is a host that doesn't exist
+	-->
+	<server className="net.sf.j2ep.servers.BaseServer"
+		domainName="www.dfsdf.dkdks"
+		isRewriting="true">
 		
-		<server className="net.sf.j2ep.servers.BaseServer"
-			domainName="localhost:8080"
-			path="/test-response/GET"
-			isRewriting="true"
-			ruleId="4"
-		/>
-		
-		<server className="net.sf.j2ep.servers.BaseServer"
-			domainName="www.test.com"
-			path="/folder"
-			isRewriting="true"
-			ruleId="5"
-		/>
-		
-		<server className="net.sf.j2ep.servers.BaseServer"
-			domainName="www.short.com"
-			isRewriting="true"
-			ruleId="6"
-		/>
-		
-		<!-- 
-			Here is a server that has to support some special methods
-			like PROPFIND. It is used to test that a Allow will be
-			rewritted to only include supported http methods.
-		-->
-		<server className="net.sf.j2ep.servers.BaseServer"
-			domainName="localhost:8080"
-			path="/webdav"
-			isRewriting="true"
-			ruleId="2"
-		/>
-		
-		<server className="net.sf.j2ep.servers.BaseServer"
-			domainName="localhost:8080"
-			path="/test-response"
-			isRewriting="true"
-			ruleId="1"
-		/>
-	</servers>
-
-
-	<rules>
-	
-		<rule className="net.sf.j2ep.rules.AcceptEverythingRule"
-  			id="1"
+		<rule className="net.sf.j2ep.rules.DirectoryRule"
+  			directory="/testNonExistentServer"
+  			id="3"
   		/>
-  		
+	</server>
+		
+	<server className="net.sf.j2ep.servers.BaseServer"
+		domainName="localhost:8080"
+		path="/test-response/GET"
+		isRewriting="true">
+	
+		<rule className="net.sf.j2ep.rules.DirectoryRule"
+  			directory="/testDirectoryMapping"
+  			id="4"
+  		/>
+	</server>
+		
+	<server className="net.sf.j2ep.servers.BaseServer"
+		domainName="www.test.com"
+		path="/folder"
+		isRewriting="true">
+		
+		<rule className="net.sf.j2ep.rules.DirectoryRule"
+  			directory="/testRewriteAbsoluteOther"
+  			id="5"
+  		/>
+	</server>
+		
+	<server className="net.sf.j2ep.servers.BaseServer"
+		domainName="www.short.com"
+		isRewriting="true">
+	
+		<rule className="net.sf.j2ep.rules.DirectoryRule"
+  			directory="/testRewriteAbsoluteShort"
+  			id="6"
+  		/>
+	</server>
+		
+	<!-- 
+		Here is a server that has to support some special methods
+		like PROPFIND. It is used to test that a Allow will be
+		rewritted to only include supported http methods.
+	-->
+	<server className="net.sf.j2ep.servers.BaseServer"
+		domainName="localhost:8080"
+		path="/webdav"
+		isRewriting="true">
+		
 		<rule className="net.sf.j2ep.rules.DirectoryRule"
   			directory="/testUnsupportedMethods"
   			id="2"
   		/>
-  		
-  		<rule className="net.sf.j2ep.rules.DirectoryRule"
-  			directory="/testNonExistentServer"
-  			id="3"
+	</server>
+		
+	<server className="net.sf.j2ep.servers.BaseServer"
+		domainName="localhost:8080"
+		path="/test-response"
+		isRewriting="true">
+		
+		<rule className="net.sf.j2ep.rules.AcceptEverythingRule"
+  			id="1"
   		/>
-  		
-  		<rule className="net.sf.j2ep.rules.DirectoryRule"
-  			directory="/testDirectoryMapping"
-  			id="4"
-  		/>
-  		
-  		<rule className="net.sf.j2ep.rules.DirectoryRule"
-  			directory="/testRewriteAbsoluteOther"
-  			id="5"
-  		/>
-  		
-  		<rule className="net.sf.j2ep.rules.DirectoryRule"
-  			directory="/testRewriteAbsoluteShort"
-  			id="6"
-  		/>
-
-	</rules>
+	</server>
 	
 </config>
