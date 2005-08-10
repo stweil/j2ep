@@ -100,7 +100,7 @@ public class ConfigParser {
         // Create the servers in this cluster
         digester.addCallMethod("config/servers/cluster-server/server", "addServer", 2);
         digester.addCallParam("config/servers/cluster-server/server", 0, "domainName");
-        digester.addCallParam("config/servers/cluster-server/server", 1, "directory");
+        digester.addCallParam("config/servers/cluster-server/server", 1, "path");
         // Add cluster to list
         digester.addSetNext("config/servers/cluster-server", "add");
         
