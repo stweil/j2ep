@@ -120,6 +120,12 @@ public class ServerStatusChecker extends Thread {
             
             try {
                 httpClient.executeMethod(get);
+                if (get.getStatusCode()/100 == 5) {
+                    offline.add(server);
+                    itr.remove();
+                    log.debug("Server going OFFLINE! " + getServerURL(server));
+                    listener.serverOffline(server);
+                }
             } catch (Exception e) { 
                 offline.add(server);
                 itr.remove();
