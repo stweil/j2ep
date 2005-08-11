@@ -18,13 +18,9 @@ package net.sf.j2ep.test;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import net.sf.j2ep.ProxyFilter;
-import net.sf.j2ep.RewriteFilter;
 
 import org.apache.cactus.FilterTestCase;
 import org.apache.cactus.WebRequest;
@@ -37,24 +33,14 @@ import org.apache.cactus.WebResponse;
  */
 public class OptionTest extends FilterTestCase {
     
-    private RewriteFilter rewriteFilter;
-    private FilterChain mockFilterChain;
-
-    public void setUp() {        
-        rewriteFilter = new RewriteFilter();
-
-        mockFilterChain = new FilterChain() {
-            ProxyFilter proxyFilter = new ProxyFilter();
-
-            public void doFilter(ServletRequest theRequest, ServletResponse theResponse) throws IOException, ServletException {
-                proxyFilter.init(config);
-                proxyFilter.doFilter(theRequest, theResponse, this);
-            }
-        };
+    private ProxyFilter proxyFilter;
+    
+    public void setUp() {
+        proxyFilter = new ProxyFilter();
 
         config.setInitParameter("dataUrl", "/WEB-INF/classes/net/sf/j2ep/test/testData.xml");
         try {
-            rewriteFilter.init(config);
+            proxyFilter.init(config);
         } catch (ServletException e) {
             fail("Problem with init, error given was " + e.getMessage());
         }
@@ -66,7 +52,7 @@ public class OptionTest extends FilterTestCase {
 
     public void testNoMaxFowards() throws ServletException, IOException {
         MethodWrappingRequest req = new MethodWrappingRequest(request, "OPTIONS");
-        rewriteFilter.doFilter(req, response, mockFilterChain);
+        proxyFilter.doFilter(req, response, filterChain);
 
     }
 
@@ -84,7 +70,7 @@ public class OptionTest extends FilterTestCase {
     
     public void testStarUri() throws ServletException, IOException {
         MethodWrappingRequest req = new MethodWrappingRequest(request, "OPTIONS");
-        rewriteFilter.doFilter(req, response, mockFilterChain);
+        proxyFilter.doFilter(req, response, filterChain);
 
     }
 
@@ -103,7 +89,7 @@ public class OptionTest extends FilterTestCase {
     public void testMaxForwards() throws ServletException,
             IOException {
         MethodWrappingRequest req = new MethodWrappingRequest(request, "OPTIONS");
-        rewriteFilter.doFilter(req, response, mockFilterChain);
+        proxyFilter.doFilter(req, response, filterChain);
     }
     
     public void endMaxForwards(WebResponse theResponse) {
@@ -128,7 +114,7 @@ public class OptionTest extends FilterTestCase {
     
     public void testServerWithUnsupportedMethods() throws ServletException, IOException {
         MethodWrappingRequest req = new MethodWrappingRequest(request, "OPTIONS");
-        rewriteFilter.doFilter(req, response, mockFilterChain);
+        proxyFilter.doFilter(req, response, filterChain);
     }
     
     public void endServerWithUnsupportedMethods(WebResponse theResponse) {

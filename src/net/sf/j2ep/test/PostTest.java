@@ -18,13 +18,9 @@ package net.sf.j2ep.test;
 
 import java.io.*;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import net.sf.j2ep.ProxyFilter;
-import net.sf.j2ep.RewriteFilter;
 
 import org.apache.cactus.FilterTestCase;
 import org.apache.cactus.WebRequest;
@@ -37,24 +33,14 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 
 public class PostTest extends FilterTestCase {
     
-    private RewriteFilter rewriteFilter;
-    private FilterChain mockFilterChain;
+    private ProxyFilter proxyFilter;
 
     public void setUp() {        
-        rewriteFilter = new RewriteFilter();
-
-        mockFilterChain = new FilterChain() {
-            ProxyFilter proxyFilter = new ProxyFilter();
-
-            public void doFilter(ServletRequest theRequest, ServletResponse theResponse) throws IOException, ServletException {
-                proxyFilter.init(config);
-                proxyFilter.doFilter(theRequest, theResponse, this);
-            }
-        };
+        proxyFilter = new ProxyFilter();
 
         config.setInitParameter("dataUrl", "/WEB-INF/classes/net/sf/j2ep/test/testData.xml");
         try {
-            rewriteFilter.init(config);
+            proxyFilter.init(config);
         } catch (ServletException e) {
             fail("Problem with init, error given was " + e.getMessage());
         }
@@ -67,7 +53,7 @@ public class PostTest extends FilterTestCase {
     }
     
     public void testSendParam() throws IOException, ServletException {
-        rewriteFilter.doFilter(request, response, mockFilterChain);
+        proxyFilter.doFilter(request, response, filterChain);
     }
     
     public void endSendParam(WebResponse theResponse) {
@@ -101,7 +87,7 @@ public class PostTest extends FilterTestCase {
     }
     
     public void testSendMultipart() throws IOException, ServletException {
-        rewriteFilter.doFilter(request, response, mockFilterChain);
+        proxyFilter.doFilter(request, response, filterChain);
     }
     
     public void endSendMultipart(WebResponse theResponse) {
