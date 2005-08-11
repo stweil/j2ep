@@ -108,7 +108,7 @@ public class ServerStatusChecker extends Thread {
      * Checks all the servers marked as being online
      * if they still are online.
      */
-    private void checkOnlineServers() {
+    private synchronized void checkOnlineServers() {
         Iterator itr;
         itr = online.listIterator();
         while (itr.hasNext()) {
@@ -140,7 +140,7 @@ public class ServerStatusChecker extends Thread {
      * Checks if the offline servers has come back online
      * again.
      */
-    private void checkOfflineServers() {
+    private synchronized void checkOfflineServers() {
         Iterator itr = offline.listIterator();
         while (itr.hasNext()) {
             Server server = (Server) itr.next();
