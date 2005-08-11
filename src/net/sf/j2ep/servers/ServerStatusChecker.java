@@ -97,9 +97,9 @@ public class ServerStatusChecker extends Thread {
             checkOnlineServers();
             checkOfflineServers();
             try {
-                Thread.sleep(pollingTime);
+                sleep(pollingTime);
             } catch (InterruptedException ie) {
-                return;
+                
             }
         }
     }
