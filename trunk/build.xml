@@ -117,6 +117,7 @@
             <test name="net.sf.j2ep.test.DirectoryRuleTest" todir="${reports.test}" />
             <test name="net.sf.j2ep.test.IPRuleTest" todir="${reports.test}" />
         	<test name="net.sf.j2ep.test.RewriteRuleTest" todir="${reports.test}" />
+			<test name="net.sf.j2ep.test.TimeRuleTest" todir="${reports.test}" />
         </junit>
 
         <!-- Cactus -->
