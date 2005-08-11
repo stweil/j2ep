@@ -92,6 +92,8 @@ public abstract class ClusterContainer extends ServerContainerBase implements Se
         ClusteredServer server = (ClusteredServer) servers.get(serverId);
         if (server == null || !server.online()) {
             server = getNextServer();
+        } else {
+            log.debug("Server found in session");
         }
         
         if (server.online()) {
