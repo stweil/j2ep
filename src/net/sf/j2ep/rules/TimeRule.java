@@ -48,6 +48,9 @@ public class TimeRule extends BaseRule {
     public boolean matches(HttpServletRequest request) {
         int currentTime = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         if (startTime > endTime) {
+            if (currentTime < startTime) {
+                currentTime += 24;
+            }
             return (currentTime >= startTime && currentTime <= endTime+24);  
         } else {
             return (currentTime >= startTime && currentTime <= endTime);  
