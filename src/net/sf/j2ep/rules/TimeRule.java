@@ -56,7 +56,7 @@ public class TimeRule extends BaseRule {
         if (time == null) {
             throw new IllegalArgumentException("The start time cannot be null");
         } else {
-            startTime = Integer.parseInt(time);
+            startTime = Integer.parseInt(time)%24;
         }
     }
     
@@ -69,7 +69,7 @@ public class TimeRule extends BaseRule {
         if (time == null) {
             throw new IllegalArgumentException("The end time cannot be null");
         } else {
-            endTime = Integer.parseInt(time);
+            endTime = Integer.parseInt(time)%24;
         }
     }
 
