@@ -94,7 +94,6 @@ public class ServerStatusChecker extends Thread {
      */
     public void run() {
         for(;;) {
-            log.debug("Checking status of servers.");
             checkOnlineServers();
             checkOfflineServers();
             try {
