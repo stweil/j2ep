@@ -40,11 +40,19 @@ public class TimeRule extends BaseRule {
     private int endTime;
 
     /**
+     * Making check to see that the time lies between the start and end 
+     * time. If the time crosses a date barrier, e.g. 23-01 the time will
+     * be checked correctly. Note the difference between 01-23 and 23-01.
      * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
      */
     public boolean matches(HttpServletRequest request) {
         int currentTime = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        return (currentTime >= startTime && currentTime <= endTime);        
+        if (startTime > endTime) {
+            return (currentTime >= startTime && currentTime <= endTime+24);  
+        } else {
+            return (currentTime >= startTime && currentTime <= endTime);  
+        }
+              
     }
     
     /**
@@ -71,6 +79,6 @@ public class TimeRule extends BaseRule {
         } else {
             endTime = Integer.parseInt(time)%24;
         }
-    }
+    } 
 
 }
