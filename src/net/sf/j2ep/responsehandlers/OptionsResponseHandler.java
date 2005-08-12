@@ -44,7 +44,7 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
     
     /** 
      * Set a construction to indicate if the request is directed to the
-     * proxy directly by using Max-Forwards: 0.
+     * proxy directly by using Max-Forwards: 0 or using URI *.
      */
     private boolean useOwnAllow;
 
