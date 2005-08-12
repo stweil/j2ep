@@ -52,6 +52,11 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
     private PrintWriter outWriter;
     
     /** 
+     * Writer that writes to the underlying stream.
+     */
+    private PrintWriter originalWriter;
+    
+    /** 
      * Server used for this page
      */
     private Server server;
@@ -104,6 +109,7 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
         log = LogFactory.getLog(UrlRewritingResponseWrapper.class);        
         outStream = new UrlRewritingOutputStream(response.getOutputStream(), ownHostName, contextPath, serverChain);
         outWriter = new PrintWriter(outStream);
+        originalWriter = new PrintWriter(response.getOutputStream());
     }
     
     /**
@@ -226,7 +232,7 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
         if (getContentType() != null && shouldRewrite(getContentType())) {
             return outWriter;
         } else {
-            return super.getWriter();
+            return originalWriter;
         }
     }
     
@@ -237,12 +243,15 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
      */
     public void processStream() throws IOException {
         if (getContentType() != null && shouldRewrite(getContentType())) {
+            outWriter.flush();
             outStream.rewrite(server);
         }
+        originalWriter.flush();
+        originalWriter.close();
         super.getOutputStream().flush();
         super.getOutputStream().close();
+        outWriter.close();
         outStream.close();
-        
     }
     
     /**
