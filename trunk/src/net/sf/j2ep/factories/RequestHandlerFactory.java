@@ -47,7 +47,7 @@ public class RequestHandlerFactory {
     /** 
      * List of banned headers that should not be set.
      */
-    private static final String bannedHeaders = "connection,accept-encoding";
+    private static final String bannedHeaders = "connection,accept-encoding,via,x-forwarded-for,x-forwarded-host,x-forwarded-server";
     
     static {
         RequestHandlerBase.addBannedHeaders(bannedHeaders);
