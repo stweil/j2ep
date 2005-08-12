@@ -17,6 +17,7 @@
 package net.sf.j2ep.requesthandlers;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,20 +52,31 @@ public class MaxForwardRequestHandler extends RequestHandlerBase {
             return null;
         }
         
-        setHeaders(method, request);
         try {
             int max = request.getIntHeader("Max-Forwards");
-
             if (max == 0 || request.getRequestURI().equals("*")) {
+                setAllHeaders(method, request);
                 method.abort();
             } else if (max != -1) {
+                setHeaders(method, request);
                 method.setRequestHeader("Max-Forwards", "" + max--);
             }
-
-        } catch (NumberFormatException e) {
-           
-        }
+        } catch (NumberFormatException e) {}
         
         return method;
+    }
+    
+    private void setAllHeaders(HttpMethod method, HttpServletRequest request) {
+        Enumeration headers = request.getHeaderNames();
+        
+        while (headers.hasMoreElements()) {
+            String name = (String) headers.nextElement();
+            Enumeration value = request.getHeaders(name);
+            
+            while (value.hasMoreElements()) {
+                method.addRequestHeader(name, (String) value.nextElement());
+            }
+
+        } 
     }
 }
