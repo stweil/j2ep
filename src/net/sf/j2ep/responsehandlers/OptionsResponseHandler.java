@@ -69,13 +69,14 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
      * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
      */
     public void process(HttpServletResponse response) {
-        setHeaders(response);
-        response.setStatus(getStatusCode());
-
         if (useOwnAllow) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setHeader("Connection", "close");
             response.setHeader("allow", ResponseHandlerFactory.getAllowHeader());
             response.setHeader("content-length", "0");
         } else {
+            setHeaders(response);
+            response.setStatus(getStatusCode());
             String allow = method.getResponseHeader("allow").getValue();
             ResponseHandlerFactory.processAllowHeader(allow);
             response.setHeader("allow", ResponseHandlerFactory.processAllowHeader(allow));
