@@ -37,7 +37,7 @@ public class ResponseHandlerFactory {
     /** 
      * The methods handled by this factory.
      */
-    private static final String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
+    private static final String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE,TRACE";
 
     /**
      * Checks the method being received and created a 
@@ -62,6 +62,8 @@ public class ResponseHandlerFactory {
             handler = new PutResponseHandler((PutMethod) method);
         } else if (method.getName().equals("DELETE")) {
             handler = new DeleteResponseHandler((DeleteMethod) method);
+        } else if (method.getName().equals("TRACE")) {
+            handler = new TraceResponseHandler((TraceMethod) method);
         } else {
             throw new MethodNotAllowedException("The method " + method.getName() + " is not handled by this Factory.", allowedMethods);
         }
