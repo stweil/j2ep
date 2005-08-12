@@ -71,8 +71,8 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
     public void process(HttpServletResponse response) {
         if (useOwnAllow) {
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setHeader("Connection", "close");
             response.setHeader("allow", ResponseHandlerFactory.getAllowHeader());
+            response.setHeader("Connection", "close");
             response.setHeader("content-length", "0");
         } else {
             setHeaders(response);
