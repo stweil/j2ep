@@ -9,6 +9,20 @@
   <description>
                 A J2EE application implementing a reverse proxy.
   </description>
+  
+  	<filter>
+        <filter-name>Rewriter</filter-name>
+        <filter-class>net.sf.j2ep.RewriteFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Rewriter</filter-name>
+        <url-pattern>/*</url-pattern>
+         <init-param>
+        	<param-name>dataUrl</param-name>
+        	<param-value>/WEB-INF/config/data.xml</param-value>
+        </init-param>
+    </filter-mapping>
 
     <filter>
         <filter-name>Proxy</filter-name>
@@ -18,10 +32,7 @@
     <filter-mapping>
         <filter-name>Proxy</filter-name>
         <url-pattern>/*</url-pattern>
-         <init-param>
-        	<param-name>dataUrl</param-name>
-        	<param-value>/WEB-INF/config/data.xml</param-value>
-        </init-param>
     </filter-mapping>
 
 </web-app>
+ 
