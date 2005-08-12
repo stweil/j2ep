@@ -19,14 +19,18 @@ package net.sf.j2ep.responsehandlers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.j2ep.ResponseHandler;
+import net.sf.j2ep.requesthandlers.RequestHandlerBase;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Basic implementation of a Response Handler. This class
@@ -115,5 +119,29 @@ public abstract class ResponseHandlerBase implements ResponseHandler{
                 response.addHeader(name, header.getValue());
             } 
         }
+        
+        setViaHeader(response);
+    }
+
+    /**
+     * Will set the via header with this proxies data to the response.
+     * @param response The response we set the header for
+     */
+    private void setViaHeader(HttpServletResponse response) {
+        String serverHostName = "jEasyReverseProxy";
+        try {
+            serverHostName = InetAddress.getLocalHost().getHostName();   
+        } catch (UnknownHostException e) {
+            LogFactory.getLog(RequestHandlerBase.class).error("Couldn't get the hostname needed for header Via", e);
+        }
+        
+        Header originalVia = method.getResponseHeader("via");
+        StringBuffer via = new StringBuffer("");
+        if (originalVia != null) {
+            via.append(originalVia.getValue()).append(", ");
+        }
+        via.append(method.getStatusLine().getHttpVersion()).append(" ").append(serverHostName);
+         
+        response.setHeader("via", via.toString());
     }
 }
