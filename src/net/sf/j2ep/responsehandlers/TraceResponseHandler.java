@@ -59,16 +59,20 @@ public class TraceResponseHandler extends ResponseHandlerBase {
         
         if (proxyTargeted) {
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setHeader("connection", "close");
+            response.setHeader("content-type", "message/http");
+            response.setHeader("Connection", "close");
             
+            String path = method.getPath();
+            String protocol = method.getParams().getVersion().toString();
             PrintWriter writer = response.getWriter();
+            writer.println("TRACE " + path + " " + protocol);
             Header[] headers = method.getRequestHeaders();
             for (int i=0; i < headers.length; i++) {
-                String name = headers[i].getName();
-                String value = headers[i].getValue();
-                writer.println(name + " " + value);
+                writer.print(headers[i]);
             }
-
+            writer.flush();
+            writer.close();
+            
         } else {
             setHeaders(response);
             response.setStatus(getStatusCode());

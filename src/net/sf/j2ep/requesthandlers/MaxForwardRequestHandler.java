@@ -60,6 +60,8 @@ public class MaxForwardRequestHandler extends RequestHandlerBase {
             } else if (max != -1) {
                 setHeaders(method, request);
                 method.setRequestHeader("Max-Forwards", "" + max--);
+            } else {
+                setHeaders(method, request);
             }
         } catch (NumberFormatException e) {}
         
