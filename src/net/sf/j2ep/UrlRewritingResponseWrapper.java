@@ -237,21 +237,22 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
     }
     
     /**
-     * Rewrites the output stream to change any links.
+     * Rewrites the output stream to change any links. Also closes all the 
+     * streams and writers. We need the user to flush and close the streams himself
+     * as usual but we can't be sure that the writers created are used by the client
+     * and therefor we close them here.
      * 
      * @throws IOException Is thrown when there is a problem with the streams
      */
     public void processStream() throws IOException {
         if (getContentType() != null && shouldRewrite(getContentType())) {
-            outWriter.flush();
             outStream.rewrite(server);
         }
-        originalWriter.flush();
-        originalWriter.close();
         super.getOutputStream().flush();
         super.getOutputStream().close();
-        outWriter.close();
         outStream.close();
+        originalWriter.close();
+        outWriter.close();
     }
     
     /**
