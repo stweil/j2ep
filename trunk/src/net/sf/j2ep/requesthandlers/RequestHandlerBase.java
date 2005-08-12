@@ -76,6 +76,16 @@ public abstract class RequestHandlerBase implements RequestHandler {
             } 
         } 
         
+        setProxySpecificHeaders(method, request);
+    }
+
+    /**
+     * Will write the proxy specific headers such as Via and x-forwarded-for.
+     * 
+     * @param method Method to write the headers to
+     * @param request The incoming request, will need to get virtual host.
+     */
+    private void setProxySpecificHeaders(HttpMethod method, HttpServletRequest request) {
         String serverHostName = "jEasyReverseProxy";
         try {
             serverHostName = InetAddress.getLocalHost().getHostName();   
@@ -97,7 +107,6 @@ public abstract class RequestHandlerBase implements RequestHandler {
         
         //TODO change this to gzip and make content decoding if the user cant handle it
         method.setRequestHeader("accept-encoding", "");
-
     }
     
     /**
