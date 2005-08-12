@@ -21,7 +21,7 @@ import java.util.HashMap;
 import net.sf.j2ep.RequestHandler;
 import net.sf.j2ep.requesthandlers.BasicRequestHandler;
 import net.sf.j2ep.requesthandlers.EntityEnclosingRequestHandler;
-import net.sf.j2ep.requesthandlers.OptionsRequestHandler;
+import net.sf.j2ep.requesthandlers.MaxForwardRequestHandler;
 import net.sf.j2ep.requesthandlers.RequestHandlerBase;
 
 /**
@@ -42,7 +42,7 @@ public class RequestHandlerFactory {
     /** 
      * These methods are handled by this factory.
      */
-    private static final String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE";
+    private static final String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE,TRACE";
     
     /** 
      * List of banned headers that should not be set.
@@ -53,16 +53,17 @@ public class RequestHandlerFactory {
         RequestHandlerBase.addBannedHeaders(bannedHeaders);
         
         requestHandlers = new HashMap();
-        OptionsRequestHandler options = new OptionsRequestHandler();
+        MaxForwardRequestHandler optionsAndTrace = new MaxForwardRequestHandler();
         BasicRequestHandler basic = new BasicRequestHandler();
         EntityEnclosingRequestHandler entityEnclosing = new EntityEnclosingRequestHandler();
         
-        requestHandlers.put("OPTIONS", options);
+        requestHandlers.put("OPTIONS", optionsAndTrace);
         requestHandlers.put("GET", basic);
         requestHandlers.put("HEAD", basic);
         requestHandlers.put("POST", entityEnclosing);
         requestHandlers.put("PUT", entityEnclosing);
         requestHandlers.put("DELETE", basic);
+        requestHandlers.put("TRACE", optionsAndTrace);
     }
     
     /**

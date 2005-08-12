@@ -58,7 +58,7 @@ public class OptionTest extends FilterTestCase {
 
     public void endNoMaxFowards(WebResponse theResponse) {
         assertEquals("Correct options not returned",
-                "GET,HEAD,POST,PUT,DELETE,OPTIONS,", theResponse.getConnection()
+                "GET,HEAD,POST,PUT,DELETE,TRACE,OPTIONS,", theResponse.getConnection()
                         .getHeaderField("Allow"));
     }
 
@@ -86,6 +86,7 @@ public class OptionTest extends FilterTestCase {
         assertTrue("Should include POST", allow.contains("POST"));
         assertTrue("Should include PUT", allow.contains("PUT"));
         assertTrue("Should include DELETE", allow.contains("DELETE"));
+        assertTrue("Should include TRACE", allow.contains("TRACE"));
         assertEquals("Content Length should be 0", "0", theResponse.getConnection().getHeaderField("Content-Length"));
     }
     
@@ -106,7 +107,7 @@ public class OptionTest extends FilterTestCase {
         assertTrue("Should include HEAD", allow.contains("HEAD"));
         assertTrue("Should include POST", allow.contains("POST"));
         assertTrue("Should include DELETE", allow.contains("DELETE"));
-        assertFalse("Shouldn't include TRACE", allow.contains("TRACE"));
+        assertTrue("Should include TRACE", allow.contains("TRACE"));
         assertFalse("Shouldn't include PROPPATCH", allow.contains("PROPPATCH"));
         assertFalse("Shouldn't include COPY", allow.contains("COPY"));
         assertFalse("Shouldn't include MOVE", allow.contains("MOVE"));

@@ -111,7 +111,7 @@ public class GetTest extends FilterTestCase {
     public void endUnhandledMethod(WebResponse theResponse) {
         assertEquals("Checking that we got a 405 response", 405, theResponse.getStatusCode());
         assertEquals("Correct options not returned",
-                "OPTIONS,GET,HEAD,POST,PUT,DELETE", theResponse.getConnection()
+                "OPTIONS,GET,HEAD,POST,PUT,DELETE,TRACE", theResponse.getConnection()
                         .getHeaderField("Allow"));
     }
     
