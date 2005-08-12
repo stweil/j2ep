@@ -43,11 +43,11 @@ public class BasicRequestHandler extends RequestHandlerBase {
         
         HttpMethodBase method = null;
       
-        if (request.getMethod().equals("GET")) {
+        if (request.getMethod().equalsIgnoreCase("GET")) {
             method = new GetMethod(url);
-        } else if (request.getMethod().equals("HEAD")) {
+        } else if (request.getMethod().equalsIgnoreCase("HEAD")) {
             method = new HeadMethod(url);
-        } else if (request.getMethod().equals("DELETE")) {
+        } else if (request.getMethod().equalsIgnoreCase("DELETE")) {
             method = new DeleteMethod(url);
         } else {
             return null;

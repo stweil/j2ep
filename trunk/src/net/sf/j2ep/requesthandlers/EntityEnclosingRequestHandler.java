@@ -45,9 +45,9 @@ public class EntityEnclosingRequestHandler extends RequestHandlerBase {
         
         EntityEnclosingMethod method = null;
         
-        if (request.getMethod().equals("POST")) {
+        if (request.getMethod().equalsIgnoreCase("POST")) {
             method = new PostMethod(url);
-        } else if (request.getMethod().equals("PUT")) {
+        } else if (request.getMethod().equalsIgnoreCase("PUT")) {
             method = new PutMethod(url);
         }
         
