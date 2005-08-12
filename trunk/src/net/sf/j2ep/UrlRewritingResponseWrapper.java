@@ -17,6 +17,7 @@
 package net.sf.j2ep;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,6 +45,11 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
      * Stream we are using for the response.
      */
     private UrlRewritingOutputStream outStream;
+    
+    /** 
+     * Writer we are using for the response.
+     */
+    private PrintWriter outWriter;
     
     /** 
      * Server used for this page
@@ -97,6 +103,7 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
         
         log = LogFactory.getLog(UrlRewritingResponseWrapper.class);        
         outStream = new UrlRewritingOutputStream(response.getOutputStream(), ownHostName, contextPath, serverChain);
+        outWriter = new PrintWriter(outStream);
     }
     
     /**
@@ -205,6 +212,21 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
             return outStream;
         } else {
             return super.getOutputStream();
+        }
+    }
+    
+    /**
+     * Based on the value in the content-type header we either
+     * return the default writer or our own writer. Our own
+     * writer will write to the stream that can rewrite links.
+     * 
+     * @see javax.servlet.ServletResponse#getWriter()
+     */
+    public PrintWriter getWriter() throws IOException {
+        if (getContentType() != null && shouldRewrite(getContentType())) {
+            return outWriter;
+        } else {
+            return super.getWriter();
         }
     }
     
