@@ -76,21 +76,25 @@ public abstract class RequestHandlerBase implements RequestHandler {
             } 
         } 
         
+        String serverHostName = "jEasyReverseProxy";
+        try {
+            serverHostName = InetAddress.getLocalHost().getHostName();   
+        } catch (UnknownHostException e) {
+            LogFactory.getLog(RequestHandlerBase.class).error("Couldn't get the hostname needed for headers x-forwarded-server and Via", e);
+        }
+        
         String originalVia = request.getHeader("via");
         StringBuffer via = new StringBuffer("");
         if (originalVia != null) {
             via.append(originalVia).append(", ");
         }
-        via.append(request.getProtocol()).append(" ").append(request.getServerName());
+        via.append(request.getProtocol()).append(" ").append(serverHostName);
          
         method.setRequestHeader("via", via.toString());
         method.setRequestHeader("x-forwarded-for", request.getRemoteAddr());     
         method.setRequestHeader("x-forwarded-host", request.getServerName());
-        try {
-            method.setRequestHeader("x-forwarded-server", InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException e) {
-            LogFactory.getLog(RequestHandlerBase.class).error("Couldn't write the x-forwarded-server header", e);
-        }
+        method.setRequestHeader("x-forwarded-server", serverHostName);
+        
         //TODO change this to gzip and make content decoding if the user cant handle it
         method.setRequestHeader("accept-encoding", "");
 
