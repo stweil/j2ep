@@ -29,7 +29,7 @@ import org.apache.commons.httpclient.methods.OptionsMethod;
  *
  * @author Anders Nyman
  */
-public class OptionsRequestHandler extends RequestHandlerBase {
+public class MaxForwardRequestHandler extends RequestHandlerBase {
 
     /**
      * Sets the headers and does some checking for if this request
@@ -45,7 +45,7 @@ public class OptionsRequestHandler extends RequestHandlerBase {
         try {
             int max = request.getIntHeader("Max-Forwards");
 
-            if (max == 0) {
+            if (max == 0 || request.getRequestURI().equals("*")) {
                 method.abort();
             } else if (max != -1) {
                 method.setRequestHeader("Max-Forwards", "" + max--);
