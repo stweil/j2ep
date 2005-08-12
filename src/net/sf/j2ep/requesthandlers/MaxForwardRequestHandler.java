@@ -21,7 +21,9 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.OptionsMethod;
+import org.apache.commons.httpclient.methods.TraceMethod;
 
 
 /**
@@ -39,9 +41,17 @@ public class MaxForwardRequestHandler extends RequestHandlerBase {
      * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
      */
     public HttpMethod process(HttpServletRequest request, String url) throws IOException {
-        OptionsMethod method = new OptionsMethod(url);
-        setHeaders(method, request);
+        HttpMethodBase method = null;
         
+        if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
+            method = new OptionsMethod(url);
+        } else if (request.getMethod().equalsIgnoreCase("TRACE")) {
+            method = new TraceMethod(url);
+        } else {
+            return null;
+        }
+        
+        setHeaders(method, request);
         try {
             int max = request.getIntHeader("Max-Forwards");
 
