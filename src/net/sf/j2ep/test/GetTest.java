@@ -17,6 +17,8 @@
 package net.sf.j2ep.test;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.servlet.ServletException;
 
@@ -131,6 +133,27 @@ public class GetTest extends FilterTestCase {
         assertTrue("Should include GET", allow.contains("GET"));
         assertFalse("Shouldn't include MYOWNHEADER", allow.contains("MYOWNHEADER"));
         assertFalse("Shouldn't include PROPFIND", allow.contains("PROPFIND"));
+    }
+    
+    public void beginVia(WebRequest theRequest) {
+        theRequest.setURL("localhost:8080", "/test", "/GET/main.jsp", null, null);
+    }
+    
+    public void testVia() throws IOException, ServletException {
+        proxyFilter.doFilter(request, response, filterChain);
+    }
+    
+    public void endVia(WebResponse theResponse) {
+        assertEquals("The response code should be 200", 200, theResponse.getStatusCode());
+        String via = theResponse.getConnection().getHeaderField("Via").trim();
+
+        try {
+            String serverHostName = InetAddress.getLocalHost().getHostName();  
+            String expected = "HTTP/1.1 " + serverHostName;
+            assertEquals("Checking that the via header is included", expected, via);
+        } catch (UnknownHostException e) {
+            fail("Couldn't get the hostname needed for header Via");
+        }
     }
     
 }
