@@ -61,26 +61,7 @@ public class OptionTest extends FilterTestCase {
                 "GET,HEAD,POST,PUT,DELETE,OPTIONS,", theResponse.getConnection()
                         .getHeaderField("Allow"));
     }
-    
-    public void beginStarUri(WebRequest theRequest) {
-        //TODO change this to * if that functionally really is required.
-        //Will take some time since httpclient doesn't support it.
-        theRequest.setURL("localhost:8080", "/test", "/*", null, null);
-    }
-    
-    public void testStarUri() throws ServletException, IOException {
-        MethodWrappingRequest req = new MethodWrappingRequest(request, "OPTIONS");
-        proxyFilter.doFilter(req, response, filterChain);
 
-    }
-
-    public void endStarUri(WebResponse theResponse) {
-        assertEquals("Correct options not returned",
-                "GET,HEAD,POST,PUT,DELETE,OPTIONS,", theResponse.getConnection()
-                        .getHeaderField("Allow"));
-    }
-
-    
     public void beginMaxForwards(WebRequest theRequest) {
         theRequest.setURL("localhost:8080", "/test", "/maxForwards", null, null);
         theRequest.addHeader("Max-Forwards", "0");
