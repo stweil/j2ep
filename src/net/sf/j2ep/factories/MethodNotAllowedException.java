@@ -33,6 +33,11 @@ public class MethodNotAllowedException extends Exception {
      */
     private String allowedMethods;
     
+    /**
+     * Basic constructor creating a exception.
+     * @param message The exception message
+     * @param allowedMethods The allowed methods
+     */
     public MethodNotAllowedException(String message, String allowedMethods) {
         super(message);
         this.allowedMethods = allowedMethods;
