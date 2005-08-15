@@ -50,10 +50,10 @@ public class TraceTest extends FilterTestCase {
         assertEquals("Checking content-type", "message/http", contentType);
         
         String expectedVia = "HTTP/1.0 fakeserver.com, " + "HTTP/1.1 " + serverHostName;
-        assertTrue("Checking that the via header is included", theResponse.getText().contains(expectedVia));
+        assertTrue("Checking that the via header is included", theResponse.getText().indexOf(expectedVia)>-1);
         
         String expectedUserAgent = "Jakarta Commons-HttpClient/3.0-rc3";
-        assertTrue("Checking that user-agent is included", theResponse.getText().contains(expectedUserAgent));
+        assertTrue("Checking that user-agent is included", theResponse.getText().indexOf(expectedUserAgent)>-1);
     }
 
     public void beginMaxForwards(WebRequest theRequest) {
