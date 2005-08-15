@@ -23,6 +23,9 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A wrapper for the default output stream. This class will
  * make sure all data being sent is cached by the stream and
@@ -62,6 +65,11 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
      */
     private static Pattern linkPattern = Pattern.compile("\\b(href=|src=|action=|url\\()([\"\'])(([^/]+://)([^/<>]+))?([^\"\'>]*)[\"\']", Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
 
+    /** 
+     * Logging element supplied by commons-logging.
+     */
+    private static Log log;
+    
     /**
      * Basic constructor.
      * 
@@ -72,6 +80,7 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
         this.ownHostName = ownHostName;
         this.contextPath = contextPath;
         this.serverChain = serverChain;
+        log = LogFactory.getLog(UrlRewritingOutputStream.class);  
         
         stream = new ByteArrayOutputStream();
     }
@@ -154,8 +163,7 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
         }
         
         matcher.appendTail(page);
-        originalStream.print(page.toString());
-        
+        originalStream.print(page.toString());        
     }
     
     
@@ -177,8 +185,12 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
                String type = matcher.group(1);
                String separator = matcher.group(2);
                String protocol = matcher.group(4);
+               String rewritten = type+separator+protocol+ ownHostName + contextPath + link + separator;
                
-               return type+separator+protocol+ ownHostName + contextPath + link + separator;
+               if (log.isDebugEnabled()) {
+                   log.debug("Found external link " + link + " >> " + rewritten);
+               }
+               return rewritten;
            } else {
                return null;
            }
@@ -198,7 +210,11 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
             link = server.getRule().revert(link.substring(serverDir.length()));
             String type = matcher.group(1);
             String separator = matcher.group(2);
-            return type + separator + contextPath + link + separator;
+            String rewritten = type + separator + contextPath + link + separator;
+            if (log.isDebugEnabled()) {
+                log.debug("Found local link " + link + " >> " + rewritten);
+            }
+            return rewritten;
         } else {
             return null;
         }
