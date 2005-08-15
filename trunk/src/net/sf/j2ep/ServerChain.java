@@ -116,8 +116,6 @@ public class ServerChain{
      * @return The matching server, if no server is found null is returned
      */
     public Server getServerMapped(String location) {
-        //TODO use some method in serverChain instead. 
-        //Probably create some new serverChain.match(location)
         Iterator itr = getServerIterator();
         Server match = null;
 

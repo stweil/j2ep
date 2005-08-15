@@ -105,7 +105,6 @@ public abstract class RequestHandlerBase implements RequestHandler {
         method.setRequestHeader("x-forwarded-host", request.getServerName());
         method.setRequestHeader("x-forwarded-server", serverHostName);
         
-        //TODO change this to gzip and make content decoding if the user cant handle it
         method.setRequestHeader("accept-encoding", "");
     }
     

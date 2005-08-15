@@ -77,7 +77,6 @@ public class RewriteFilter implements Filter {
             } else {
                 httpRequest.setAttribute("proxyServer", server);
                 
-                //TODO make better way for this, some permanent check at init maybe?
                 String ownHostName = request.getServerName() + ":" + request.getServerPort();
                 UrlRewritingResponseWrapper wrappedResponse;
                 wrappedResponse = new UrlRewritingResponseWrapper(httpResponse, server, ownHostName, httpRequest.getContextPath(), serverChain);
