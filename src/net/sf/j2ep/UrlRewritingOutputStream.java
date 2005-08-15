@@ -145,7 +145,7 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
         Matcher matcher = linkPattern.matcher(stream.toString());
         while (matcher.find()) {          
             
-            String link = matcher.group(6).replaceAll("\\$", "\\\\$");
+           String link = matcher.group(6).replaceAll("\\$", "\\\\$");
            if (link.length() == 0) {
                link = "/";
            }
@@ -153,11 +153,14 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
            String rewritten = null;
            if (matcher.group(4) != null) { 
                rewritten = handleExternalLink(matcher, link);
-           } else {
+           } else if (link.startsWith("/")) {
                rewritten = handleLocalLink(server, matcher, link);
            }
            
            if (rewritten != null) {
+               if (log.isDebugEnabled()) {
+                   log.debug("Found link " + link + " >> " + rewritten);
+               }
                matcher.appendReplacement(page, rewritten); 
            }
         }
@@ -185,12 +188,7 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
                String type = matcher.group(1);
                String separator = matcher.group(2);
                String protocol = matcher.group(4);
-               String rewritten = type+separator+protocol+ ownHostName + contextPath + link + separator;
-               
-               if (log.isDebugEnabled()) {
-                   log.debug("Found external link " + link + " >> " + rewritten);
-               }
-               return rewritten;
+               return type+separator+protocol+ ownHostName + contextPath + link + separator;
            } else {
                return null;
            }
@@ -210,11 +208,7 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
             link = server.getRule().revert(link.substring(serverDir.length()));
             String type = matcher.group(1);
             String separator = matcher.group(2);
-            String rewritten = type + separator + contextPath + link + separator;
-            if (log.isDebugEnabled()) {
-                log.debug("Found local link " + link + " >> " + rewritten);
-            }
-            return rewritten;
+            return type + separator + contextPath + link + separator;
         } else {
             return null;
         }
