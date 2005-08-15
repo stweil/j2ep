@@ -163,7 +163,7 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
         Matcher matcher = linkPattern.matcher(value);
         while (matcher.find()) {
             
-            String link = matcher.group(3).replace("$", "\\$");
+            String link = matcher.group(3).replaceAll("\\$", "\\\\$");
             if (link.length() == 0) {
                 link = "/";
             }
