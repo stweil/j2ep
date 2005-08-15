@@ -19,6 +19,12 @@ package net.sf.j2ep.servers;
 import net.sf.j2ep.Rule;
 import net.sf.j2ep.ServerContainer;
 
+/**
+ * A base container that will only handle the setting and getting of
+ * rules.
+ *
+ * @author Anders Nyman
+ */
 public abstract class ServerContainerBase implements ServerContainer {
     
     /** 
