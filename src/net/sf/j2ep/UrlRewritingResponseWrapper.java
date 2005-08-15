@@ -264,6 +264,6 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
      */
     private boolean shouldRewrite(String contentType) {
         String lowerCased = contentType.toLowerCase();
-        return (lowerCased.contains("html") || lowerCased.contains("css") || lowerCased.contains("javascript"));
+        return (lowerCased.indexOf("html")>-1 || lowerCased.indexOf("css")>-1 || lowerCased.indexOf("javascript")>-1);
     }
 }

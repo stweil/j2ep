@@ -60,7 +60,7 @@ public class ClusterTest extends FilterTestCase {
     
     public void endSessionRewriting(WebResponse theResponse) {
         String session = theResponse.getCookie("JSESSIONID").getValue();
-        assertTrue("Checking that we have rewritten the session", session.contains(".server"));
+        assertTrue("Checking that we have rewritten the session", session.indexOf(".server")>-1);
     }
     
     public void beginServerRemoving(WebRequest theRequest) {

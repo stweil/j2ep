@@ -129,10 +129,10 @@ public class GetTest extends FilterTestCase {
         assertEquals("The response code should be 405", 405, theResponse.getStatusCode());
         String allow = theResponse.getConnection().getHeaderField("Allow");
 
-        assertTrue("Should include OPTIONS", allow.contains("OPTIONS"));
-        assertTrue("Should include GET", allow.contains("GET"));
-        assertFalse("Shouldn't include MYOWNHEADER", allow.contains("MYOWNHEADER"));
-        assertFalse("Shouldn't include PROPFIND", allow.contains("PROPFIND"));
+        assertTrue("Should include OPTIONS", allow.indexOf("OPTIONS")>-1);
+        assertTrue("Should include GET", allow.indexOf("GET")>-1);
+        assertFalse("Shouldn't include MYOWNHEADER", allow.indexOf("MYOWNHEADER")>-1);
+        assertFalse("Shouldn't include PROPFIND", allow.indexOf("PROPFIND")>-1);
     }
     
     public void beginVia(WebRequest theRequest) {

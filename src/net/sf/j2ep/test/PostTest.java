@@ -91,8 +91,8 @@ public class PostTest extends FilterTestCase {
     }
     
     public void endSendMultipart(WebResponse theResponse) {
-        assertTrue("Checking for the param", theResponse.getText().contains("123456"));
-        assertTrue("Checking for the file data", theResponse.getText().contains("here is some data that will be sent using multipart POST"));
+        assertTrue("Checking for the param", theResponse.getText().indexOf("123456")>-1);
+        assertTrue("Checking for the file data", theResponse.getText().indexOf("here is some data that will be sent using multipart POST")>-1);
     }
     
 }

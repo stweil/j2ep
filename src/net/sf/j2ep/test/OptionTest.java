@@ -80,13 +80,13 @@ public class OptionTest extends FilterTestCase {
          * Reason we have to check all and not just compare to string is
          * that the order of the methods returned cannot is unknown and unimportant.
          */
-        assertTrue("Should include OPTIONS", allow.contains("OPTIONS"));
-        assertTrue("Should include GET", allow.contains("GET"));
-        assertTrue("Should include HEAD", allow.contains("HEAD"));
-        assertTrue("Should include POST", allow.contains("POST"));
-        assertTrue("Should include PUT", allow.contains("PUT"));
-        assertTrue("Should include DELETE", allow.contains("DELETE"));
-        assertTrue("Should include TRACE", allow.contains("TRACE"));
+        assertTrue("Should include OPTIONS", allow.indexOf("OPTIONS")>-1);
+        assertTrue("Should include GET", allow.indexOf("GET")>-1);
+        assertTrue("Should include HEAD", allow.indexOf("HEAD")>-1);
+        assertTrue("Should include POST", allow.indexOf("POST")>-1);
+        assertTrue("Should include PUT", allow.indexOf("PUT")>-1);
+        assertTrue("Should include DELETE", allow.indexOf("DELETE")>-1);
+        assertTrue("Should include TRACE", allow.indexOf("TRACE")>-1);
         assertEquals("Content Length should be 0", "0", theResponse.getConnection().getHeaderField("Content-Length"));
     }
     
@@ -102,17 +102,17 @@ public class OptionTest extends FilterTestCase {
     public void endServerWithUnsupportedMethods(WebResponse theResponse) {
         String allow = theResponse.getConnection().getHeaderField("Allow");
 
-        assertTrue("Should include OPTIONS", allow.contains("OPTIONS"));
-        assertTrue("Should include GET", allow.contains("GET"));
-        assertTrue("Should include HEAD", allow.contains("HEAD"));
-        assertTrue("Should include POST", allow.contains("POST"));
-        assertTrue("Should include DELETE", allow.contains("DELETE"));
-        assertTrue("Should include TRACE", allow.contains("TRACE"));
-        assertFalse("Shouldn't include PROPPATCH", allow.contains("PROPPATCH"));
-        assertFalse("Shouldn't include COPY", allow.contains("COPY"));
-        assertFalse("Shouldn't include MOVE", allow.contains("MOVE"));
-        assertFalse("Shouldn't include LOCK", allow.contains("LOCK"));
-        assertFalse("Shouldn't include UNLOCK", allow.contains("UNLOCK"));
-        assertFalse("Shouldn't include PROPFIND", allow.contains("PROPFIND"));
+        assertTrue("Should include OPTIONS", allow.indexOf("OPTIONS")>-1);
+        assertTrue("Should include GET", allow.indexOf("GET")>-1);
+        assertTrue("Should include HEAD", allow.indexOf("HEAD")>-1);
+        assertTrue("Should include POST", allow.indexOf("POST")>-1);
+        assertTrue("Should include DELETE", allow.indexOf("DELETE")>-1);
+        assertTrue("Should include TRACE", allow.indexOf("TRACE")>-1);
+        assertFalse("Shouldn't include PROPPATCH", allow.indexOf("PROPPATCH")>-1);
+        assertFalse("Shouldn't include COPY", allow.indexOf("COPY")>-1);
+        assertFalse("Shouldn't include MOVE", allow.indexOf("MOVE")>-1);
+        assertFalse("Shouldn't include LOCK", allow.indexOf("LOCK")>-1);
+        assertFalse("Shouldn't include UNLOCK", allow.indexOf("UNLOCK")>-1);
+        assertFalse("Shouldn't include PROPFIND", allow.indexOf("PROPFIND")>-1);
     }
 }
