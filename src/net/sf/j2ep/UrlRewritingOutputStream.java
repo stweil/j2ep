@@ -136,7 +136,7 @@ public final class UrlRewritingOutputStream extends ServletOutputStream {
         Matcher matcher = linkPattern.matcher(stream.toString());
         while (matcher.find()) {          
             
-           String link = matcher.group(6).replace("$", "\\$");
+            String link = matcher.group(6).replaceAll("\\$", "\\\\$");
            if (link.length() == 0) {
                link = "/";
            }
