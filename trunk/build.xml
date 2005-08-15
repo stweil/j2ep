@@ -88,7 +88,7 @@
 
         <!-- Compile Java classes -->
         <mkdir dir="${build.home}" />
-        <javac srcdir="${src.home}" destdir="${build.home}" debug="${compile.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+        <javac source="1.4" target="1.4" srcdir="${src.home}" destdir="${build.home}" debug="${compile.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
             <classpath refid="compile.classpath" />
         </javac>
 
