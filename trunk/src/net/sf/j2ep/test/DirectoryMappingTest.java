@@ -83,6 +83,7 @@ public class DirectoryMappingTest extends FilterTestCase {
         assertTrue("Test path not in directory", theResponse.getText().indexOf("<a href=\"/test4.jsp\">")>-1);
         assertTrue("Test relative path", theResponse.getText().indexOf("<a href=\"test5.jsp\">")>-1);
         assertTrue("Test mixed containers", theResponse.getText().indexOf("src=\"/test/testDirectoryMapping/test11.jsp\"")>-1);
+        assertTrue("Test path included $", theResponse.getText().indexOf("src=\"/test/testDirectoryMapping/$HOME\"")>-1);
     }
     
     public void beginRewriteAbsolute(WebRequest theRequest) {
