@@ -118,6 +118,7 @@ public class ServerChain{
      * 
      * @param location The location we want a server for.
      * @return The matching server, if no server is found null is returned
+     * @see ServerContainer#getServerMapped(String)
      */
     public Server getServerMapped(String location) {
         Iterator itr = getServerIterator();

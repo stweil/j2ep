@@ -18,7 +18,6 @@ package net.sf.j2ep.model;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.j2ep.ServerChain;
 
 /**
  * A server container is a object can can hold a server. It 
@@ -67,7 +66,6 @@ public interface ServerContainer {
      * 
      * @param link The start of a link that a server is mapped to
      * @return The server that can handle the link, null if no server is found
-     * @see ServerChain#getServerMapped(String)
      */
     Server getServerMapped(String link);
 }

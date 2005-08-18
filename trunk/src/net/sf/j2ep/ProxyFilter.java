@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.j2ep.factories.MethodNotAllowedException;
 import net.sf.j2ep.factories.RequestHandlerFactory;
 import net.sf.j2ep.factories.ResponseHandlerFactory;
+import net.sf.j2ep.model.AllowedMethodHandler;
 import net.sf.j2ep.model.RequestHandler;
 import net.sf.j2ep.model.ResponseHandler;
 import net.sf.j2ep.model.Server;
@@ -173,7 +174,7 @@ public class ProxyFilter implements Filter {
                 Header allow = method.getResponseHeader("allow");
                 String value = allow.getValue();
                 throw new MethodNotAllowedException(
-                        "Status code 405 from server", ResponseHandlerFactory
+                        "Status code 405 from server", AllowedMethodHandler
                                 .processAllowHeader(value));
             }
         }
@@ -189,6 +190,7 @@ public class ProxyFilter implements Filter {
      */
     public void init(FilterConfig filterConfig) throws ServletException {
         log = LogFactory.getLog(ProxyFilter.class);
+        AllowedMethodHandler.setAllowedMethods("OPTIONS,GET,HEAD,POST,PUT,DELETE,TRACE");
         
         httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
         httpClient.getParams().setBooleanParameter(HttpClientParams.USE_EXPECT_CONTINUE, false);
