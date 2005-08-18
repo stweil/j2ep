@@ -23,6 +23,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.j2ep.model.Server;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

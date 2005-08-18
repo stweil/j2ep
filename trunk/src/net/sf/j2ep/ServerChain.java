@@ -21,6 +21,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.j2ep.model.Rule;
+import net.sf.j2ep.model.Server;
+import net.sf.j2ep.model.ServerContainer;
+
 
 /**
  * A ServerChain is a list of server

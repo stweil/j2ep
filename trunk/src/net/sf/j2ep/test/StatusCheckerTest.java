@@ -1,7 +1,7 @@
 package net.sf.j2ep.test;
 
 import junit.framework.TestCase;
-import net.sf.j2ep.Server;
+import net.sf.j2ep.model.Server;
 import net.sf.j2ep.servers.BaseServer;
 import net.sf.j2ep.servers.ServerStatusChecker;
 import net.sf.j2ep.servers.ServerStatusListener;

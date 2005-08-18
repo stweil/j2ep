@@ -19,7 +19,7 @@ package net.sf.j2ep.servers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.j2ep.Server;
+import net.sf.j2ep.model.Server;
 
 /**
  * A basic implementation of the Server interface using a single host name to map
@@ -62,7 +62,7 @@ public class BaseServer extends ServerContainerBase implements Server {
     }   
     
     /**
-     * @see net.sf.j2ep.ServerContainer#getServer(javax.servlet.http.HttpServletRequest)
+     * @see net.sf.j2ep.model.ServerContainer#getServer(javax.servlet.http.HttpServletRequest)
      */
     public Server getServer(HttpServletRequest request) {
         return this;
@@ -70,7 +70,7 @@ public class BaseServer extends ServerContainerBase implements Server {
 
     /**
      * Will no do any handling
-     * @see net.sf.j2ep.Server#preExecute(javax.servlet.http.HttpServletRequest)
+     * @see net.sf.j2ep.model.Server#preExecute(javax.servlet.http.HttpServletRequest)
      */
     public HttpServletRequest preExecute(HttpServletRequest request) {
         return request;
@@ -78,28 +78,28 @@ public class BaseServer extends ServerContainerBase implements Server {
     
     /**
      * Will no do any handling
-     * @see net.sf.j2ep.Server#postExecute(javax.servlet.http.HttpServletResponse)
+     * @see net.sf.j2ep.model.Server#postExecute(javax.servlet.http.HttpServletResponse)
      */
     public HttpServletResponse postExecute(HttpServletResponse response) {
         return response;
     }
     
     /**
-     * @see net.sf.j2ep.Server#getDomainName()
+     * @see net.sf.j2ep.model.Server#getDomainName()
      */
     public String getDomainName() {
         return domainName;
     }
     
     /**
-     * @see net.sf.j2ep.Server#getPath()
+     * @see net.sf.j2ep.model.Server#getPath()
      */
     public String getPath() {
         return path;
     }
 
     /**
-     * @see net.sf.j2ep.ServerContainer#getServerMapped(java.lang.String)
+     * @see net.sf.j2ep.model.ServerContainer#getServerMapped(java.lang.String)
      */
     public Server getServerMapped(String location) {
         String fullPath = getDomainName() + getPath() + "/";
@@ -149,7 +149,7 @@ public class BaseServer extends ServerContainerBase implements Server {
     }
 
     /**
-     * @see net.sf.j2ep.Server#setConnectionExceptionRecieved(java.lang.Exception)
+     * @see net.sf.j2ep.model.Server#setConnectionExceptionRecieved(java.lang.Exception)
      */
     public void setConnectionExceptionRecieved(Exception e) {
     }

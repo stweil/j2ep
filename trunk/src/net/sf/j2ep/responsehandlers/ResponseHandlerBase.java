@@ -25,7 +25,7 @@ import java.net.UnknownHostException;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.j2ep.ResponseHandler;
+import net.sf.j2ep.model.ResponseHandler;
 import net.sf.j2ep.requesthandlers.RequestHandlerBase;
 
 import org.apache.commons.httpclient.Header;
@@ -55,21 +55,21 @@ public abstract class ResponseHandlerBase implements ResponseHandler{
     }
 
     /**
-     * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
+     * @see net.sf.j2ep.model.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
      */
     public abstract void process(HttpServletResponse response) throws IOException;
     
     /**
      * Will release the connection for the method.
      * 
-     * @see net.sf.j2ep.ResponseHandler#close()
+     * @see net.sf.j2ep.model.ResponseHandler#close()
      */
     public  void close() {
         method.releaseConnection();
     }
 
     /**
-     * @see net.sf.j2ep.ResponseHandler#getStatusCode()
+     * @see net.sf.j2ep.model.ResponseHandler#getStatusCode()
      */
     public int getStatusCode() {
         return method.getStatusCode();

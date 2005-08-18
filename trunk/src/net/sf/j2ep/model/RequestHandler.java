@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.sf.j2ep;
+package net.sf.j2ep.model;
 
 import java.io.IOException;
 

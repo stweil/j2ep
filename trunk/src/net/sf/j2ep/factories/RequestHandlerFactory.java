@@ -18,7 +18,7 @@ package net.sf.j2ep.factories;
 
 import java.util.HashMap;
 
-import net.sf.j2ep.RequestHandler;
+import net.sf.j2ep.model.RequestHandler;
 import net.sf.j2ep.requesthandlers.BasicRequestHandler;
 import net.sf.j2ep.requesthandlers.EntityEnclosingRequestHandler;
 import net.sf.j2ep.requesthandlers.MaxForwardRequestHandler;

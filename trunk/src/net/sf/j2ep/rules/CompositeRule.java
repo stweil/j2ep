@@ -22,7 +22,7 @@ import java.util.ListIterator;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.j2ep.Rule;
+import net.sf.j2ep.model.Rule;
 
 /**
  * This rule consists of many other rules using the 
@@ -61,7 +61,7 @@ public class CompositeRule extends BaseRule {
      * Iterates over all the rules in the list checking that they all match.
      * 
      * @return true if all the rules match or there are no rules, false otherwise
-     * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
+     * @see net.sf.j2ep.model.Rule#matches(javax.servlet.http.HttpServletRequest)
      */
     public boolean matches(HttpServletRequest request) {
         Iterator itr = rules.iterator();
@@ -78,7 +78,7 @@ public class CompositeRule extends BaseRule {
      * Process all the rules in the list, allowing them all to change
      * the URI.
      * 
-     * @see net.sf.j2ep.Rule#process(java.lang.String)
+     * @see net.sf.j2ep.model.Rule#process(java.lang.String)
      */
     public String process(String uri) {
         String returnString = uri;
@@ -96,7 +96,7 @@ public class CompositeRule extends BaseRule {
      * value. This method will call all rules in the rule list and call revert on them.
      * Rules are called in a reversed order in comparison with process.
      * 
-     * @see net.sf.j2ep.Rule#revert(java.lang.String)
+     * @see net.sf.j2ep.model.Rule#revert(java.lang.String)
      */
     public String revert(String uri) {
         String returnString = uri;

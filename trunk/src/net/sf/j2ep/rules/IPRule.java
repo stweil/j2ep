@@ -42,7 +42,7 @@ public class IPRule extends BaseRule {
      * Checks the IP for the remote user, if it's in the specified
      * range it's a match.
      * 
-     * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
+     * @see net.sf.j2ep.model.Rule#matches(javax.servlet.http.HttpServletRequest)
      */
     public boolean matches(HttpServletRequest request) {
         boolean match = false;

@@ -37,7 +37,7 @@ public class BasicRequestHandler extends RequestHandlerBase {
     /**
      * Will only set the headers.
      * 
-     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
+     * @see net.sf.j2ep.model.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
      */
     public HttpMethod process(HttpServletRequest request, String url) {
         

@@ -39,7 +39,7 @@ public class MaxForwardRequestHandler extends RequestHandlerBase {
      * is meant for the server or for the proxy. This check is done
      * by looking at the Max-Forwards header.
      * 
-     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
+     * @see net.sf.j2ep.model.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
      */
     public HttpMethod process(HttpServletRequest request, String url) throws IOException {
         HttpMethodBase method = null;

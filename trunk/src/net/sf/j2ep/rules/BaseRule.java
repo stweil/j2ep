@@ -17,7 +17,7 @@
 
 package net.sf.j2ep.rules;
 
-import net.sf.j2ep.Rule;
+import net.sf.j2ep.model.Rule;
 
 /**
  * The BaseRule is an empty rule
@@ -31,14 +31,14 @@ import net.sf.j2ep.Rule;
 public abstract class BaseRule implements Rule {
     
     /**
-     * @see net.sf.j2ep.Rule#process(java.lang.String)
+     * @see net.sf.j2ep.model.Rule#process(java.lang.String)
      */
     public String process(String uri) {
         return uri;
     }
     
     /**
-     * @see net.sf.j2ep.Rule#revert(java.lang.String)
+     * @see net.sf.j2ep.model.Rule#revert(java.lang.String)
      */
     public String revert(String uri) {
         return uri;
