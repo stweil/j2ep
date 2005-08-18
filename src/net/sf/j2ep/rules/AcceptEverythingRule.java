@@ -32,7 +32,7 @@ public class AcceptEverythingRule extends BaseRule {
     /**
      * This implementation always matches.
      * 
-     * @see net.sf.j2ep.Rule#matches(HttpServletRequest)
+     * @see net.sf.j2ep.model.Rule#matches(HttpServletRequest)
      */
     public boolean matches(HttpServletRequest request) {
         return true;

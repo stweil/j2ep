@@ -27,6 +27,9 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.j2ep.factories.MethodNotAllowedException;
 import net.sf.j2ep.factories.RequestHandlerFactory;
 import net.sf.j2ep.factories.ResponseHandlerFactory;
+import net.sf.j2ep.model.RequestHandler;
+import net.sf.j2ep.model.ResponseHandler;
+import net.sf.j2ep.model.Server;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;

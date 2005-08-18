@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
 
+import net.sf.j2ep.model.Server;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import net.sf.j2ep.Rule;
-import net.sf.j2ep.Server;
+import net.sf.j2ep.model.Rule;
+import net.sf.j2ep.model.Server;
 
 /**
  * A ServerContainer implementation that have multiple domains to choose from.
@@ -85,7 +85,7 @@ public abstract class ClusterContainer extends ServerContainerBase implements Se
      * If no session is included in the request we will choose the next server
      * in a round-robin fashion.
      * 
-     * @see net.sf.j2ep.ServerContainer#getServer(javax.servlet.http.HttpServletRequest)
+     * @see net.sf.j2ep.model.ServerContainer#getServer(javax.servlet.http.HttpServletRequest)
      */
     public Server getServer(HttpServletRequest request) {
         String serverId = getServerIdFromCookie(request.getCookies());
@@ -144,7 +144,7 @@ public abstract class ClusterContainer extends ServerContainerBase implements Se
     }
     
     /**
-     * @see net.sf.j2ep.ServerContainer#getServerMapped(java.lang.String)
+     * @see net.sf.j2ep.model.ServerContainer#getServerMapped(java.lang.String)
      */
     public Server getServerMapped(String location) {
         Iterator itr = servers.values().iterator();
@@ -163,7 +163,7 @@ public abstract class ClusterContainer extends ServerContainerBase implements Se
     /**
      * Sets the server to offline status.
      * Will only handle servers that are ClusteredServers
-     * @see net.sf.j2ep.servers.ServerStatusListener#serverOffline(net.sf.j2ep.Server)
+     * @see net.sf.j2ep.servers.ServerStatusListener#serverOffline(net.sf.j2ep.model.Server)
      */
     public void serverOffline(Server server) {
         if (server instanceof ClusteredServer) {
@@ -174,7 +174,7 @@ public abstract class ClusterContainer extends ServerContainerBase implements Se
     /**
      * Sets the server to online status.
      * Will only handle servers that are ClusteredServers
-     * @see net.sf.j2ep.servers.ServerStatusListener#serverOnline(net.sf.j2ep.Server)
+     * @see net.sf.j2ep.servers.ServerStatusListener#serverOnline(net.sf.j2ep.model.Server)
      */
     public void serverOnline(Server server) {
         if (server instanceof ClusteredServer) {
@@ -247,7 +247,7 @@ public abstract class ClusterContainer extends ServerContainerBase implements Se
          * Will wrap the request so the tailing .something,
          * identifying the server, is removed from the request.
          * 
-         * @see net.sf.j2ep.Server#preExecute(javax.servlet.http.HttpServletRequest)
+         * @see net.sf.j2ep.model.Server#preExecute(javax.servlet.http.HttpServletRequest)
          */
         public HttpServletRequest preExecute(HttpServletRequest request) {
             return new ClusterRequestWrapper(request);
@@ -257,7 +257,7 @@ public abstract class ClusterContainer extends ServerContainerBase implements Se
          * Will wrap the response so that sessions are rewritten to
          * remove the tailing .something that indicated which server
          * the session is linked to.
-         * @see net.sf.j2ep.Server#postExecute(javax.servlet.http.HttpServletResponse)
+         * @see net.sf.j2ep.model.Server#postExecute(javax.servlet.http.HttpServletResponse)
          */
         public HttpServletResponse postExecute(HttpServletResponse response) {
             return new ClusterResponseWrapper(response, serverId);
@@ -266,21 +266,21 @@ public abstract class ClusterContainer extends ServerContainerBase implements Se
         /**
          * Notifies the server status checker that a server
          * might have gone offline.
-         * @see net.sf.j2ep.Server#setConnectionExceptionRecieved(java.lang.Exception)
+         * @see net.sf.j2ep.model.Server#setConnectionExceptionRecieved(java.lang.Exception)
          */
         public void setConnectionExceptionRecieved(Exception e) {
             ClusterContainer.this.statusChecker.interrupt();
         }
 
         /**
-         * @see net.sf.j2ep.Server#getDomainName()
+         * @see net.sf.j2ep.model.Server#getDomainName()
          */
         public String getDomainName() {
             return domainName;
         }
 
         /**
-         * @see net.sf.j2ep.Server#getPath()
+         * @see net.sf.j2ep.model.Server#getPath()
          */
         public String getPath() {
             return path;
@@ -304,7 +304,7 @@ public abstract class ClusterContainer extends ServerContainerBase implements Se
         }
 
         /**
-         * @see net.sf.j2ep.Server#getRule()
+         * @see net.sf.j2ep.model.Server#getRule()
          */
         public Rule getRule() {
             return ClusterContainer.this.getRule();

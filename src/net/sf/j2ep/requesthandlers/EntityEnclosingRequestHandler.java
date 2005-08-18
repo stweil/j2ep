@@ -39,7 +39,7 @@ public class EntityEnclosingRequestHandler extends RequestHandlerBase {
      * Will also set the other headers send in the request.
      * 
      * @throws IOException An exception is throws when there is a problem getting the input stream
-     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
+     * @see net.sf.j2ep.model.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
      */
     public HttpMethod process(HttpServletRequest request, String url) throws IOException {
         

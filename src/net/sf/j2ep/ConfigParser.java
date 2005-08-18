@@ -20,6 +20,8 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import net.sf.j2ep.model.ServerContainer;
+
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

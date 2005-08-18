@@ -18,7 +18,7 @@ package net.sf.j2ep.servers;
 
 import java.util.EventListener;
 
-import net.sf.j2ep.Server;
+import net.sf.j2ep.model.Server;
 
 /**
  * A listener for status messages for the servers.

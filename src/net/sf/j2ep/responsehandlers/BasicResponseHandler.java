@@ -45,7 +45,7 @@ public class BasicResponseHandler extends ResponseHandlerBase {
     /**
      * Sets the headers, writes the stream and sets the status code.
      * 
-     * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
+     * @see net.sf.j2ep.model.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
      */
     public void process(HttpServletResponse response) throws IOException{
             setHeaders(response);

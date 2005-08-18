@@ -66,7 +66,7 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
      * If it is a request meant for the backing server its
      * allowed method will be returned.
      * 
-     * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
+     * @see net.sf.j2ep.model.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
      */
     public void process(HttpServletResponse response) {
         if (useOwnAllow) {
@@ -98,7 +98,7 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
      * Returns 200 if the request is targeted to the proxy
      * otherwise the normal status code is returned.
      * 
-     * @see net.sf.j2ep.ResponseHandler#getStatusCode()
+     * @see net.sf.j2ep.model.ResponseHandler#getStatusCode()
      */
     public int getStatusCode() {
         if (useOwnAllow) {

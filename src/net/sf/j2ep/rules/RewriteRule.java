@@ -80,7 +80,7 @@ public class RewriteRule extends BaseRule {
     /**
      * Will check if the URI matches the pattern we have set up.
      * 
-     * @see net.sf.j2ep.Rule#matches(javax.servlet.http.HttpServletRequest)
+     * @see net.sf.j2ep.model.Rule#matches(javax.servlet.http.HttpServletRequest)
      */
     public boolean matches(HttpServletRequest request) {
         String uri = getURI(request);      
@@ -93,7 +93,7 @@ public class RewriteRule extends BaseRule {
      * rewrite the URI before using it to connection to
      * the end server.
      * 
-     * @see net.sf.j2ep.Rule#process(java.lang.String)
+     * @see net.sf.j2ep.model.Rule#process(java.lang.String)
      */
     public String process(String uri) {
         String rewritten = uri;
@@ -106,7 +106,7 @@ public class RewriteRule extends BaseRule {
     }
     
     /**
-     * @see net.sf.j2ep.Rule#revert(java.lang.String)
+     * @see net.sf.j2ep.model.Rule#revert(java.lang.String)
      */
     public String revert(String uri) {
         String rewritten = uri;

@@ -18,7 +18,7 @@ package net.sf.j2ep.factories;
 
 import java.util.StringTokenizer;
 
-import net.sf.j2ep.ResponseHandler;
+import net.sf.j2ep.model.ResponseHandler;
 import net.sf.j2ep.responsehandlers.*;
 
 import org.apache.commons.httpclient.HttpMethod;

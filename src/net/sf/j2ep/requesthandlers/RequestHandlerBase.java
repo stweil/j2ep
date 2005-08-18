@@ -26,7 +26,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.j2ep.RequestHandler;
+import net.sf.j2ep.model.RequestHandler;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.logging.LogFactory;
@@ -46,7 +46,7 @@ public abstract class RequestHandlerBase implements RequestHandler {
     private static Set bannedHeaders = new HashSet();
 
     /**
-     * @see net.sf.j2ep.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
+     * @see net.sf.j2ep.model.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
      */
     public abstract HttpMethod process(HttpServletRequest request, String url) throws IOException;
     

@@ -53,7 +53,7 @@ public class TraceResponseHandler extends ResponseHandlerBase {
     /**
      * Will either respond with data from the underlying server
      * or the proxy's own data.
-     * @see net.sf.j2ep.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
+     * @see net.sf.j2ep.model.ResponseHandler#process(javax.servlet.http.HttpServletResponse)
      */
     public void process(HttpServletResponse response) throws IOException {
         
@@ -84,7 +84,7 @@ public class TraceResponseHandler extends ResponseHandlerBase {
      * Returns 200 if the request is targeted to the proxy
      * otherwise the normal status code is returned.
      * 
-     * @see net.sf.j2ep.ResponseHandler#getStatusCode()
+     * @see net.sf.j2ep.model.ResponseHandler#getStatusCode()
      */
     public int getStatusCode() {
         if (proxyTargeted) {

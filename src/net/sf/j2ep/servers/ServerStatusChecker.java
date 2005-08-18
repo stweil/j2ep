@@ -19,7 +19,7 @@ package net.sf.j2ep.servers;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import net.sf.j2ep.Server;
+import net.sf.j2ep.model.Server;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.cookie.CookiePolicy;

@@ -16,8 +16,8 @@
 
 package net.sf.j2ep.servers;
 
-import net.sf.j2ep.Rule;
-import net.sf.j2ep.ServerContainer;
+import net.sf.j2ep.model.Rule;
+import net.sf.j2ep.model.ServerContainer;
 
 /**
  * A base container that will only handle the setting and getting of
@@ -33,14 +33,14 @@ public abstract class ServerContainerBase implements ServerContainer {
     private Rule rule;
 
     /**
-     * @see net.sf.j2ep.ServerContainer#getRule()
+     * @see net.sf.j2ep.model.ServerContainer#getRule()
      */
     public Rule getRule() {
         return rule;
     }
 
     /**
-     * @see net.sf.j2ep.ServerContainer#setRule(net.sf.j2ep.Rule)
+     * @see net.sf.j2ep.model.ServerContainer#setRule(net.sf.j2ep.model.Rule)
      */
     public void setRule(Rule rule) {
         this.rule = rule;
