@@ -18,6 +18,7 @@ package net.sf.j2ep.factories;
 
 import java.util.HashMap;
 
+import net.sf.j2ep.model.AllowedMethodHandler;
 import net.sf.j2ep.model.RequestHandler;
 import net.sf.j2ep.requesthandlers.BasicRequestHandler;
 import net.sf.j2ep.requesthandlers.EntityEnclosingRequestHandler;
@@ -42,7 +43,7 @@ public class RequestHandlerFactory {
     /** 
      * These methods are handled by this factory.
      */
-    private static final String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE,TRACE";
+    private static final String handledMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE,TRACE";
     
     /** 
      * List of banned headers that should not be set.
@@ -74,9 +75,13 @@ public class RequestHandlerFactory {
      * @throws MethodNotAllowedException If there is no RequestHandler available an exception will be thrown
      */
     public static RequestHandler createRequestMethod(String method) throws MethodNotAllowedException{
+        if (!AllowedMethodHandler.methodAllowed(method)) {
+            throw new MethodNotAllowedException("The method " + method + " is not in the AllowedHeaderHandler's list of allowed methods.", AllowedMethodHandler.getAllowHeader());
+        }
+        
         RequestHandler handler = (RequestHandler) requestHandlers.get(method.toUpperCase());
         if (handler == null) {
-            throw new MethodNotAllowedException("The method " + method + " is not handled by this Factory.", allowedMethods);
+            throw new MethodNotAllowedException("The method " + method + " was allowed by the AllowedMethodHandler, not by the factory.", handledMethods);
         } else {
             return handler;
         }

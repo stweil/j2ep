@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.j2ep.factories.ResponseHandlerFactory;
+import net.sf.j2ep.model.AllowedMethodHandler;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.OptionsMethod;
@@ -71,15 +71,14 @@ public class OptionsResponseHandler extends ResponseHandlerBase {
     public void process(HttpServletResponse response) {
         if (useOwnAllow) {
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setHeader("allow", ResponseHandlerFactory.getAllowHeader());
+            response.setHeader("allow", AllowedMethodHandler.getAllowHeader());
             response.setHeader("Connection", "close");
             response.setHeader("content-length", "0");
         } else {
             setHeaders(response);
             response.setStatus(getStatusCode());
             String allow = method.getResponseHeader("allow").getValue();
-            ResponseHandlerFactory.processAllowHeader(allow);
-            response.setHeader("allow", ResponseHandlerFactory.processAllowHeader(allow));
+            response.setHeader("allow", AllowedMethodHandler.processAllowHeader(allow));
             Header contentLength = method.getResponseHeader("Content-Length");
             if (contentLength == null || contentLength.getValue().equals("0")) {
                 response.setHeader("Content-Length", "0");

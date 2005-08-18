@@ -16,8 +16,7 @@
 
 package net.sf.j2ep.factories;
 
-import java.util.StringTokenizer;
-
+import net.sf.j2ep.model.AllowedMethodHandler;
 import net.sf.j2ep.model.ResponseHandler;
 import net.sf.j2ep.responsehandlers.*;
 
@@ -35,9 +34,9 @@ import org.apache.commons.httpclient.methods.*;
 public class ResponseHandlerFactory {
     
     /** 
-     * The methods handled by this factory.
+     * These methods are handled by this factory.
      */
-    private static final String allowedMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE,TRACE";
+    private static final String handledMethods = "OPTIONS,GET,HEAD,POST,PUT,DELETE,TRACE";
 
     /**
      * Checks the method being received and created a 
@@ -48,8 +47,11 @@ public class ResponseHandlerFactory {
      * @throws MethodNotAllowedException If no method could be choose this exception is thrown
      */
     public static ResponseHandler createResponseHandler(HttpMethod method) throws MethodNotAllowedException {
+        if (!AllowedMethodHandler.methodAllowed(method)) {
+            throw new MethodNotAllowedException("The method " + method.getName() + " is not in the AllowedHeaderHandler's list of allowed methods.", AllowedMethodHandler.getAllowHeader());
+        }
+        
         ResponseHandler handler = null;
-
         if (method.getName().equals("OPTIONS")) {
             handler = new OptionsResponseHandler((OptionsMethod) method);
         } else if (method.getName().equals("GET")) {
@@ -65,41 +67,12 @@ public class ResponseHandlerFactory {
         } else if (method.getName().equals("TRACE")) {
             handler = new TraceResponseHandler((TraceMethod) method);
         } else {
-            throw new MethodNotAllowedException("The method " + method.getName() + " is not handled by this Factory.", allowedMethods);
+            throw new MethodNotAllowedException("The method " + method.getName() + " was allowed by the AllowedMethodHandler, not by the factory.", handledMethods);
         }
 
         return handler;
     }
 
-    /**
-     * Will go through all the methods sent in
-     * checking to see that the method is allowed.
-     * If it's allowed it will be included
-     * in the returned value.
-     * 
-     * @param allowSent The header returned by the server
-     * @return The allowed headers for this request
-     */
-    public static String processAllowHeader(String allowSent) {
-        StringBuffer allowToSend = new StringBuffer("");
-        StringTokenizer tokenizer = new StringTokenizer(allowSent, ",");
-        while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken().trim().toUpperCase();
-            if (allowedMethods.matches("[A-Z,]*\\b" + token + "\\b[A-Z,]*")) {
-                allowToSend.append(token).append(",");
-            }
-        }
 
-        return allowToSend.toString();
-    }
-    
-    /**
-     * Returns the allow methods for this factory.
-     * 
-     * @return Allowed methods
-     */ 
-    public static String getAllowHeader() {
-        return allowedMethods;
-    }
 
 }
