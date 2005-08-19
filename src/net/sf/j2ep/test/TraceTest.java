@@ -41,17 +41,17 @@ public class TraceTest extends FilterTestCase {
     public void endNoMaxFowards(WebResponse theResponse) {
         String serverHostName = null;
         try {
-            serverHostName = InetAddress.getLocalHost().getHostName();  
+            serverHostName = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
             fail("Couldn't get the hostname needed for header Via");
         }
-        
+
         String contentType = theResponse.getConnection().getContentType();
         assertEquals("Checking content-type", "message/http", contentType);
-        
+
         String expectedVia = "HTTP/1.0 fakeserver.com, " + "HTTP/1.1 " + serverHostName;
         assertTrue("Checking that the via header is included", theResponse.getText().indexOf(expectedVia)>-1);
-        
+
         String expectedUserAgent = "Jakarta Commons-HttpClient/3.0-rc3";
         assertTrue("Checking that user-agent is included", theResponse.getText().indexOf(expectedUserAgent)>-1);
     }
@@ -67,15 +67,15 @@ public class TraceTest extends FilterTestCase {
         MethodWrappingRequest req = new MethodWrappingRequest(request, "TRACE");
         proxyFilter.doFilter(req, response, filterChain);
     }
-    
+
     public void endMaxForwards(WebResponse theResponse) {
         String contentType = theResponse.getConnection().getContentType();
         if (contentType.indexOf(";") != -1) {
             contentType = contentType.substring(0, contentType.indexOf(";"));
         }
         assertEquals("Checking content-type", "message/http", contentType);
-        
+
         String expectedVia = "HTTP/1.0 fakeserver.com";
-        assertTrue("Checking that the via header is included", theResponse.getText().contains(expectedVia));
+        assertTrue("Checking that the via header is included", theResponse.getText().indexOf(expectedVia)>-1);
     }
 }
