@@ -116,9 +116,9 @@
             <test name="net.sf.j2ep.test.CompositeRuleTest" todir="${reports.test}" />
             <test name="net.sf.j2ep.test.DirectoryRuleTest" todir="${reports.test}" />
             <test name="net.sf.j2ep.test.IPRuleTest" todir="${reports.test}" />
-        	<test name="net.sf.j2ep.test.RewriteRuleTest" todir="${reports.test}" />
-			<test name="net.sf.j2ep.test.TimeRuleTest" todir="${reports.test}" />
-        	<test name="net.sf.j2ep.test.StatusCheckerTest" todir="${reports.test}" />
+            <test name="net.sf.j2ep.test.RewriteRuleTest" todir="${reports.test}" />
+            <test name="net.sf.j2ep.test.TimeRuleTest" todir="${reports.test}" />
+            <test name="net.sf.j2ep.test.StatusCheckerTest" todir="${reports.test}" />
         </junit>
 
         <!-- Cactus -->
@@ -130,8 +130,8 @@
             <test name="net.sf.j2ep.test.GetTest" todir="${reports.test}" />
             <test name="net.sf.j2ep.test.PostTest" todir="${reports.test}" />
             <test name="net.sf.j2ep.test.DirectoryMappingTest" todir="${reports.test}" />
-        	<test name="net.sf.j2ep.test.ClusterTest" todir="${reports.test}" />
-        	<test name="net.sf.j2ep.test.TraceTest" todir="${reports.test}" />
+            <test name="net.sf.j2ep.test.ClusterTest" todir="${reports.test}" />
+            <test name="net.sf.j2ep.test.TraceTest" todir="${reports.test}" />
         </cactus>
 
     </target>
@@ -172,23 +172,36 @@
 
     </target>
 
+    <!--
+
+    Make a jar of the class files for simple embedding.
+
+    -->
+    <target name="jar" depends="compile" description="Make a jar of the class files for simple embedding.">
+        <mkdir dir="${dist.home}" />
+        <jar jarfile="${dist.home}/${app.name}-${app.version}.jar">
+            <fileset dir="${build.home}"  includes='**/*.class' excludes='**/test/*'/>
+        </jar>
+    </target>
 
     <!--
 
     Makes a release ready WAR file ready to deploy.
 
     -->
-    <target name="release" depends="compile" description="Create binary distribution">
+    <target name="release" depends="jar" description="Create binary distribution">
 
         <!-- Create temporary dist directory -->
         <mkdir dir="${dist.home}/tmp/WEB-INF" />
         <copy todir="${dist.home}/tmp/WEB-INF">
             <fileset dir="${app.home}" />
         </copy>
+        <copy todir="${dist.home}/tmp/WEB-INF/lib" file="${dist.home}/${app.name}-${app.version}.jar"/>
 
-        <!-- Remove tests from war -->
-        <delete dir="${dist.home}/tmp/WEB-INF/classes${test.relativehome}" />
-        <delete file="${dist.home}/tmp/WEB-INF/classes/cactus.properties" />
+        <!-- Remove tests and classes from war -->
+        <delete includeemptydirs="true">
+          <fileset dir="${dist.home}/tmp/WEB-INF/classes" includes="**/*"/>
+        </delete>
         <delete file="${dist.home}/tmp/WEB-INF/cactus-web.xml" />
 
         <!-- Create application JAR file -->
@@ -228,7 +241,7 @@
 
             <tarfileset dir="${basedir}" >
                 <include name="build.xml" />
-            	<include name="build.properties.default" />
+                <include name="build.properties.default" />
             </tarfileset>
         </tar>
         <bzip2 src="${dist.home}/src.tar" destfile="${dist.home}/${app.name}-${app.version}-src.tar.bz2"/>
@@ -252,7 +265,7 @@
 
             <zipfileset dir="${basedir}">
                 <include name="build.xml" />
-            	<include name="build.properties.default" />
+                <include name="build.properties.default" />
             </zipfileset>
         </zip>
 
@@ -380,7 +393,7 @@
         <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="compile.classpath"/>
         <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="compile.classpath"/>
         <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" classpathref="compile.classpath"/>
-    
+
     </target>
 
 
