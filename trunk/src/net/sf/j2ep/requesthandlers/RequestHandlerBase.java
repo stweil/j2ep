@@ -86,7 +86,7 @@ public abstract class RequestHandlerBase implements RequestHandler {
      * @param request The incoming request, will need to get virtual host.
      */
     private void setProxySpecificHeaders(HttpMethod method, HttpServletRequest request) {
-        String serverHostName = "jEasyReverseProxy";
+        String serverHostName = "jEasyExtensibleProxy";
         try {
             serverHostName = InetAddress.getLocalHost().getHostName();   
         } catch (UnknownHostException e) {
