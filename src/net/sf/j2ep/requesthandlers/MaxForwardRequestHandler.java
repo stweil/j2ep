@@ -28,7 +28,7 @@ import org.apache.commons.httpclient.methods.TraceMethod;
 
 
 /**
- * Handler for the OPTIONS method.
+ * Handler for the OPTIONS and TRACE method.
  *
  * @author Anders Nyman
  */
@@ -68,6 +68,16 @@ public class MaxForwardRequestHandler extends RequestHandlerBase {
         return method;
     }
     
+    /**
+     * Will write all the headers included in the request to the method.
+     * The difference between this method and setHeaders in BasicRequestHandler
+     * is that the BasicRequestHandler will also add Via, x-forwarded-for, etc.
+     * These "special" headers should not be added when the proxy is target
+     * directly with a Max-Forwards: 0 headers.
+     * @param method The method to write to
+     * @param request The incoming request
+     * @see RequestHandlerBase#setHeaders(HttpMethod, HttpServletRequest)
+     */
     private void setAllHeaders(HttpMethod method, HttpServletRequest request) {
         Enumeration headers = request.getHeaderNames();
         

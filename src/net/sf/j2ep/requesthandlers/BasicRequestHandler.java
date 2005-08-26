@@ -19,6 +19,7 @@ package net.sf.j2ep.requesthandlers;
 import javax.servlet.http.HttpServletRequest;
 
 
+import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.DeleteMethod;
@@ -36,10 +37,11 @@ public class BasicRequestHandler extends RequestHandlerBase {
 
     /**
      * Will only set the headers.
+     * @throws HttpException 
      * 
      * @see net.sf.j2ep.model.RequestHandler#process(javax.servlet.http.HttpServletRequest, java.lang.String)
      */
-    public HttpMethod process(HttpServletRequest request, String url) {
+    public HttpMethod process(HttpServletRequest request, String url) throws HttpException {
         
         HttpMethodBase method = null;
       
