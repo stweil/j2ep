@@ -28,7 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.j2ep.model.RequestHandler;
 
+import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
@@ -50,6 +52,11 @@ public abstract class RequestHandlerBase implements RequestHandler {
      */
     public abstract HttpMethod process(HttpServletRequest request, String url) throws IOException;
     
+    /** 
+     * Logging element supplied by commons-logging.
+     */
+    private static Log log = LogFactory.getLog(RequestHandlerBase.class);
+    
     /**
      * Will write all request headers stored in the request to the method that
      * are not in the set of banned headers.
@@ -59,8 +66,9 @@ public abstract class RequestHandlerBase implements RequestHandler {
      * 
      * @param method The HttpMethod used for this connection
      * @param request The incoming request
+     * @throws HttpException 
      */
-    protected void setHeaders(HttpMethod method, HttpServletRequest request) {
+    protected void setHeaders(HttpMethod method, HttpServletRequest request) throws HttpException {
         Enumeration headers = request.getHeaderNames();
         String connectionToken = request.getHeader("connection");
         
@@ -84,18 +92,23 @@ public abstract class RequestHandlerBase implements RequestHandler {
      * 
      * @param method Method to write the headers to
      * @param request The incoming request, will need to get virtual host.
+     * @throws HttpException 
      */
-    private void setProxySpecificHeaders(HttpMethod method, HttpServletRequest request) {
+    private void setProxySpecificHeaders(HttpMethod method, HttpServletRequest request) throws HttpException {
         String serverHostName = "jEasyExtensibleProxy";
         try {
             serverHostName = InetAddress.getLocalHost().getHostName();   
         } catch (UnknownHostException e) {
-            LogFactory.getLog(RequestHandlerBase.class).error("Couldn't get the hostname needed for headers x-forwarded-server and Via", e);
+            log.error("Couldn't get the hostname needed for headers x-forwarded-server and Via", e);
         }
         
         String originalVia = request.getHeader("via");
         StringBuffer via = new StringBuffer("");
         if (originalVia != null) {
+            if (originalVia.indexOf(serverHostName) != -1) {
+                log.error("This proxy has already handled the request, will abort.");
+                throw new HttpException("Request has a cyclic dependency on this proxy.");
+            }
             via.append(originalVia).append(", ");
         }
         via.append(request.getProtocol()).append(" ").append(serverHostName);

@@ -132,6 +132,7 @@
             <test name="net.sf.j2ep.test.DirectoryMappingTest" todir="${reports.test}" />
             <test name="net.sf.j2ep.test.ClusterTest" todir="${reports.test}" />
             <test name="net.sf.j2ep.test.TraceTest" todir="${reports.test}" />
+        	<test name="net.sf.j2ep.test.CycleTest" todir="${reports.test}" />
         </cactus>
 
     </target>

@@ -41,6 +41,19 @@
   			directory="/testRewriteAbsoluteShort"
   		/>
 	</server>
+	
+	<!--
+		Here we need another server running the proxy on the same
+		hostname. The test server wont work since it is handled by
+		cactus and a normal request to it will not be taken by the proxy.
+	-->
+	<server className="net.sf.j2ep.servers.BaseServer"
+		domainName="localhost:8080">
+	
+		<rule className="net.sf.j2ep.rules.DirectoryRule"
+  			directory="/testCycle"
+  		/>
+	</server>
 		
 	<!-- 
 		Here is a server that has to support some special methods
