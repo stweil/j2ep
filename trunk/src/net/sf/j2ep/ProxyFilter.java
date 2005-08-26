@@ -103,7 +103,7 @@ public class ProxyFilter implements Filter {
 
                 responseHandler.process(httpResponse);
             } catch (HttpException e) {
-                log.error("Problem while connection to server", e);
+                log.error("Problem while connecting to server", e);
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 server.setConnectionExceptionRecieved(e);
             } catch (UnknownHostException e) {
