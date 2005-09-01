@@ -21,10 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * A representation of the server. Its main use it to be able to open
- * a connection to the server sending back a executed method.
- * The server has to choose which type of method to invoke and should
- * support all method in the HTTP specification.
+ * A representation of the server. Its main use it to get the
+ * domain and path for the underlying proxied server.
  *
  * @author Anders Nyman
  */
