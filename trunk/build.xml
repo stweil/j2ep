@@ -372,8 +372,9 @@
         <property name="commons-httpclient-3.0-rc3.jar" value="${external.libs}/commons-httpclient-3.0-rc3.jar" />
         <property name="commons-digester-1.7.jar" value="${external.libs}/commons-digester-1.7.jar" />
         <property name="commons-beanutils.jar" value="${external.libs}/commons-beanutils.jar" />
-        <property name="commons-codec-1.3.jar.jar" value="${external.libs}/commons-codec-1.3.jar" />
-
+        <property name="commons-codec-1.3.jar" value="${external.libs}/commons-codec-1.3.jar" />
+    	<property name="commons-logging-1.0.4.jar" value="${external.libs}/commons-logging-1.0.4.jar" />
+    	
         <!-- Create build directories as needed -->
         <mkdir  dir="${build.home}"/>
         <mkdir  dir="${build.home}"/>
@@ -385,7 +386,8 @@
         <copy todir="${lib.home}" file="${commons-httpclient-3.0-rc3.jar}"/>
         <copy todir="${lib.home}" file="${commons-digester-1.7.jar}"/>
         <copy todir="${lib.home}" file="${commons-beanutils.jar}"/>
-        <copy todir="${lib.home}" file="${commons-codec-1.3.jar.jar}"/>
+        <copy todir="${lib.home}" file="${commons-codec-1.3.jar}"/>
+    	<copy todir="${lib.home}" file="${commons-logging-1.0.4.jar}"/>
 
         <!-- Define the Cactus tasks -->
         <taskdef resource="cactus.tasks" classpathref="compile.classpath" />
