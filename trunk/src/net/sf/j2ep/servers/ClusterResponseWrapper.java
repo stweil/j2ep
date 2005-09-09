@@ -94,8 +94,9 @@ public class ClusterResponseWrapper extends HttpServletResponseWrapper {
     }
     
     /**
-     * Rewrites the header Set-Cookie so that path and domain 
-     * is correct.
+     * Rewrites the cookie so that we store the server this session
+     * is linked to. The check making sure that this is a session cookie
+     * is performed by the regex.
      * 
      * @param value The original header
      * @return The rewritten header
