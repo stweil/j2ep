@@ -197,7 +197,7 @@ public final class UrlRewritingResponseWrapper extends HttpServletResponseWrappe
         while (matcher.find()) {
             if (matcher.group(1).equalsIgnoreCase("path=")) {
                 String path = server.getRule().revert(matcher.group(2));
-                matcher.appendReplacement(header, "$1" + path + ";"); 
+                matcher.appendReplacement(header, "$1" + contextPath + path + ";"); 
             } else {
                 matcher.appendReplacement(header, "");
             }
