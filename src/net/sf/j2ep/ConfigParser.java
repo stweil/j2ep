@@ -52,8 +52,7 @@ public class ConfigParser {
      * parse the config and build a corresponding rule chain with the server
      * mappings included.
      * 
-     * @param data
-     *            The config file containing the XML data structure.
+     * @param data The config file containing the XML data structure
      */
     public ConfigParser(File data) {
         log = LogFactory.getLog(ConfigParser.class);
