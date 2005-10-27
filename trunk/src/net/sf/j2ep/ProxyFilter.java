@@ -183,10 +183,10 @@ public class ProxyFilter implements Filter {
     }
 
     /**
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     * 
      * Called upon initialization, Will create the ConfigParser and get the
      * RuleChain back. Will also configure the httpclient.
+     * 
+     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
     public void init(FilterConfig filterConfig) throws ServletException {
         log = LogFactory.getLog(ProxyFilter.class);
@@ -211,10 +211,10 @@ public class ProxyFilter implements Filter {
     }
 
     /**
-     * @see javax.servlet.Filter#destroy()
-     * 
      * Called when this filter is destroyed.
      * Releases the fields.
+     * 
+     * @see javax.servlet.Filter#destroy()
      */
     public void destroy() {
         log = null;
