@@ -70,7 +70,7 @@ public class MaxForwardRequestHandler extends RequestHandlerBase {
     
     /**
      * Will write all the headers included in the request to the method.
-     * The difference between this method and setHeaders in BasicRequestHandler
+     * The difference between this method and setHeaders in RequestHandlerBase
      * is that the BasicRequestHandler will also add Via, x-forwarded-for, etc.
      * These "special" headers should not be added when the proxy is target
      * directly with a Max-Forwards: 0 headers.
