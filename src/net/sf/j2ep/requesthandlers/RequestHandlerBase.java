@@ -108,8 +108,9 @@ public abstract class RequestHandlerBase implements RequestHandler {
             if (originalVia.indexOf(serverHostName) != -1) {
                 log.error("This proxy has already handled the request, will abort.");
                 throw new HttpException("Request has a cyclic dependency on this proxy.");
+            } else {
+                via.append(originalVia).append(", "); 
             }
-            via.append(originalVia).append(", ");
         }
         via.append(request.getProtocol()).append(" ").append(serverHostName);
          
